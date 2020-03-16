@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ui/option/option_menu.qml</file>
+        <file>ui/option/button_test.qml</file>
+        <file>ui/option/camera_test.qml</file>
+        <file>ui/option/Header.qml</file>
+        <file>ui/option/MyButton.qml</file>
+        <file>ui/option/network_test.qml</file>
+        <file>ui/option/param_setting.qml</file>
+        <file>ui/option/SelectBar.qml</file>
+        <file>ui/option/settings.qml</file>
+        <file>ui/game/game_main.qml</file>
+    </qresource>
+</RCC>
