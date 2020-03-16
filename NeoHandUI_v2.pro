@@ -19,7 +19,9 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
-    input_handler.h
+    input_handler.h \
+    musicplayer.h \
+    soundfx.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,4 +32,5 @@ DISTFILES +=
 
 RESOURCES += \
     fonts.qrc \
-    qml.qrc
+    qml.qrc \
+    sound_effect.qrc

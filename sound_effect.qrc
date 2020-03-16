@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>sound_effect/click.wav</file>
+        <file>sound_effect/hold.wav</file>
+        <file>sound_effect/songselect_click.wav</file>
+        <file>sound_effect/swipe.wav</file>
+    </qresource>
+</RCC>

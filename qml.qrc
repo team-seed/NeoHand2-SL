@@ -11,5 +11,6 @@
         <file>ui/option/SelectBar.qml</file>
         <file>ui/option/settings.qml</file>
         <file>ui/game/game_main.qml</file>
+        <file>ui/songselect/songselect_main.qml</file>
     </qresource>
 </RCC>
