@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/songselect/image/layer1_outer_frame_new.png</file>
+    </qresource>
+</RCC>

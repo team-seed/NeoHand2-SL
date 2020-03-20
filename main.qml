@@ -33,7 +33,7 @@ Item {
         focus: true
         asynchronous: true
 
-        source: "/ui/game/game_main.qml"
+        source: "qrc:/ui/songselect/songselect_main.qml"
     }
 
     // insert animations here

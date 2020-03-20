@@ -21,6 +21,7 @@ SOURCES += \
 HEADERS += \
     input_handler.h \
     musicplayer.h \
+    songselect.h \
     soundfx.h
 
 # Default rules for deployment.
@@ -32,5 +33,6 @@ DISTFILES +=
 
 RESOURCES += \
     fonts.qrc \
+    images.qrc \
     qml.qrc \
     sound_effect.qrc
