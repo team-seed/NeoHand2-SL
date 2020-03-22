@@ -6,21 +6,24 @@ Item {
     id: songselect_container
 
     property variant songs_meta: dir.content
-    property int song_index: select_list.currentIndex
+    property int song_index: select_list.currentIndex[0]
     property int page_count: 4
     property bool select_expert: false
-    property variant sort_text: ["Artist","Title","Level"]
+    property variant sort_text: ["Artist","Title","Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
 
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
-    // 0 = artist , 1 = title , 2 = level
+    // 0 = artist , 1 = title , 2 = basic , 3 = expert
     property int sort_type : 0
+    // artist/tilte : [[index,-1]] , level : [[index,dif(6=basic,7=expert)] ]
+    property variant after_sort: []
 
     CustomSongselect { id: dir }
 
     Rectangle {
         anchors.fill: parent
         color: "#aaaaaa"
+
     }
 
 
@@ -123,7 +126,9 @@ Item {
                         top: parent.top
                         horizontalCenter: parent.horizontalCenter
                     }
+
                 }
+
             }
         }
         //白外框
@@ -144,7 +149,7 @@ Item {
 
         ListView {
             id: sort_select_list
-            y: parent.height * 0.4 - currentItem.y
+            y: parent.height * 0.4 - sort_select_list.currentItem.y
 
             height: parent.height / 5 * songs_meta.length
             width: sort_select_bar.width
@@ -194,6 +199,7 @@ Item {
                 Rectangle{
                     anchors.fill:parent
                     radius: height / 8
+
                     Rectangle {
                         id: title_box
                         color: "#222222"
@@ -206,6 +212,18 @@ Item {
                         }
                     }
 
+                    Text {
+                        id: dif_value
+                        text: after_sort[index][1] == -1 ? "0" : songs_meta[after_sort[index][0]][after_sort[index][1]].toString()
+                        color: "#222222"
+                        anchors {
+                            left: parent.left
+                            verticalCenter: parent.verticalCenter
+                        }
+                        font.family: font_Genjyuu_XP_bold.name
+                        font.pixelSize: parent.height / 2
+                    }
+
                     Item {
                         height: parent.height
                         width: height
@@ -213,7 +231,7 @@ Item {
 
                         Text {
                             id: cov
-                            text: songs_meta[index][2]
+                            text: songs_meta[after_sort[index][0]][2]
                             color: "white"
                             horizontalAlignment: Text.AlignHCenter
                             anchors.centerIn: parent
@@ -247,7 +265,7 @@ Item {
 
             height: parent.height / 5 * songs_meta.length
             width: song_select_bar.width
-            model: songs_meta
+            //model: after_sort
             delegate: list_delegate
             orientation: ListView.Vertical
             interactive: false
@@ -275,6 +293,7 @@ Item {
     //song imformation
     Item {
         property double cont_margin: 40
+        property double temp: 0
 
         id: data_panel
         width: parent.width * 0.5
@@ -282,13 +301,28 @@ Item {
 
         anchors {
             left : parent.horizontalCenter
+            leftMargin: temp
             verticalCenter: parent.verticalCenter
+        }
+
+        Behavior on temp {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.InOutExpo
+            }
         }
 
         Image {
             id: current_jacket
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[song_index][0] + "/jacket.png"
+            source:"file:///" + songs_meta[after_sort[select_list.currentIndex][0]][0] + "/jacket.png"
 
             height: parent.height * 0.5
             width: parent.width * 0.5
@@ -319,7 +353,7 @@ Item {
 
         Text {
             id: current_title
-            text: songs_meta[song_index][2]
+            text: songs_meta[after_sort[select_list.currentIndex][0]][2]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -342,7 +376,7 @@ Item {
 
         Text {
             id: current_artist
-            text: songs_meta[song_index][1]
+            text: songs_meta[after_sort[select_list.currentIndex][0]][1]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -425,7 +459,7 @@ Item {
                         }
 
                         Text {
-                            text: "BASIC  " + songs_meta[song_index][6]
+                            text: "BASIC  " + songs_meta[after_sort[select_list.currentIndex][0]][6]
                             font.family: font_hemi_head.name
                             color: "white"
                             font.pixelSize: parent.height * 0.8
@@ -480,7 +514,7 @@ Item {
                         }
 
                         Text {
-                            text: "EXPERT  " + songs_meta[song_index][7]
+                            text: "EXPERT  " + songs_meta[after_sort[select_list.currentIndex][0]][7]
                             font.family: font_hemi_head.name
                             color: "white"
                             font.pixelSize: parent.height * 0.8
@@ -511,10 +545,12 @@ Item {
 
     Timer {
         id: player_timer
-        interval: 1500
+        interval: 1000
         repeat: false
         onTriggered: {
             dir.playPreview("file:///" + songs_meta[song_index][0] + "/audio.wav", songs_meta[song_index][4])
+            data_panel.temp = 0
+            data_panel.opacity = 1
         }
     }
 
@@ -531,6 +567,9 @@ Item {
     function right_press () {
         if (current_state == false){
             current_state = true
+            after_sort = []
+            sorting(sort_select_list.currentIndex)
+            select_list.model = after_sort
             player_timer.restart();
         }
         else
@@ -548,15 +587,21 @@ Item {
     function up_press() {
         if(current_state == false)
             sort_select_list.decrementCurrentIndex()
-        else
+        else{
             select_list.decrementCurrentIndex()
+            console.log(select_list.currentItem.y)
+        }
     }
 
     function down_press () {
+        data_panel.temp = -parent.width / 2
+        data_panel.opacity = 0
         if(current_state == false)
             sort_select_list.incrementCurrentIndex()
-        else
+        else{
             select_list.incrementCurrentIndex()
+            console.log(select_list.currentItem.y)
+        }
     }
 
     function to_main () {
@@ -573,6 +618,47 @@ Item {
         destruct.start();
     }
 
+    // 0 = artist , 1 = title , defalt = levels
+    function sorting(x){
+        switch(x){
+
+            case 0:
+                songs_meta.forEach(function(data,index){
+                    after_sort.push([index,-1])
+                })
+                after_sort.sort(function(a,b){
+                        if(songs_meta[a[0]][1].toUpperCase() < songs_meta[b[0]][1].toUpperCase() )
+                            return -1
+                        else
+                            return 1
+                    });
+                break;
+
+            case 1:
+                songs_meta.forEach(function(data,index){
+                    after_sort.push([index,-1])
+                })
+                after_sort.sort(function(a,b){
+                    if( songs_meta[a[0]][2].toUpperCase() < songs_meta[b[0]][2].toUpperCase() )
+                        return -1
+                    else
+                        return 1
+                });
+                break;
+
+            default:
+                for(var i = 1; i <= 10; i++ ){
+                    songs_meta.forEach(function(data,index){
+                        if(data[6]==i)
+                            after_sort.push([index,6])
+                        if(data[7]==i)
+                            after_sort.push([index,7])
+                    });
+                }
+                break;
+        }
+    }
+
     Component.onCompleted: {
         mainqml.rightpress_signal.connect(right_press)
         mainqml.leftpress_signal.connect(left_press)
@@ -581,7 +667,6 @@ Item {
         mainqml.escpress_signal.connect(to_main)
         mainqml.enterpress_signal.connect(select)
 
-        game_transition.state = "COMPLETE"
     }
 
     function disconnect_all() {
@@ -596,9 +681,4 @@ Item {
         disconnect_all();
     }
 
-    Timer {
-        id: destruct
-        interval: game_transition.time
-        onTriggered: pageloader.source = "../game/Game.qml"
-    }
 }

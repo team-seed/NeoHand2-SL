@@ -93,6 +93,7 @@ private:
                         list.append(value.toString());
                     }
                 }
+                else list.append("");
 
                 if (obj.contains("TITLE")) {
                     QJsonValue value = obj.value("TITLE");
@@ -100,6 +101,7 @@ private:
                         list.append(value.toString());
                     }
                 }
+                else list.append("");
 
                 if (obj.contains("GENRE")) {
                     QJsonValue value = obj.value("GENRE");
@@ -107,6 +109,7 @@ private:
                         list.append(value.toString());
                     }
                 }
+                else list.append("");
 
                 if (obj.contains("PREVIEW")) {
                     QJsonValue value = obj.value("PREVIEW");
@@ -114,6 +117,7 @@ private:
                         list.append(value.toVariant().toInt());
                     }
                 }
+                else list.append(0);
 
                 if (obj.contains("COLOR")) {
                     QJsonValue value = obj.value("COLOR");
@@ -121,6 +125,7 @@ private:
                         list.append(value.toString());
                     }
                 }
+                else list.append("#222222");
 
                 if (obj.contains("BASIC")) {
                     QJsonValue value = obj.value("BASIC");
@@ -128,6 +133,7 @@ private:
                         list.append(value.toVariant().toInt());
                     }
                 }
+                else list.append(-1);
 
                 if (obj.contains("EXPERT")) {
                     QJsonValue value = obj.value("EXPERT");
@@ -135,6 +141,7 @@ private:
                         list.append(value.toVariant().toInt());
                     }
                 }
+                else list.append(-1);
             }
         }
 
