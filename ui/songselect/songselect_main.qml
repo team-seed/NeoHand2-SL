@@ -37,7 +37,6 @@ Item {
         ListElement { title: "Level 8"; sortfunc: "Level" }
         ListElement { title: "Level 9"; sortfunc: "Level" }
         ListElement { title: "Level 10"; sortfunc: "Level" }
-
     }
 
     //temp background
@@ -105,7 +104,8 @@ Item {
                 }
 
                 function sortbythis () {
-                    song_sorting(sortfunc)
+                    after_sort = song_sorting(sortfunc)
+                    secondlayer_listview.model = after_sort
                 }
             }   
         }
@@ -128,7 +128,7 @@ Item {
             id: firstlayer_listview
             y: parent.height * 0.4 - currentItem.y
 
-            height: parent.height / 5 * songs_meta.length
+            height: parent.height / 5 * count
             width: firstlayer.width
             model: sort_selection_list
             delegate: firstlayer_delegate
@@ -225,9 +225,9 @@ Item {
             id: secondlayer_listview
             y: parent.height * 0.4 - currentItem.y
 
-            height: parent.height / 5 * songs_meta.length
+            height: parent.height / 5 * count
             width: secondlayer.width
-            //model: after_sort
+            model: []
             delegate: secondlayer_delegate
             orientation: ListView.Vertical
             interactive: false
@@ -249,6 +249,8 @@ Item {
                     player_timer.restart();
                 }
             }
+
+            Component.onCompleted: positionViewAtIndex(0, ListView.Contain)
         }
 
     }
@@ -401,12 +403,13 @@ Item {
     }
 
     function song_sorting (method) {
+        var list = [];
         switch (method) {
             case "Artist":
                 songs_meta.forEach(function(data,index){
-                    after_sort.push([index,-1])
+                    list.push([index,-1])
                 })
-                after_sort.sort(function(a,b){
+                list.sort(function(a,b){
                         if(songs_meta[a[0]][1].toUpperCase() < songs_meta[b[0]][1].toUpperCase() )
                             return -1
                         else
@@ -416,9 +419,9 @@ Item {
 
             case "Title":
                 songs_meta.forEach(function(data,index){
-                    after_sort.push([index,-1])
+                    list.push([index,-1])
                 })
-                after_sort.sort(function(a,b){
+                list.sort(function(a,b){
                     if( songs_meta[a[0]][2].toUpperCase() < songs_meta[b[0]][2].toUpperCase() )
                         return -1
                     else
@@ -430,26 +433,21 @@ Item {
                 for(var i = 1; i <= 10; i++ ){
                     songs_meta.forEach(function(data,index){
                         if(data[6]==i)
-                            after_sort.push([index,6])
+                            list.push([index,6])
                         if(data[7]==i)
-                            after_sort.push([index,7])
+                            list.push([index,7])
                     });
                 }
                 break;
         }
+        return list
     }
 
     function right_press () {
         if (current_state == false){
             current_state = true
-            after_sort = []
             firstlayer_listview.currentItem.sortbythis()
-            secondlayer_listview.model = after_sort
-            player_timer.restart();
         }
-
-        console.log(secondlayer_listview.count)
-
     }
 
     function left_press () {
@@ -489,9 +487,9 @@ Item {
     }
 
     function disconnect_all() {
-        mainqml.rightpress_signal.disconnect(next_song)
-        mainqml.leftpress_signal.disconnect(prev_song)
-        mainqml.downpress_signal.disconnect(chng_diff)
+        mainqml.rightpress_signal.disconnect(right_press)
+        mainqml.leftpress_signal.disconnect(left_press)
+        mainqml.downpress_signal.disconnect(down_press)
         mainqml.escpress_signal.disconnect(to_main)
         mainqml.enterpress_signal.disconnect(select)
     }
