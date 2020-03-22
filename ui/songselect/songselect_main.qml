@@ -3,62 +3,83 @@ import QtQuick 2.12
 import custom.songselect 1.0
 
 Item {
-    id: songselect_container
+    id: songselect_main_container
 
-    property variant songs_meta: dir.content
-    property int song_index: select_list.currentIndex[0]
-    property int page_count: 4
+    property var songs_meta: dir.content
     property bool select_expert: false
-    property variant sort_text: ["Artist","Title","Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
 
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
-    // 0 = artist , 1 = title , 2 = basic , 3 = expert
-    property int sort_type : 0
     // artist/tilte : [[index,-1]] , level : [[index,dif(6=basic,7=expert)] ]
-    property variant after_sort: []
+    property var after_sort: []
+
+    property var detail_display: {
+        "jacket": "",
+        "title": "",
+        "artist": "",
+        "basic_difficulty": "",
+        "expert_difficulty": "",
+    }
 
     CustomSongselect { id: dir }
 
+    ListModel {
+        id: sort_selection_list
+        ListElement { title: "Artist"; sortfunc: "Artist" }
+        ListElement { title: "Title"; sortfunc: "Title" }
+        ListElement { title: "Level 1"; sortfunc: "Level" }
+        ListElement { title: "Level 2"; sortfunc: "Level" }
+        ListElement { title: "Level 3"; sortfunc: "Level" }
+        ListElement { title: "Level 4"; sortfunc: "Level" }
+        ListElement { title: "Level 5"; sortfunc: "Level" }
+        ListElement { title: "Level 6"; sortfunc: "Level" }
+        ListElement { title: "Level 7"; sortfunc: "Level" }
+        ListElement { title: "Level 8"; sortfunc: "Level" }
+        ListElement { title: "Level 9"; sortfunc: "Level" }
+        ListElement { title: "Level 10"; sortfunc: "Level" }
+
+    }
+
+    //temp background
     Rectangle {
         anchors.fill: parent
         color: "#aaaaaa"
 
     }
 
-
     //select sort
     Item {
-        id: sort_select_bar
-        property double select_bar_margin: 0
-        z: 2
+        id: firstlayer
 
         width: parent.width / 4
         height: parent.height
 
         anchors {
             right: parent.horizontalCenter
-            rightMargin: current_state ?  width : 0
+            rightMargin: current_state ? width : 0
             verticalCenter: parent.verticalCenter
-        }
 
-        Behavior on anchors.rightMargin {
-            NumberAnimation{
-                duration: 250
-                easing.type: Easing.OutCubic
+            Behavior on rightMargin {
+                NumberAnimation{
+                    duration: 250
+                    easing.type: Easing.OutCubic
+                }
             }
         }
+
+        //first layer bg
         Rectangle{
             anchors.fill: parent
             color: "#222222"
             opacity: 0.5
         }
+
         Component {
-            id: sort_list_delegate
+            id: firstlayer_delegate
 
             Item {
-                width: sort_select_bar.width
-                height: sort_select_bar.height / 5
+                width: firstlayer.width
+                height: firstlayer.height / 5
 
                 Rectangle {
                     color: "steelblue"
@@ -72,8 +93,7 @@ Item {
                     anchors.centerIn: parent
 
                     Text {
-                        id: sort_cov
-                        text: sort_text[index]
+                        text: title
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
                         anchors.centerIn: parent
@@ -84,81 +104,38 @@ Item {
                     }
                 }
 
-                Image {
-                    id: sort_delegate_left
-                    source: "qrc:/ui/songselect/image/layer1_outer_frame_new.png"// This is available in all editors.
-                    width: parent.width / 10
-                    height: parent.height
-                    anchors{
-                        left: parent.left
-                        verticalCenter: parent.verticalCenter
-                    }
-                    fillMode: Image.TileVertically
-                    verticalAlignment: Image.AlignVCenter
+                function sortbythis () {
+                    song_sorting(sortfunc)
                 }
-
-                Image {
-                    id: sort_delegate_right
-                    source: "qrc:/ui/songselect/image/layer1_outer_frame_new.png"// This is available in all editors.
-                    width: parent.width / 10
-                    height: parent.height
-                    anchors{
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
-                    }
-                    fillMode: Image.TileVertically
-                    verticalAlignment: Image.AlignVCenter
-                }
-                Rectangle{
-                    color: "#222222"
-                    width: parent.width
-                    height: parent.height / 36
-                    anchors{
-                        bottom: parent.bottom
-                        horizontalCenter: parent.horizontalCenter
-                    }
-                }
-                Rectangle{
-                    color: "#222222"
-                    width: parent.width
-                    height: parent.height / 36
-                    anchors{
-                        top: parent.top
-                        horizontalCenter: parent.horizontalCenter
-                    }
-
-                }
-
-            }
+            }   
         }
+
         //白外框
         Component {
-            id: sort_list_hl
+            id: firstlayer_hl
 
             Rectangle {
                 color: "transparent"
                 radius: 10
-                z: 3
                 border {
                     color: "white"
                     width: 10
                 }
-                visible: false
             }
         }
 
         ListView {
-            id: sort_select_list
-            y: parent.height * 0.4 - sort_select_list.currentItem.y
+            id: firstlayer_listview
+            y: parent.height * 0.4 - currentItem.y
 
             height: parent.height / 5 * songs_meta.length
-            width: sort_select_bar.width
-            model: sort_text
-            delegate: sort_list_delegate
+            width: firstlayer.width
+            model: sort_selection_list
+            delegate: firstlayer_delegate
             orientation: ListView.Vertical
             interactive: false
 
-            highlight: sort_list_hl
+            highlight: firstlayer_hl
             highlightMoveDuration: 0
 
             Behavior on y {
@@ -170,11 +147,12 @@ Item {
         }
 
     }
+
     //select song
     Item {
-        id: song_select_bar
-        z: 0
-        width: parent.width/4
+        id: secondlayer
+
+        width: parent.width / 4
         height: parent.height
         opacity: current_state ? 1 : 0
         anchors {
@@ -184,73 +162,57 @@ Item {
 
         Behavior on opacity {
             NumberAnimation{
-                duration:250
+                duration: 250
                 easing.type: Easing.OutCubic
             }
         }
 
         Component {
-            id: list_delegate
+            id: secondlayer_delegate
 
             Item {
-                width: song_select_bar.width
-                height: song_select_bar.height / 5
+                width: secondlayer.width
+                height: secondlayer.height / 5
 
-                Rectangle{
-                    anchors.fill:parent
-                    radius: height / 8
-
-                    Rectangle {
-                        id: title_box
-                        color: "#222222"
-                        opacity: 0.7
-                        width: parent.width * 0.7
-                        height: parent.height
-                        anchors{
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
-
-                    Text {
-                        id: dif_value
-                        text: after_sort[index][1] == -1 ? "0" : songs_meta[after_sort[index][0]][after_sort[index][1]].toString()
-                        color: "#222222"
-                        anchors {
-                            left: parent.left
-                            verticalCenter: parent.verticalCenter
-                        }
-                        font.family: font_Genjyuu_XP_bold.name
-                        font.pixelSize: parent.height / 2
-                    }
-
-                    Item {
-                        height: parent.height
-                        width: height
-                        anchors.centerIn: title_box
-
-                        Text {
-                            id: cov
-                            text: songs_meta[after_sort[index][0]][2]
-                            color: "white"
-                            horizontalAlignment: Text.AlignHCenter
-                            anchors.centerIn: parent
-                            wrapMode: Text.WordWrap
-                            width: parent.width
-                            font.family: font_Genjyuu_XP_bold.name
-                            font.pixelSize: parent.height / 8
-                        }
+                Rectangle {
+                    id: title_box
+                    color: "#222222"
+                    opacity: 0.7
+                    width: parent.width * 0.7
+                    height: parent.height
+                    anchors{
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
                     }
                 }
+
+                Item {
+                    height: parent.height
+                    width: height
+                    anchors.centerIn: title_box
+
+                    Text {
+                        id: cov
+                        text: songs_meta[after_sort[index][0]][2]
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.centerIn: parent
+                        wrapMode: Text.WordWrap
+                        width: parent.width
+                        font.family: font_Genjyuu_XP_bold.name
+                        font.pixelSize: parent.height / 8
+                    }
+                }
+
             }
         }
+
         //白外框
         Component {
-            id: list_hl
+            id: secondlayer_hl
             Rectangle {
                 color: "transparent"
                 radius: 10
-                z: 1
                 border {
                     color: "white"
                     width: 10
@@ -260,17 +222,17 @@ Item {
         }
 
         ListView {
-            id: select_list
+            id: secondlayer_listview
             y: parent.height * 0.4 - currentItem.y
 
             height: parent.height / 5 * songs_meta.length
-            width: song_select_bar.width
+            width: secondlayer.width
             //model: after_sort
-            delegate: list_delegate
+            delegate: secondlayer_delegate
             orientation: ListView.Vertical
             interactive: false
 
-            highlight: list_hl
+            highlight: secondlayer_hl
             highlightMoveDuration: 0
 
             Behavior on y {
@@ -281,7 +243,7 @@ Item {
             }
 
             onCurrentIndexChanged: {
-                if(current_state == 1){
+                if (current_state) {
                     dir.stopPreview();
                     dir.playEffect();
                     player_timer.restart();
@@ -290,50 +252,34 @@ Item {
         }
 
     }
-    //song imformation
-    Item {
-        property double cont_margin: 40
-        property double temp: 0
 
-        id: data_panel
+    //song information
+    Item {
+        id: detail_panel
+
         width: parent.width * 0.5
         height: parent.height
 
         anchors {
             left : parent.horizontalCenter
-            leftMargin: temp
             verticalCenter: parent.verticalCenter
         }
 
-        Behavior on temp {
-            NumberAnimation {
-                duration: 500
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 500
-                easing.type: Easing.InOutExpo
-            }
-        }
-
+        //jacket
         Image {
             id: current_jacket
             fillMode: Image.PreserveAspectFit
-            source:"file:///" + songs_meta[after_sort[select_list.currentIndex][0]][0] + "/jacket.png"
+            source: "file:///" + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
 
             height: parent.height * 0.5
             width: parent.width * 0.5
 
             anchors {
                 top: parent.top
-                topMargin: data_panel.cont_margin
                 left: parent.left
-                leftMargin: data_panel.cont_margin
             }
         }
+
 
         Rectangle {
             id: current_bar
@@ -344,16 +290,14 @@ Item {
 
             anchors {
                 top: current_jacket.bottom
-                topMargin: data_panel.cont_margin
                 bottom: current_artist.bottom
                 left: parent.left
-                leftMargin: data_panel.cont_margin
             }
         }
 
         Text {
             id: current_title
-            text: songs_meta[after_sort[select_list.currentIndex][0]][2]
+            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][2]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -368,15 +312,13 @@ Item {
 
             anchors {
                 top: current_jacket.bottom
-                topMargin: data_panel.cont_margin
                 left: current_bar.right
-                leftMargin: data_panel.cont_margin
             }
         }
 
         Text {
             id: current_artist
-            text: songs_meta[after_sort[select_list.currentIndex][0]][1]
+            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][1]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -393,154 +335,60 @@ Item {
                 top: current_title.bottom
                 topMargin: 20
                 left: current_bar.right
-                leftMargin: data_panel.cont_margin
             }
-        }
-
-
-        Rectangle {
-            color: "white"
-            opacity: 0
-
-            anchors.fill: difficulty_frame
         }
 
         Item {
-            id: difficulty_frame
+            width: parent.width
+            height: parent.height / 4
 
             anchors {
-                top: current_artist.bottom
-                topMargin: 40
-                left: parent.left
-                leftMargin: data_panel.cont_margin*2
                 bottom: parent.bottom
-                bottomMargin: data_panel.cont_margin
-                right: parent.right
-                rightMargin: data_panel.cont_margin * 2
+                horizontalCenter: parent.horizontalCenter
             }
 
-            property double frame_margin: difficulty_frame.height / 4
-
-            Row {
-                spacing: parent.frame_margin *1.5
+            Rectangle {
+                id: basic_token
+                color: "forestgreen"
+                radius: height / 2
+                height: 50
+                width: parent.width / 3
                 anchors {
-                    right: parent.right
                     verticalCenter: parent.verticalCenter
+                    right: parent.horizontalCenter
                 }
 
-                Item {
-                    id: difficulty_basic
-                    width: parent.parent.width / 3
-                    height: parent.parent.frame_margin
+                Text {
+                    text: "BASIC  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][6]
+                    font.family: font_hemi_head.name
+                    color: "white"
+                    font.pixelSize: parent.height * 0.8
 
-                    Text {
-                        text: ">"
-                        color: "#222222"
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height * 0.8
-                        visible: !select_expert
+                    anchors.centerIn: parent
+                }
+            }
 
-                        anchors {
-                            left: parent.left
-                            leftMargin: 50
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
-
-                    Rectangle {
-                        id: basic_token
-                        color: "forestgreen"
-                        radius: this.height / 2
-                        height: parent.height * 0.75
-                        width: parent.width
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            right: parent.horizontalCenter
-                        }
-
-                        Text {
-                            text: "BASIC  " + songs_meta[after_sort[select_list.currentIndex][0]][6]
-                            font.family: font_hemi_head.name
-                            color: "white"
-                            font.pixelSize: parent.height * 0.8
-
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Text {
-                        id: highscore_basic
-                        text: "0000000"
-                        color: "#222222"
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height * 0.8
-
-                        anchors {
-                            top: basic_token.bottom
-                            left: basic_token.left
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
+            Rectangle {
+                id: expert_token
+                color: "firebrick"
+                radius: height / 2
+                height: 50
+                width: parent.width / 3
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.horizontalCenter
                 }
 
-                Item {
-                    id: difficulty_expert
-                    width: parent.parent.width / 3
-                    height: parent.parent.frame_margin
+                Text {
+                    text: "EXPERT  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][7]
+                    font.family: font_hemi_head.name
+                    color: "white"
+                    font.pixelSize: parent.height * 0.8
 
-                    Text {
-                        text: ">"
-                        color: "#222222"
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height / 3
-                        visible: select_expert
-
-                        anchors {
-                            left: parent.left
-                            leftMargin: 50
-                            //verticalCenter: parent.verticalCenter
-                        }
-                    }
-
-                    Rectangle {
-                        id: expert_token
-                        color: "firebrick"
-                        radius: this.height / 2
-                        height: parent.height * 0.75
-                        width: parent.width
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            right: parent.horizontalCenter
-                        }
-
-                        Text {
-                            text: "EXPERT  " + songs_meta[after_sort[select_list.currentIndex][0]][7]
-                            font.family: font_hemi_head.name
-                            color: "white"
-                            font.pixelSize: parent.height * 0.8
-
-                            anchors.centerIn: parent
-                        }
-                    }
-
-                    Text {
-                        id: highscore_expert
-                        text: "0000000"
-                        color: "#222222"
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height * 0.8
-
-                        anchors {
-                            top:  expert_token.bottom
-                            left: expert_token.left
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
+                    anchors.centerIn: parent
                 }
-
             }
         }
-
     }
 
     Timer {
@@ -548,81 +396,13 @@ Item {
         interval: 1000
         repeat: false
         onTriggered: {
-            dir.playPreview("file:///" + songs_meta[song_index][0] + "/audio.wav", songs_meta[song_index][4])
-            data_panel.temp = 0
-            data_panel.opacity = 1
+            //dir.playPreview("file:///" + songs_meta[song_index][0] + "/audio.wav", songs_meta[song_index][4])
         }
     }
 
-    FontLoader {
-        id: font_Genjyuu_XP_bold
-        source: "/font/GenJyuuGothicX-P-Bold.ttf"
-    }
-
-    FontLoader {
-        id: font_hemi_head
-        source: "/font/hemi-head-bd-it.ttf"
-    }
-
-    function right_press () {
-        if (current_state == false){
-            current_state = true
-            after_sort = []
-            sorting(sort_select_list.currentIndex)
-            select_list.model = after_sort
-            player_timer.restart();
-        }
-        else
-            select_expert = !select_expert
-
-    }
-
-    function left_press () {
-        if(current_state == true){
-            current_state =false
-            dir.stopPreview()
-        }
-    }
-
-    function up_press() {
-        if(current_state == false)
-            sort_select_list.decrementCurrentIndex()
-        else{
-            select_list.decrementCurrentIndex()
-            console.log(select_list.currentItem.y)
-        }
-    }
-
-    function down_press () {
-        data_panel.temp = -parent.width / 2
-        data_panel.opacity = 0
-        if(current_state == false)
-            sort_select_list.incrementCurrentIndex()
-        else{
-            select_list.incrementCurrentIndex()
-            console.log(select_list.currentItem.y)
-        }
-    }
-
-    function to_main () {
-        //pageloader.source = "/ui/option/option_menu.qml"
-        Qt.quit()
-    }
-
-    function select() {
-        game_transition.state = "LOADING"
-        disconnect_all();
-        var data = songs_meta[select_list.currentIndex]
-        data.push(select_expert)
-        mainqml.song_data = data;
-        destruct.start();
-    }
-
-    // 0 = artist , 1 = title , defalt = levels
-    function sorting(x){
-        switch(x){
-
-            case 0:
+    function song_sorting (method) {
+        switch (method) {
+            case "Artist":
                 songs_meta.forEach(function(data,index){
                     after_sort.push([index,-1])
                 })
@@ -634,7 +414,7 @@ Item {
                     });
                 break;
 
-            case 1:
+            case "Title":
                 songs_meta.forEach(function(data,index){
                     after_sort.push([index,-1])
                 })
@@ -646,7 +426,7 @@ Item {
                 });
                 break;
 
-            default:
+            case "Level":
                 for(var i = 1; i <= 10; i++ ){
                     songs_meta.forEach(function(data,index){
                         if(data[6]==i)
@@ -657,6 +437,45 @@ Item {
                 }
                 break;
         }
+    }
+
+    function right_press () {
+        if (current_state == false){
+            current_state = true
+            after_sort = []
+            firstlayer_listview.currentItem.sortbythis()
+            secondlayer_listview.model = after_sort
+            player_timer.restart();
+        }
+
+        console.log(secondlayer_listview.count)
+
+    }
+
+    function left_press () {
+        if(current_state == true){
+            current_state = false
+            dir.stopPreview()
+        }
+    }
+
+    function up_press() {
+        (current_state ? secondlayer_listview : firstlayer_listview).decrementCurrentIndex()
+    }
+
+    function down_press () {
+        (current_state ? secondlayer_listview : firstlayer_listview).incrementCurrentIndex()
+
+    }
+
+    function to_main () {
+        //pageloader.source = "/ui/option/option_menu.qml"
+        Qt.quit()
+    }
+
+    function select() {
+        disconnect_all();
+        destruct.start();
     }
 
     Component.onCompleted: {
@@ -681,4 +500,13 @@ Item {
         disconnect_all();
     }
 
+    FontLoader {
+        id: font_Genjyuu_XP_bold
+        source: "/font/GenJyuuGothicX-P-Bold.ttf"
+    }
+
+    FontLoader {
+        id: font_hemi_head
+        source: "/font/hemi-head-bd-it.ttf"
+    }
 }
