@@ -10,8 +10,6 @@ Item {
 
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
-    // artist/tilte : [[index,-1]] , level : [[index,dif(6=basic,7=expert)] ]
-    property var after_sort: []
 
     property var detail_display: {
         "jacket": "",
@@ -62,7 +60,6 @@ Item {
         ListElement { title: "Level 8"; sortfunc: "Level" }
         ListElement { title: "Level 9"; sortfunc: "Level" }
         ListElement { title: "Level 10"; sortfunc: "Level" }
-
     }
 
     //temp background
@@ -130,7 +127,7 @@ Item {
                 }
 
                 function sortbythis () {
-                    song_sorting(sortfunc)
+                    secondlayer_listview.model = song_sorting(sortfunc)
                 }
             }   
         }
@@ -153,7 +150,7 @@ Item {
             id: firstlayer_listview
             y: parent.height * 0.4 - currentItem.y
 
-            height: parent.height / 5 * songs_meta.length
+            height: parent.height / 5 * count
             width: firstlayer.width
             model: sort_selection_list
             delegate: firstlayer_delegate
@@ -218,7 +215,7 @@ Item {
 
                     Text {
                         id: cov
-                        text: songs_meta[after_sort[index][0]][2]
+                        text: songs_meta[secondlayer_listview.model[index][0]][2]
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
                         anchors.centerIn: parent
@@ -250,9 +247,9 @@ Item {
             id: secondlayer_listview
             y: parent.height * 0.4 - currentItem.y
 
-            height: parent.height / 5 * songs_meta.length
+            height: parent.height / 5 * count
             width: secondlayer.width
-            //model: after_sort
+            model: []
             delegate: secondlayer_delegate
             orientation: ListView.Vertical
             interactive: false
@@ -274,6 +271,8 @@ Item {
                     player_timer.restart();
                 }
             }
+
+            Component.onCompleted: positionViewAtIndex(0, ListView.Contain)
         }
 
     }
@@ -294,7 +293,7 @@ Item {
         Image {
             id: current_jacket
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+            source: "file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
 
             height: parent.height * 0.5
             width: parent.width * 0.5
@@ -322,7 +321,7 @@ Item {
         //title
         Text {
             id: current_title
-            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][2]
+            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][2]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -343,7 +342,7 @@ Item {
         //artist
         Text {
             id: current_artist
-            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][1]
+            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][1]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -411,7 +410,7 @@ Item {
                 }
 
                 Text {
-                    text: "EXPERT  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][7]
+                    text: "EXPERT  " + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
                     font.family: font_hemi_head.name
                     color: "white"
                     font.pixelSize: parent.height * 0.8
@@ -432,12 +431,13 @@ Item {
     }
 
     function song_sorting (method) {
+        var list = [];
         switch (method) {
             case "Artist":
                 songs_meta.forEach(function(data,index){
-                    after_sort.push([index,-1])
+                    list.push([index,-1])
                 })
-                after_sort.sort(function(a,b){
+                list.sort(function(a,b){
                         if(songs_meta[a[0]][1].toUpperCase() < songs_meta[b[0]][1].toUpperCase() )
                             return -1
                         else
@@ -447,9 +447,9 @@ Item {
 
             case "Title":
                 songs_meta.forEach(function(data,index){
-                    after_sort.push([index,-1])
+                    list.push([index,-1])
                 })
-                after_sort.sort(function(a,b){
+                list.sort(function(a,b){
                     if( songs_meta[a[0]][2].toUpperCase() < songs_meta[b[0]][2].toUpperCase() )
                         return -1
                     else
@@ -458,26 +458,24 @@ Item {
                 break;
 
             case "Level":
-                songs_meta.forEach(function(data,index){
-                                    after_sort.push([index,6])
-                                    after_sort.push([index,7])
-                                })
-                after_sort.sort(function(a,b){
-                    return songs_meta[a[0]][a[1]] - songs_meta[b[0]][b[1]]
-                });
+                for(var i = 1; i <= 10; i++ ){
+                    songs_meta.forEach(function(data,index){
+                        if(data[6]==i)
+                            list.push([index,6])
+                        if(data[7]==i)
+                            list.push([index,7])
+                    });
+                }
                 break;
         }
+        return list
     }
 
     function right_press () {
         if (current_state == false){
             current_state = true
-            after_sort = []
             firstlayer_listview.currentItem.sortbythis()
-            secondlayer_listview.model = after_sort
-            player_timer.restart();
         }
-        console.log(secondlayer_listview.count)
     }
 
     function left_press () {
@@ -517,9 +515,9 @@ Item {
     }
 
     function disconnect_all() {
-        mainqml.rightpress_signal.disconnect(next_song)
-        mainqml.leftpress_signal.disconnect(prev_song)
-        mainqml.downpress_signal.disconnect(chng_diff)
+        mainqml.rightpress_signal.disconnect(right_press)
+        mainqml.leftpress_signal.disconnect(left_press)
+        mainqml.downpress_signal.disconnect(down_press)
         mainqml.escpress_signal.disconnect(to_main)
         mainqml.enterpress_signal.disconnect(select)
     }
