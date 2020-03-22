@@ -23,6 +23,31 @@ Item {
 
     CustomSongselect { id: dir }
 
+    //round count
+    Rectangle{
+        width : parent.width / 4
+        height : parent.height / 8
+        color: "white"
+        opacity: 0.7
+        z : 100
+        anchors{
+            top: parent.top
+            left: parent.left
+        }
+    }
+    //button hint
+    Rectangle{
+        width : parent.width / 4
+        height : parent.height / 8
+        color: "white"
+        opacity: 0.7
+        z : 100
+        anchors{
+            bottom: parent.bottom
+            left: parent.left
+        }
+    }
+
     ListModel {
         id: sort_selection_list
         ListElement { title: "Artist"; sortfunc: "Artist" }
@@ -280,7 +305,7 @@ Item {
             }
         }
 
-
+        //bar
         Rectangle {
             id: current_bar
 
@@ -294,7 +319,7 @@ Item {
                 left: parent.left
             }
         }
-
+        //title
         Text {
             id: current_title
             text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][2]
@@ -315,7 +340,7 @@ Item {
                 left: current_bar.right
             }
         }
-
+        //artist
         Text {
             id: current_artist
             text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][1]
@@ -337,7 +362,7 @@ Item {
                 left: current_bar.right
             }
         }
-
+        //difficulty(highscore)
         Item {
             width: parent.width
             height: parent.height / 4
@@ -346,32 +371,38 @@ Item {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
-
-            Rectangle {
-                id: basic_token
-                color: "forestgreen"
-                radius: height / 2
-                height: 50
+            Rectangle{
+                height: parent.height / 8
                 width: parent.width / 3
                 anchors {
                     verticalCenter: parent.verticalCenter
                     right: parent.horizontalCenter
                 }
 
-                Text {
-                    text: "BASIC  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][6]
-                    font.family: font_hemi_head.name
-                    color: "white"
-                    font.pixelSize: parent.height * 0.8
+                Rectangle {
+                    id: basic_token
+                    color: "#222222"
+                    opacity: 0.7
+                    height: parent.height * 0.7
+                    width: parent.width
+                    anchors.top: parent.top
 
-                    anchors.centerIn: parent
+                    Text {
+                        text: "BASIC  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][6]
+                        font.family: font_hemi_head.name
+                        color: "white"
+                        font.pixelSize: parent.height * 0.8
+
+                        anchors.centerIn: parent
+                    }
                 }
             }
 
+
             Rectangle {
                 id: expert_token
-                color: "firebrick"
-                radius: height / 2
+                color: "#222222"
+                opacity: 0.7
                 height: 50
                 width: parent.width / 3
                 anchors {
@@ -427,14 +458,13 @@ Item {
                 break;
 
             case "Level":
-                for(var i = 1; i <= 10; i++ ){
-                    songs_meta.forEach(function(data,index){
-                        if(data[6]==i)
-                            after_sort.push([index,6])
-                        if(data[7]==i)
-                            after_sort.push([index,7])
-                    });
-                }
+                songs_meta.forEach(function(data,index){
+                                    after_sort.push([index,6])
+                                    after_sort.push([index,7])
+                                })
+                after_sort.sort(function(a,b){
+                    return songs_meta[a[0]][a[1]] - songs_meta[b[0]][b[1]]
+                });
                 break;
         }
     }
@@ -447,9 +477,7 @@ Item {
             secondlayer_listview.model = after_sort
             player_timer.restart();
         }
-
         console.log(secondlayer_listview.count)
-
     }
 
     function left_press () {
