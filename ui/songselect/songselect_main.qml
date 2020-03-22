@@ -10,8 +10,6 @@ Item {
 
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
-    // artist/tilte : [[index,-1]] , level : [[index,dif(6=basic,7=expert)] ]
-    property var after_sort: []
 
     property var detail_display: {
         "jacket": "",
@@ -104,8 +102,7 @@ Item {
                 }
 
                 function sortbythis () {
-                    after_sort = song_sorting(sortfunc)
-                    secondlayer_listview.model = after_sort
+                    secondlayer_listview.model = song_sorting(sortfunc)
                 }
             }   
         }
@@ -193,7 +190,7 @@ Item {
 
                     Text {
                         id: cov
-                        text: songs_meta[after_sort[index][0]][2]
+                        text: songs_meta[secondlayer_listview.model[index][0]][2]
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
                         anchors.centerIn: parent
@@ -271,7 +268,7 @@ Item {
         Image {
             id: current_jacket
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+            source: "file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
 
             height: parent.height * 0.5
             width: parent.width * 0.5
@@ -299,7 +296,7 @@ Item {
 
         Text {
             id: current_title
-            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][2]
+            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][2]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -320,7 +317,7 @@ Item {
 
         Text {
             id: current_artist
-            text: songs_meta[after_sort[secondlayer_listview.currentIndex][0]][1]
+            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][1]
             color: "white"
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
@@ -361,7 +358,7 @@ Item {
                 }
 
                 Text {
-                    text: "BASIC  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][6]
+                    text: "BASIC  " + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][6]
                     font.family: font_hemi_head.name
                     color: "white"
                     font.pixelSize: parent.height * 0.8
@@ -382,7 +379,7 @@ Item {
                 }
 
                 Text {
-                    text: "EXPERT  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][7]
+                    text: "EXPERT  " + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
                     font.family: font_hemi_head.name
                     color: "white"
                     font.pixelSize: parent.height * 0.8
