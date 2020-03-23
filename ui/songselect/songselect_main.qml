@@ -7,9 +7,7 @@ Item {
 
     property var songs_meta: dir.content
     property bool select_expert: false
-    //margin
-    property int horizontal_margin : width / 20
-    property int vertical_margin : height / 16
+
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
 
@@ -201,7 +199,6 @@ Item {
                 height: secondlayer.height / 5
 
                 Rectangle {
-                    id: title_box
                     color: "#222222"
                     opacity: 0.7
                     width: parent.width * 0.7
@@ -223,7 +220,6 @@ Item {
                 }
 
                 Rectangle{
-                    id: difficulty_box
                     color: "white"
                     opacity: 0.7
                     width: parent.width * 0.3
@@ -298,6 +294,10 @@ Item {
     //song information
     Item {
         id: detail_panel
+
+        //margin
+        property double panel_margin: width / 16
+
         width: parent.width * 0.5
         height: parent.height
 
@@ -309,205 +309,278 @@ Item {
         //jacket
         Image {
             id: current_jacket
-            fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
 
-            height: parent.height * 0.5
-            width: parent.width * 0.5
+            width: parent.width / 2
+            height: width
 
             anchors {
+                margins: detail_panel.panel_margin
                 top: parent.top
                 left: parent.left
-                leftMargin:horizontal_margin
             }
+
+            fillMode: Image.PreserveAspectFit
+            source: "file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+        }
+
+        //bar background
+        Rectangle {
+            id: bar_bg
+
+            height: current_bar.height + detail_panel.panel_margin
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                verticalCenter: current_bar.verticalCenter
+            }
+
+            color: "#DDDDDD"
+            opacity: 0.5
+
         }
 
         //bar
         Rectangle {
             id: current_bar
 
+            height: current_jacket.height / 4
+            width: height / 6
+
+            anchors {
+                margins: detail_panel.panel_margin
+                top: current_jacket.bottom
+                left: parent.left
+            }
+
             color: "#222222"
+        }
 
-            width: 20
+        // title & artist
+        Item {
+            anchors {
+                top: current_bar.top
+                bottom: current_bar.bottom
+                right: parent.right
+                rightMargin: detail_panel.panel_margin
+                left: current_bar.right
+                leftMargin: detail_panel.panel_margin / 2
+            }
+
+            //title
+            Text {
+                id: current_title
+                height: current_artist.height * 2
+
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                }
+
+                text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][2]
+                color: "white"
+                font.family: font_Genjyuu_XP_bold.name
+                font.pixelSize: height
+                minimumPixelSize: 10
+
+                fontSizeMode: Text.Fit
+                verticalAlignment: Text.AlignVCenter
+                style: Text.Raised
+                styleColor: "black"
+            }
+
+            //artist
+            Text {
+                id: current_artist
+
+                height: parent.height / 3
+
+                anchors {
+                    bottom: parent.bottom
+                    left: parent.left
+                    right: parent.right
+                }
+
+                text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][1]
+                color: "white"
+                font.family: font_Genjyuu_XP_bold.name
+                font.pixelSize: height
+                minimumPixelSize: 10
+
+                fontSizeMode: Text.Fit
+                verticalAlignment: Text.AlignVCenter
+                style: Text.Raised
+                styleColor: "black"
+            }
+
+        }
+
+        // difficulties
+        Item {
+            id: box_container
+
+            height: current_bar.height * 2
 
             anchors {
-                top: current_jacket.bottom
-                bottom: current_artist.bottom
                 left: parent.left
-                leftMargin:horizontal_margin
-            }
-        }
-        //title
-        Text {
-            id: current_title
-            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][2]
-            color: "white"
-            font.family: font_Genjyuu_XP_bold.name
-            font.pixelSize: height
-            minimumPixelSize: 10
-
-            fontSizeMode: Text.Fit
-            verticalAlignment: Text.AlignVCenter
-            style: Text.Raised
-            styleColor: "#222222"
-
-            height: current_jacket.height / 6
-
-            anchors {
-                top: current_jacket.bottom
-                left: current_bar.right
-            }
-        }
-        //artist
-        Text {
-            id: current_artist
-            text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][1]
-            color: "white"
-            font.family: font_Genjyuu_XP_bold.name
-            font.pixelSize: height
-            minimumPixelSize: 10
-
-            fontSizeMode: Text.Fit
-            verticalAlignment: Text.AlignVCenter
-            style: Text.Raised
-            styleColor: "#222222"
-
-            height: current_jacket.height / 8
-
-            anchors {
-                top: current_title.bottom
-                topMargin: 20
-                left: current_bar.right
-            }
-        }
-        //basic
-        Rectangle{
-            id:box_basic
-            height: parent.height / 5
-            width: height * 1.5
-            anchors {
+                right: parent.right
                 bottom: parent.bottom
-                bottomMargin: vertical_margin
-                left: parent.left
-                leftMargin: horizontal_margin
+                margins: detail_panel.panel_margin
             }
-            //basic text
-            Rectangle {
-                color: "#222222"
-                opacity: 0.7
-                height: (parent.height / 3) * 2
-                width: parent.width
-                anchors.top: parent.top
-                Text {
-                    text: "BASIC" //
-                    font.family: font_hemi_head.name
-                    color: "white"
-                    font.pixelSize: parent.height * 0.4
-                    anchors{
-                        bottom: parent.bottom
-                        left: parent.left
+
+            //basic
+            Item {
+                id: box_basic
+                height: parent.height
+                width: height * 1.5
+
+                anchors {
+                    left: parent.left
+                    bottom: parent.bottom
+                }
+
+                //basic text
+                Rectangle {
+                    color: "#222222"
+                    height: parent.height * 2 / 3
+                    width: parent.width
+                    anchors.top: parent.top
+
+                    Text {
+                        text: "BASIC"
+                        font.family: font_hemi_head.name
+                        color: "#DDDDDD"
+                        font.pixelSize: parent.height * 0.375
+                        anchors{
+                            bottom: parent.bottom
+                            left: parent.left
+                            margins: parent.width * 0.03
+                        }
+                    }
+                }
+
+                //score
+                Rectangle {
+                    color: "#DDDDDD"
+                    height: parent.height / 3
+                    width: parent.width
+
+                    anchors.bottom:  parent.bottom
+
+                    Text {
+                        id: highscore_basic
+                        text: "0000000"
+                        font.family: font_hemi_head.name
+                        color: "#444444"
+                        font.pixelSize: parent.height * 0.75
+                        anchors.left: parent.left
+                        anchors.margins: parent.width * 0.03
+                    }
+                }
+                //difficulty_val
+                Image {
+                    source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
+                    fillMode: Image.PreserveAspectFit
+                    width: parent.width / 2
+                    height: parent.height
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][6]
+
+                        width: parent.width * 0.7
+                        height: width
+
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        font.family: font_hemi_head.name
+                        font.pixelSize: parent.height * 0.3
+
                     }
                 }
             }
-            //score
-            Rectangle {
-                color: "white"
-                opacity: 0.7
-                height: parent.height / 3
-                width: parent.width
-                anchors.bottom:  parent.bottom
-                Text {
-                    id: highscore_basic
-                    text: "0000000"
-                    font.family: font_hemi_head.name
-                    color: "#222222"
-                    font.pixelSize: parent.height *0.8
-                    anchors.left: parent.left
-                }
-            }
-            //difficulty_val
-            Image {
-                source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
-                fillMode: Image.PreserveAspectFit
-                width: parent.width / 2
+
+            //expert
+            Item{
+                id: box_expert
+
                 height: parent.height
+                width: height * 1.5
+
                 anchors {
                     right: parent.right
-                    verticalCenter: parent.verticalCenter
+                    bottom: parent.bottom
                 }
-                Text {
-                    text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][6]
-                    font.family: font_hemi_head.name
-                    color: "white"
-                    font.pixelSize: parent.height * 0.3
-                    anchors.right: parent.right
-                    rightPadding: parent.width / 6
-                }
-            }
-        }
-        //expert
-        Rectangle{
-            id:box_expert
-            height: parent.height / 5
-            width: height * 1.5
-            anchors {
-                bottom: parent.bottom
-                bottomMargin: vertical_margin
-                left: box_basic.right
-                leftMargin:horizontal_margin
-            }
-            //expert text
-            Rectangle {
-                color: "#222222"
-                opacity: 0.7
-                height: (parent.height / 3) * 2
-                width: parent.width
-                anchors.top: parent.top
-                Text {
-                    text: "EXPERT"
-                    font.family: font_hemi_head.name
-                    color: "white"
-                    font.pixelSize: parent.height * 0.4
 
-                    anchors{
-                        bottom: parent.bottom
-                        left: parent.left
+                //expert text
+                Rectangle {
+                    color: "#222222"
+                    height: parent.height * 2/3
+                    width: parent.width
+                    anchors.top: parent.top
+
+                    Text {
+                        text: "EXPERT"
+                        font.family: font_hemi_head.name
+                        color: "#DDDDDD"
+                        font.pixelSize: parent.height * 0.375
+                        anchors{
+                            bottom: parent.bottom
+                            left: parent.left
+                            margins: parent.width * 0.03
+                        }
                     }
                 }
-            }
-            //score
-            Rectangle {
-                color: "white"
-                opacity: 0.7
-                height: parent.height / 3
-                width: parent.width
-                anchors.bottom:  parent.bottom
-                Text {
-                    id: highscore_expert
-                    text: "0000000"
-                    font.family: font_hemi_head.name
-                    color: "#222222"
-                    font.pixelSize: parent.height *0.8
-                    anchors.left: parent.left
+
+                //score
+                Rectangle {
+                    color: "#DDDDDD"
+                    height: parent.height / 3
+                    width: parent.width
+                    anchors.bottom:  parent.bottom
+
+                    Text {
+                        id: highscore_expert
+                        text: "0000000"
+                        font.family: font_hemi_head.name
+                        color: "#444444"
+                        font.pixelSize: parent.height * 0.75
+                        anchors.left: parent.left
+                        anchors.margins: parent.width * 0.03
+                    }
                 }
-            }
-            //difficulty_val
-            Image {
-                source: "qrc:/ui/songselect/image/difficulty_frame_expert.png"
-                fillMode: Image.PreserveAspectFit
-                width: parent.width / 2
-                height: parent.height
-                anchors {
-                    right: parent.right
-                    verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
-                    font.family: font_hemi_head.name
-                    color: "white"
-                    font.pixelSize: parent.height * 0.3
-                    anchors.right: parent.right
-                    rightPadding: parent.width / 6
+
+                //difficulty_val
+                Image {
+                    source: "qrc:/ui/songselect/image/difficulty_frame_expert.png"
+                    fillMode: Image.PreserveAspectFit
+                    width: parent.width / 2
+                    height: parent.height
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+                    Text {
+                        text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
+
+                        width: parent.width * 0.7
+                        height: width
+
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        font.family: font_hemi_head.name
+                        font.pixelSize: parent.height * 0.3
+                    }
                 }
             }
         }
