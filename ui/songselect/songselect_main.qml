@@ -12,7 +12,7 @@ Item {
     property int vertical_margin : height / 16
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
-
+    property bool is_level: false
     property var detail_display: {
         "jacket": "",
         "title": "",
@@ -232,16 +232,27 @@ Item {
                         left: parent.left
                         verticalCenter: parent.verticalCenter
                     }
-                    Text {
-                        text: songs_meta[secondlayer_listview.model[index][0]][6]
-                        color: "black"
-                        horizontalAlignment: Text.AlignRight
-                        rightPadding: parent.width / 10
-                        anchors.bottom:  parent.bottom
-                        wrapMode: Text.WordWrap
+                    Image {
+                        id: secondlayer_dif_img
+                        source: "qrc:/ui/songselect/image/difficulty_frame_" + (secondlayer_listview.model[index][1] == 6 ? "basic.png" : "expert.png")
+                        fillMode: Image.PreserveAspectFit
                         width: parent.width
-                        font.family: font_Genjyuu_XP_bold.name
-                        font.pixelSize: parent.height / 4
+                        height: parent.height
+                        transform: Rotation{origin.x: secondlayer_dif_img.width / 2 ; axis {x: 0; y: 1; z: 0} angle: 180}
+                        anchors {
+                            left: parent.left
+                            verticalCenter: parent.verticalCenter
+                        }
+                        Component.onCompleted: {console.log(width)}
+                    }
+                    Text {
+                        text: is_level ? songs_meta[secondlayer_listview.model[index][0]][secondlayer_listview.model[index][1]] : songs_meta[secondlayer_listview.model[index][0]][6]
+                        font.family: font_hemi_head.name
+                        color: "white"
+                        font.pixelSize: parent.height * 0.3
+                        anchors.left: secondlayer_dif_img.left
+                        leftPadding: secondlayer_dif_img.width / 6
+                        topPadding: secondlayer_dif_img.height / 10
                     }
                 }
             }
@@ -522,6 +533,7 @@ Item {
         }
     }
 
+    //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
         var list = [];
         switch (method) {
@@ -567,6 +579,8 @@ Item {
         if (current_state == false){
             current_state = true
             firstlayer_listview.currentItem.sortbythis()
+            if(firstlayer_listview.currentIndex>1)
+                is_level = true
         }
     }
 
@@ -574,6 +588,7 @@ Item {
         if(current_state == true){
             current_state = false
             dir.stopPreview()
+            is_level = false
         }
     }
 
