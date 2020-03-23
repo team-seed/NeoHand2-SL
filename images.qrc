@@ -6,5 +6,17 @@
         <file>ui/songselect/image/top_bar.png</file>
         <file>ui/songselect/image/first_layer_background.png</file>
         <file>ui/songselect/image/first_layer_delegate.png</file>
+        <file>ui/songselect/image/sorting_options_artist.png</file>
+        <file>ui/songselect/image/sorting_options_lv1.png</file>
+        <file>ui/songselect/image/sorting_options_lv2.png</file>
+        <file>ui/songselect/image/sorting_options_lv3.png</file>
+        <file>ui/songselect/image/sorting_options_lv4.png</file>
+        <file>ui/songselect/image/sorting_options_lv5.png</file>
+        <file>ui/songselect/image/sorting_options_lv6.png</file>
+        <file>ui/songselect/image/sorting_options_lv7.png</file>
+        <file>ui/songselect/image/sorting_options_lv8.png</file>
+        <file>ui/songselect/image/sorting_options_lv9.png</file>
+        <file>ui/songselect/image/sorting_options_lv10.png</file>
+        <file>ui/songselect/image/sorting_options_title.png</file>
     </qresource>
 </RCC>

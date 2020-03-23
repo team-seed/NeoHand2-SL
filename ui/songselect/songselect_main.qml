@@ -1,5 +1,5 @@
 import QtQuick 2.12
-
+import QtGraphicalEffects 1.0
 import custom.songselect 1.0
 
 Item {
@@ -22,19 +22,43 @@ Item {
     CustomSongselect { id: dir }
 
     //round count
-    Image {
-        id: name
-        source: "qrc:/ui/songselect/image/top_bar.png"
-        //fillMode: Image.PreserveAspectFit
-        width : parent.width / 4
-        height : parent.height / 8
-        opacity: 0.7
+    Item {
         z : 100
+        width : parent.width * 0.3
+        height : parent.height / 8
         anchors{
             top: parent.top
             left: parent.left
         }
+
+        Image {
+            source: "qrc:/ui/songselect/image/top_bar.png"
+            fillMode: Image.PreserveAspectCrop
+            horizontalAlignment: Image.AlignRight
+            anchors.fill: parent
+            opacity: .5
+            ColorOverlay{
+                anchors.fill: parent
+                source: parent
+                color: "red"
+            }
+        }
+        Image {
+            source: "qrc:/ui/songselect/image/top_bar.png"
+            fillMode: Image.PreserveAspectCrop
+            horizontalAlignment: Image.AlignRight
+            width : parent.width
+            height : parent.height
+            anchors{
+                bottom:  parent.bottom
+                right:  parent.right
+                bottomMargin: parent.height / 5
+                rightMargin: parent.height / 8
+            }
+        }
+
     }
+
     //button hint
     Rectangle{
         width : parent.width / 4
@@ -50,24 +74,24 @@ Item {
 
     ListModel {
         id: sort_selection_list
-        ListElement { title: "Artist"; sortfunc: "Artist" }
-        ListElement { title: "Title"; sortfunc: "Title" }
-        ListElement { title: "Level 1"; sortfunc: "Level" }
-        ListElement { title: "Level 2"; sortfunc: "Level" }
-        ListElement { title: "Level 3"; sortfunc: "Level" }
-        ListElement { title: "Level 4"; sortfunc: "Level" }
-        ListElement { title: "Level 5"; sortfunc: "Level" }
-        ListElement { title: "Level 6"; sortfunc: "Level" }
-        ListElement { title: "Level 7"; sortfunc: "Level" }
-        ListElement { title: "Level 8"; sortfunc: "Level" }
-        ListElement { title: "Level 9"; sortfunc: "Level" }
-        ListElement { title: "Level 10"; sortfunc: "Level" }
+        ListElement { title: "Artist"; sortfunc: "Artist"; path: "sorting_options_artist"}
+        ListElement { title: "Title"; sortfunc: "Title"; path: "sorting_options_title" }
+        ListElement { title: "Level 1"; sortfunc: "Level"; path: "sorting_options_lv1" }
+        ListElement { title: "Level 2"; sortfunc: "Level"; path: "sorting_options_lv2" }
+        ListElement { title: "Level 3"; sortfunc: "Level"; path: "sorting_options_lv3" }
+        ListElement { title: "Level 4"; sortfunc: "Level"; path: "sorting_options_lv4" }
+        ListElement { title: "Level 5"; sortfunc: "Level"; path: "sorting_options_lv5" }
+        ListElement { title: "Level 6"; sortfunc: "Level"; path: "sorting_options_lv6" }
+        ListElement { title: "Level 7"; sortfunc: "Level"; path: "sorting_options_lv7" }
+        ListElement { title: "Level 8"; sortfunc: "Level"; path: "sorting_options_lv8" }
+        ListElement { title: "Level 9"; sortfunc: "Level"; path: "sorting_options_lv9" }
+        ListElement { title: "Level 10"; sortfunc: "Level"; path: "sorting_options_lv10" }
     }
 
     //temp background
     Rectangle {
         anchors.fill: parent
-        color: "#aaaaaa"
+        color: "#777777"
 
     }
 
@@ -106,33 +130,14 @@ Item {
                 height: firstlayer.height / 5
 
 
-                Rectangle {
-                    color: "steelblue"
-                    opacity: 1
+                Image {
+                    source: "qrc:/ui/songselect/image/" + path
                     anchors.fill: parent
-                    anchors.margins: 10
                 }
+
                 Image {
                     source: "qrc:/ui/songselect/image/first_layer_delegate.png"
                     anchors.fill: parent
-                    anchors.margins: 10
-                }
-
-                Item {
-                    height: parent.height
-                    width: height
-                    anchors.centerIn: parent
-
-                    Text {
-                        text: title
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        anchors.centerIn: parent
-                        wrapMode: Text.WordWrap
-                        width: parent.width
-                        font.family: font_Genjyuu_XP_bold.name
-                        font.pixelSize: parent.height / 8
-                    }
                 }
 
                 function sortbythis () {
@@ -149,6 +154,7 @@ Item {
             Rectangle {
                 color: "transparent"
                 radius: 10
+                z:3
                 border {
                     color: "white"
                     width: 10
@@ -250,7 +256,6 @@ Item {
                             left: parent.left
                             verticalCenter: parent.verticalCenter
                         }
-                        Component.onCompleted: {console.log(width)}
                     }
                     Text {
                         text: is_level ? songs_meta[song_index][song_difficulty] : (is_expert ? songs_meta[song_index][7] : songs_meta[song_index][6])
@@ -680,6 +685,7 @@ Item {
 
     function up_press() {
         (current_state ? secondlayer_listview : firstlayer_listview).decrementCurrentIndex()
+
     }
 
     function down_press () {
