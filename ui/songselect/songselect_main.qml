@@ -7,7 +7,9 @@ Item {
 
     property var songs_meta: dir.content
     property bool select_expert: false
-
+    //margin
+    property int horizontal_margin : width / 20
+    property int vertical_margin : height / 16
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
 
@@ -22,10 +24,12 @@ Item {
     CustomSongselect { id: dir }
 
     //round count
-    Rectangle{
+    Image {
+        id: name
+        source: "qrc:/ui/songselect/image/top_bar.png"
+        //fillMode: Image.PreserveAspectFit
         width : parent.width / 4
         height : parent.height / 8
-        color: "white"
         opacity: 0.7
         z : 100
         anchors{
@@ -206,15 +210,7 @@ Item {
                         right: parent.right
                         verticalCenter: parent.verticalCenter
                     }
-                }
-
-                Item {
-                    height: parent.height
-                    width: height
-                    anchors.centerIn: title_box
-
                     Text {
-                        id: cov
                         text: songs_meta[secondlayer_listview.model[index][0]][2]
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
@@ -226,6 +222,28 @@ Item {
                     }
                 }
 
+                Rectangle{
+                    id: difficulty_box
+                    color: "white"
+                    opacity: 0.7
+                    width: parent.width * 0.3
+                    height: parent.height
+                    anchors{
+                        left: parent.left
+                        verticalCenter: parent.verticalCenter
+                    }
+                    Text {
+                        text: songs_meta[secondlayer_listview.model[index][0]][6]
+                        color: "black"
+                        horizontalAlignment: Text.AlignRight
+                        rightPadding: parent.width / 10
+                        anchors.bottom:  parent.bottom
+                        wrapMode: Text.WordWrap
+                        width: parent.width
+                        font.family: font_Genjyuu_XP_bold.name
+                        font.pixelSize: parent.height / 4
+                    }
+                }
             }
         }
 
@@ -280,7 +298,6 @@ Item {
     //song information
     Item {
         id: detail_panel
-
         width: parent.width * 0.5
         height: parent.height
 
@@ -301,6 +318,7 @@ Item {
             anchors {
                 top: parent.top
                 left: parent.left
+                leftMargin:horizontal_margin
             }
         }
 
@@ -316,6 +334,7 @@ Item {
                 top: current_jacket.bottom
                 bottom: current_artist.bottom
                 left: parent.left
+                leftMargin:horizontal_margin
             }
         }
         //title
@@ -361,61 +380,134 @@ Item {
                 left: current_bar.right
             }
         }
-        //difficulty(highscore)
-        Item {
-            width: parent.width
-            height: parent.height / 4
-
+        //basic
+        Rectangle{
+            id:box_basic
+            height: parent.height / 5
+            width: height * 1.5
             anchors {
                 bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
+                bottomMargin: vertical_margin
+                left: parent.left
+                leftMargin: horizontal_margin
             }
-            Rectangle{
-                height: parent.height / 8
-                width: parent.width / 3
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    right: parent.horizontalCenter
-                }
-
-                Rectangle {
-                    id: basic_token
-                    color: "#222222"
-                    opacity: 0.7
-                    height: parent.height * 0.7
-                    width: parent.width
-                    anchors.top: parent.top
-
-                    Text {
-                        text: "BASIC  " + songs_meta[after_sort[secondlayer_listview.currentIndex][0]][6]
-                        font.family: font_hemi_head.name
-                        color: "white"
-                        font.pixelSize: parent.height * 0.8
-
-                        anchors.centerIn: parent
+            //basic text
+            Rectangle {
+                color: "#222222"
+                opacity: 0.7
+                height: (parent.height / 3) * 2
+                width: parent.width
+                anchors.top: parent.top
+                Text {
+                    text: "BASIC" //
+                    font.family: font_hemi_head.name
+                    color: "white"
+                    font.pixelSize: parent.height * 0.4
+                    anchors{
+                        bottom: parent.bottom
+                        left: parent.left
                     }
                 }
             }
-
-
+            //score
             Rectangle {
-                id: expert_token
-                color: "#222222"
+                color: "white"
                 opacity: 0.7
-                height: 50
-                width: parent.width / 3
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.horizontalCenter
-                }
-
+                height: parent.height / 3
+                width: parent.width
+                anchors.bottom:  parent.bottom
                 Text {
-                    text: "EXPERT  " + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
+                    id: highscore_basic
+                    text: "0000000"
+                    font.family: font_hemi_head.name
+                    color: "#222222"
+                    font.pixelSize: parent.height *0.8
+                    anchors.left: parent.left
+                }
+            }
+            //difficulty_val
+            Image {
+                source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
+                fillMode: Image.PreserveAspectFit
+                width: parent.width / 2
+                height: parent.height
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
+                Text {
+                    text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][6]
                     font.family: font_hemi_head.name
                     color: "white"
-                    font.pixelSize: parent.height * 0.8
+                    font.pixelSize: parent.height * 0.3
+                    anchors.right: parent.right
+                    rightPadding: parent.width / 6
+                }
+            }
+        }
+        //expert
+        Rectangle{
+            id:box_expert
+            height: parent.height / 5
+            width: height * 1.5
+            anchors {
+                bottom: parent.bottom
+                bottomMargin: vertical_margin
+                left: box_basic.right
+                leftMargin:horizontal_margin
+            }
+            //expert text
+            Rectangle {
+                color: "#222222"
+                opacity: 0.7
+                height: (parent.height / 3) * 2
+                width: parent.width
+                anchors.top: parent.top
+                Text {
+                    text: "EXPERT"
+                    font.family: font_hemi_head.name
+                    color: "white"
+                    font.pixelSize: parent.height * 0.4
 
-                    anchors.centerIn: parent
+                    anchors{
+                        bottom: parent.bottom
+                        left: parent.left
+                    }
+                }
+            }
+            //score
+            Rectangle {
+                color: "white"
+                opacity: 0.7
+                height: parent.height / 3
+                width: parent.width
+                anchors.bottom:  parent.bottom
+                Text {
+                    id: highscore_expert
+                    text: "0000000"
+                    font.family: font_hemi_head.name
+                    color: "#222222"
+                    font.pixelSize: parent.height *0.8
+                    anchors.left: parent.left
+                }
+            }
+            //difficulty_val
+            Image {
+                source: "qrc:/ui/songselect/image/difficulty_frame_expert.png"
+                fillMode: Image.PreserveAspectFit
+                width: parent.width / 2
+                height: parent.height
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
+                Text {
+                    text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
+                    font.family: font_hemi_head.name
+                    color: "white"
+                    font.pixelSize: parent.height * 0.3
+                    anchors.right: parent.right
+                    rightPadding: parent.width / 6
                 }
             }
         }

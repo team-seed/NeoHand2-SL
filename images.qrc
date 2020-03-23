@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>ui/songselect/image/layer1_outer_frame_new.png</file>
+        <file>ui/songselect/image/difficulty_frame_basic.png</file>
+        <file>ui/songselect/image/difficulty_frame_expert.png</file>
+        <file>ui/songselect/image/top_bar.png</file>
     </qresource>
 </RCC>
