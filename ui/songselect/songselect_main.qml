@@ -6,7 +6,7 @@ Item {
     id: songselect_main_container
 
     property var songs_meta: dir.content
-    property bool select_expert: false
+    property bool is_expert: false
 
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
@@ -92,10 +92,10 @@ Item {
         }
 
         //first layer bg
-        Rectangle{
+        Image {
+            //id: name
+            source: "qrc:/ui/songselect/image/first_layer_background.png"
             anchors.fill: parent
-            color: "#222222"
-            opacity: 0.5
         }
 
         Component {
@@ -105,10 +105,17 @@ Item {
                 width: firstlayer.width
                 height: firstlayer.height / 5
 
+
                 Rectangle {
                     color: "steelblue"
-                    opacity: 0.6
+                    opacity: 1
                     anchors.fill: parent
+                    anchors.margins: 10
+                }
+                Image {
+                    source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                    anchors.fill: parent
+                    anchors.margins: 10
                 }
 
                 Item {
@@ -130,6 +137,7 @@ Item {
 
                 function sortbythis () {
                     secondlayer_listview.model = song_sorting(sortfunc)
+                    if (sortfunc == "Level") is_level = true
                 }
             }   
         }
@@ -195,6 +203,9 @@ Item {
             id: secondlayer_delegate
 
             Item {
+                property int song_index: secondlayer_listview.model[index][0]
+                property int song_difficulty: secondlayer_listview.model[index][1]
+
                 width: secondlayer.width
                 height: secondlayer.height / 5
 
@@ -208,7 +219,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     Text {
-                        text: songs_meta[secondlayer_listview.model[index][0]][2]
+                        text: songs_meta[song_index][2]
                         color: "white"
                         horizontalAlignment: Text.AlignHCenter
                         anchors.centerIn: parent
@@ -230,7 +241,7 @@ Item {
                     }
                     Image {
                         id: secondlayer_dif_img
-                        source: "qrc:/ui/songselect/image/difficulty_frame_" + (secondlayer_listview.model[index][1] == 6 ? "basic.png" : "expert.png")
+                        source: "qrc:/ui/songselect/image/difficulty_frame_" +  ( (!is_level && is_expert) || (is_level && song_difficulty == 7) ? "expert.png" : "basic.png")
                         fillMode: Image.PreserveAspectFit
                         width: parent.width
                         height: parent.height
@@ -242,7 +253,7 @@ Item {
                         Component.onCompleted: {console.log(width)}
                     }
                     Text {
-                        text: is_level ? songs_meta[secondlayer_listview.model[index][0]][secondlayer_listview.model[index][1]] : songs_meta[secondlayer_listview.model[index][0]][6]
+                        text: is_level ? songs_meta[song_index][song_difficulty] : (is_expert ? songs_meta[song_index][7] : songs_meta[song_index][6])
                         font.family: font_hemi_head.name
                         color: "white"
                         font.pixelSize: parent.height * 0.3
@@ -597,6 +608,7 @@ Item {
         }
     }
 
+    //preview
     Timer {
         id: player_timer
         interval: 1000
@@ -649,11 +661,12 @@ Item {
     }
 
     function right_press () {
-        if (current_state == false){
+        if (current_state) {
+            is_expert = !is_expert
+        }
+        else {
             current_state = true
             firstlayer_listview.currentItem.sortbythis()
-            if(firstlayer_listview.currentIndex>1)
-                is_level = true
         }
     }
 
