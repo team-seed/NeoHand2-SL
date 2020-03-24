@@ -11,13 +11,13 @@ Item {
     // 0 = select sorting mode , 1 = select song
     property bool current_state: false
     property bool is_level: false
-    property var detail_display: {
-        "jacket": "",
-        "title": "",
-        "artist": "",
-        "basic_difficulty": "",
-        "expert_difficulty": "",
-    }
+
+    property string detail_display_jacket: ""
+    property string detail_display_title: ""
+    property string detail_display_artist: ""
+    property int detail_display_basic_difficulty: 0
+    property int detail_display_expert_difficulty: 0
+
 
     CustomSongselect { id: dir }
 
@@ -32,17 +32,21 @@ Item {
         }
 
         Image {
+            id: topbar_frame
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
             opacity: .5
-            ColorOverlay{
-                anchors.fill: parent
-                source: parent
-                color: "red"
-            }
         }
+
+        ColorOverlay{
+            anchors.fill: topbar_frame
+            source: topbar_frame
+            color: "red"
+            opacity: .5
+        }
+
         Image {
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
@@ -72,21 +76,7 @@ Item {
         }
     }
 
-    ListModel {
-        id: sort_selection_list
-        ListElement { title: "Artist"; sortfunc: "Artist"; path: "sorting_options_artist"}
-        ListElement { title: "Title"; sortfunc: "Title"; path: "sorting_options_title" }
-        ListElement { title: "Level 1"; sortfunc: "Level"; path: "sorting_options_lv1" }
-        ListElement { title: "Level 2"; sortfunc: "Level"; path: "sorting_options_lv2" }
-        ListElement { title: "Level 3"; sortfunc: "Level"; path: "sorting_options_lv3" }
-        ListElement { title: "Level 4"; sortfunc: "Level"; path: "sorting_options_lv4" }
-        ListElement { title: "Level 5"; sortfunc: "Level"; path: "sorting_options_lv5" }
-        ListElement { title: "Level 6"; sortfunc: "Level"; path: "sorting_options_lv6" }
-        ListElement { title: "Level 7"; sortfunc: "Level"; path: "sorting_options_lv7" }
-        ListElement { title: "Level 8"; sortfunc: "Level"; path: "sorting_options_lv8" }
-        ListElement { title: "Level 9"; sortfunc: "Level"; path: "sorting_options_lv9" }
-        ListElement { title: "Level 10"; sortfunc: "Level"; path: "sorting_options_lv10" }
-    }
+    Sort_list { id: sort_selection_list }
 
     //temp background
     Rectangle {
@@ -142,7 +132,7 @@ Item {
 
                 function sortbythis () {
                     secondlayer_listview.model = song_sorting(sortfunc)
-                    if (sortfunc == "Level") is_level = true
+                    is_level = (sortfunc == "Level")
                 }
             }   
         }
@@ -286,7 +276,7 @@ Item {
 
         ListView {
             id: secondlayer_listview
-            y: parent.height * 0.4 - currentItem.y
+            y: parent.height * 0.4 - (currentItem !== null ? currentItem.y : 0)
 
             height: parent.height / 5 * count
             width: secondlayer.width
@@ -310,6 +300,12 @@ Item {
                     dir.stopPreview();
                     dir.playEffect();
                     player_timer.restart();
+
+                    detail_display_jacket = "file:///" + songs_meta[currentItem.song_index][0] + "/jacket"
+                    detail_display_artist = songs_meta[currentItem.song_index][1]
+                    detail_display_title = songs_meta[currentItem.song_index][2]
+                    detail_display_basic_difficulty = songs_meta[currentItem.song_index][6]
+                    detail_display_expert_difficulty = songs_meta[currentItem.song_index][7]
                 }
             }
 
@@ -347,7 +343,7 @@ Item {
             }
 
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+            source: detail_display_jacket //"file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
         }
 
         //bar background
@@ -405,7 +401,7 @@ Item {
                     right: parent.right
                 }
 
-                text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][2]
+                text: detail_display_title
                 color: "white"
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
@@ -429,7 +425,7 @@ Item {
                     right: parent.right
                 }
 
-                text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][1]
+                text: detail_display_artist
                 color: "white"
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
@@ -517,7 +513,7 @@ Item {
                     }
 
                     Text {
-                        text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][6]
+                        text: detail_display_basic_difficulty
 
                         width: parent.width * 0.7
                         height: width
@@ -595,7 +591,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     Text {
-                        text: songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][7]
+                        text: detail_display_expert_difficulty
 
                         width: parent.width * 0.7
                         height: width
@@ -654,9 +650,9 @@ Item {
             case "Level":
                 for(var i = 1; i <= 10; i++ ){
                     songs_meta.forEach(function(data,index){
-                        if(data[6]==i)
+                        if(data[6] == i)
                             list.push([index,6])
-                        if(data[7]==i)
+                        if(data[7] == i)
                             list.push([index,7])
                     });
                 }
@@ -676,10 +672,15 @@ Item {
     }
 
     function left_press () {
-        if(current_state == true){
+        if(current_state){
             current_state = false
             dir.stopPreview()
-            is_level = false
+
+            detail_display_jacket = ""
+            detail_display_artist = ""
+            detail_display_title = ""
+            detail_display_basic_difficulty = 0
+            detail_display_expert_difficulty = 0
         }
     }
 
