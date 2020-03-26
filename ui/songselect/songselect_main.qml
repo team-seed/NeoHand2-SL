@@ -18,6 +18,7 @@ Item {
     property int detail_display_basic_difficulty: 0
     property int detail_display_expert_difficulty: 0
 
+    property string effect_color: "white"
 
     CustomSongselect { id: dir }
 
@@ -36,7 +37,6 @@ Item {
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
-            //width: parent.width * 1.1
             height: parent.height
             anchors{
                 bottom:  parent.bottom
@@ -45,28 +45,42 @@ Item {
                 bottomMargin: - parent.height / 10
                 rightMargin: - parent.height / 16
             }
-            opacity: .5
+            visible: false
         }
-
-        ColorOverlay{
+        ConicalGradient{
             anchors.fill: topbar_frame
             source: topbar_frame
-            color: "red"
-            opacity: .5
+            gradient: Gradient{
+                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
+                GradientStop{ position: 1; color: "transparent" }
+            }
+            NumberAnimation on angle{
+                duration: 500
+                loops: Animation.Infinite
+                from: 360
+                to: 0
+            }
+            opacity: 0.8
         }
 
         Image {
+            id: topbar_img
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
-
+        }
+        ColorOverlay{
+            anchors.fill: topbar_img
+            source: topbar_img
+            color: "#222222"
         }
 
     }
 
     //button hint
     Item {
+        id: bottombar
         z : 100
         width : parent.width * 0.3
         height : parent.height / 8
@@ -75,35 +89,38 @@ Item {
             left: parent.left
         }
 
-        Item {
-            id: bottombar_container
-            anchors.fill: parent
+        transform: Rotation { origin.y: bottombar.height / 2; axis { x:1; y:0; z:0 } angle: 180 }
 
-            Image {
-                id: bottombar_frame
-                source: "qrc:/ui/songselect/image/top_bar.png"
-                fillMode: Image.PreserveAspectCrop
-                horizontalAlignment: Image.AlignRight
-                //width: parent.width * 1.1
-                height: parent.height
-                anchors{
-                    bottom:  parent.bottom
-                    right:  parent.right
-                    left: parent.left
-                    bottomMargin: - parent.height / 10
-                    rightMargin: - parent.height / 16
-                }
-                opacity: .5
+        Image {
+            id: bottombar_frame
+            source: "qrc:/ui/songselect/image/top_bar.png"
+            fillMode: Image.PreserveAspectCrop
+            horizontalAlignment: Image.AlignRight
+            height: parent.height
+            anchors{
+                bottom:  parent.bottom
+                right:  parent.right
+                left: parent.left
+                bottomMargin: - parent.height / 10
+                rightMargin: - parent.height / 16
             }
+            visible: false
+        }
 
-            ColorOverlay{
-                anchors.fill: bottombar_frame
-                source: bottombar_frame
-                color: "red"
-                opacity: .5
+        ConicalGradient{
+            anchors.fill: bottombar_frame
+            source: bottombar_frame
+            gradient: Gradient{
+                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
+                GradientStop{ position: 1; color: "transparent" }
             }
-
-            transform: Rotation {origin.y: bottombar_container.height / 2; axis { x:1; y:0; z:0 } angle: 180}
+            NumberAnimation on angle{
+                duration: 500
+                loops: Animation.Infinite
+                from: 360
+                to: 0
+            }
+            opacity: 0.8
         }
 
         Image {
@@ -112,17 +129,24 @@ Item {
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
-            transform: Rotation {origin.y: btmbar_img.height / 2; axis { x:1; y:0; z:0 } angle: 180}
         }
+
+        ColorOverlay{
+            anchors.fill: btmbar_img
+            source: btmbar_img
+            color: "#222222"
+        }
+
+
     }
 
     Sort_list { id: sort_selection_list }
 
     //temp background
-    Rectangle {
-        anchors.fill: parent
-        color: "#777777"
-
+    Image {
+        id: tmp_bg
+        source: "qrc:/ui/songselect/image/neohand2BG.png"
+        anchors.fill:parent
     }
 
     //select sort
@@ -214,8 +238,8 @@ Item {
             orientation: ListView.Vertical
             interactive: false
 
-            highlight: firstlayer_hl
-            highlightMoveDuration: 0
+            //highlight: firstlayer_hl
+            //highlightMoveDuration: 0
 
             Behavior on y {
                 NumberAnimation {
@@ -332,7 +356,6 @@ Item {
 
         ListView {
             id: secondlayer_listview
-            //property int current_level: is_level ? songs_meta[currentItem.song_index][currentItem.song_difficulty] : 0
 
             y: parent.height * 0.4 - (currentItem !== null ? currentItem.y : 0)
             height: parent.height / 5 * count
@@ -363,12 +386,11 @@ Item {
                     detail_display_title = songs_meta[currentItem.song_index][2]
                     detail_display_basic_difficulty = songs_meta[currentItem.song_index][6]
                     detail_display_expert_difficulty = songs_meta[currentItem.song_index][7]
+                    effect_color = songs_meta[currentItem.song_index][5]
                 }
 
                 if (is_level) firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
             }
-
-            Component.onCompleted: positionViewAtIndex(0, ListView.Contain)
 
             function level_dif_change(){
                 for(var i = 0; i <count ;i++){
@@ -383,337 +405,365 @@ Item {
 
     }
 
-    //song information
+    //song information(detail_panel)
     Item {
-        id: detail_panel
+        anchors.fill: parent
 
-        //margin
-        property double panel_margin: width / 16
-
-        width: parent.width * 0.5
-        height: parent.height
-
-        anchors {
-            right : parent.right
-            rightMargin: is_secondlayer ? 0 : width
-            verticalCenter: parent.verticalCenter
+        layer.enabled: true
+        layer.effect: OpacityMask{
+            maskSource: mask_rec
         }
 
-        Behavior on anchors.rightMargin {
-            NumberAnimation{
-                duration: 250
-                easing.type: Easing.OutExpo
-            }
-        }
-
-        //jacket
-        Image {
-            id: current_jacket
-
-            width: parent.width / 2
-            height: width
-
-            anchors {
-                margins: detail_panel.panel_margin
-                top: parent.top
-                left: parent.left
-            }
-
-            fillMode: Image.PreserveAspectFit
-            source: detail_display_jacket //"file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
-        }
-
-        DropShadow {
-            anchors.fill: current_jacket
-            source: current_jacket
-            horizontalOffset: current_jacket.width * 0.02
-            verticalOffset: horizontalOffset
-        }
-
-        //bar background
-        Rectangle {
-            id: bar_bg
-
-            height: current_bar.height + detail_panel.panel_margin
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                verticalCenter: current_bar.verticalCenter
-            }
-
-            color: "#DDDDDD"
-            opacity: 0.5
-
-        }
-
-        //bar
-        Rectangle {
-            id: current_bar
-
-            height: current_jacket.height / 4
-            width: height / 6
-
-            anchors {
-                margins: detail_panel.panel_margin
-                top: current_jacket.bottom
-                left: parent.left
-            }
-
-            color: "#222222"
-        }
-
-        // title & artist
         Item {
+            id: detail_panel
+            //margin
+            property double panel_margin: width / 16
+
+            width: parent.width * 0.5
+            height: parent.height
+
             anchors {
-                top: current_bar.top
-                bottom: current_bar.bottom
-                right: parent.right
-                rightMargin: detail_panel.panel_margin
-                left: current_bar.right
-                leftMargin: detail_panel.panel_margin / 2
+                right : parent.right
+                rightMargin: is_secondlayer ? 0 : width
+                verticalCenter: parent.verticalCenter
             }
 
-            //title
-            Text {
-                id: current_title
-                height: current_artist.height * 2
+            Behavior on anchors.rightMargin {
+                NumberAnimation{
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                }
+            }
+
+            //jacket
+            Image {
+                id: current_jacket
+
+                width: parent.width / 2
+                height: width
 
                 anchors {
+                    margins: detail_panel.panel_margin
                     top: parent.top
                     left: parent.left
-                    right: parent.right
                 }
 
-                text: detail_display_title
-                color: "white"
-                font.family: font_Genjyuu_XP_bold.name
-                font.pixelSize: height
-                minimumPixelSize: 10
-
-                fontSizeMode: Text.Fit
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Raised
-                styleColor: "black"
+                fillMode: Image.PreserveAspectFit
+                source: detail_display_jacket //"file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
             }
 
-            //artist
-            Text {
-                id: current_artist
+            DropShadow {
+                anchors.fill: current_jacket
+                source: current_jacket
+                horizontalOffset: current_jacket.width * 0.02
+                verticalOffset: horizontalOffset
+            }
 
-                height: parent.height / 3
+            //bar background
+            Rectangle {
+                id: bar_bg
+
+                height: current_bar.height + detail_panel.panel_margin
 
                 anchors {
-                    bottom: parent.bottom
                     left: parent.left
                     right: parent.right
+                    verticalCenter: current_bar.verticalCenter
                 }
 
-                text: detail_display_artist
-                color: "white"
-                font.family: font_Genjyuu_XP_bold.name
-                font.pixelSize: height
-                minimumPixelSize: 10
-
-                fontSizeMode: Text.Fit
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Raised
-                styleColor: "black"
+                color: "#222222"
+                opacity: 0.5
             }
 
-        }
+            LinearGradient{
+                anchors.fill: bar_bg
 
-        // difficulties
-        Item {
-            id: box_container
+                NumberAnimation on opacity {
+                    duration: 1000
+                    loops: Animation.Infinite
+                    easing.type: Easing.OutCubic
+                    from: 1
+                    to: 0.5
+                }
 
-            height: current_bar.height * 2
+                gradient: Gradient{
+                    orientation: Gradient.Horizontal
+                    GradientStop{ position: 1; color: effect_color }
+                    GradientStop{ position: 0; color: "transparent" }
+                }
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-                margins: detail_panel.panel_margin
+                opacity: 0.8
             }
 
-            //basic
+            //bar
+            Rectangle {
+                id: current_bar
+
+                height: current_jacket.height / 4
+                width: height / 6
+
+                anchors {
+                    margins: detail_panel.panel_margin
+                    top: current_jacket.bottom
+                    left: parent.left
+                }
+
+                color: "#222222"
+            }
+
+            // title & artist
             Item {
-                id: box_basic
-                height: parent.height
-                width: height * 1.5
+                anchors {
+                    top: current_bar.top
+                    bottom: current_bar.bottom
+                    right: parent.right
+                    rightMargin: detail_panel.panel_margin
+                    left: current_bar.right
+                    leftMargin: detail_panel.panel_margin / 2
+                }
+
+                //title
+                Text {
+                    id: current_title
+                    height: current_artist.height * 2
+
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    text: detail_display_title
+                    color: "white"
+                    font.family: font_Genjyuu_XP_bold.name
+                    font.pixelSize: height
+                    minimumPixelSize: 10
+
+                    fontSizeMode: Text.Fit
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Raised
+                    styleColor: "black"
+                }
+
+                //artist
+                Text {
+                    id: current_artist
+
+                    height: parent.height / 3
+
+                    anchors {
+                        bottom: parent.bottom
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    text: detail_display_artist
+                    color: "white"
+                    font.family: font_Genjyuu_XP_bold.name
+                    font.pixelSize: height
+                    minimumPixelSize: 10
+
+                    fontSizeMode: Text.Fit
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Raised
+                    styleColor: "black"
+                }
+
+            }
+
+            // difficulties
+            Item {
+                id: box_container
+
+                height: current_bar.height * 2
 
                 anchors {
                     left: parent.left
-                    bottom: parent.bottom
-                }
-
-                //basic text
-                Rectangle {
-                    color: "#222222"
-                    height: parent.height * 2 / 3
-                    width: parent.width
-                    anchors.top: parent.top
-
-                    Text {
-                        text: "BASIC"
-                        font.family: font_hemi_head.name
-                        color: "#DDDDDD"
-                        font.pixelSize: parent.height * 0.375
-                        anchors{
-                            bottom: parent.bottom
-                            left: parent.left
-                            margins: parent.width * 0.03
-                        }
-                    }
-                }
-
-                //score
-                Rectangle {
-                    color: "#DDDDDD"
-                    height: parent.height / 3
-                    width: parent.width
-
-                    anchors.bottom:  parent.bottom
-
-                    Text {
-                        id: highscore_basic
-                        text: "0000000"
-                        font.family: font_hemi_head.name
-                        color: "#444444"
-                        font.pixelSize: parent.height * 0.75
-                        anchors.left: parent.left
-                        anchors.margins: parent.width * 0.03
-                    }
-                }
-                //difficulty_val
-                Image {
-                    source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
-                    fillMode: Image.PreserveAspectFit
-                    width: parent.width / 2
-                    height: parent.height
-                    anchors {
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
-                    }
-
-                    Text {
-                        text: detail_display_basic_difficulty
-
-                        width: parent.width * 0.7
-                        height: width
-
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height * 0.3
-
-                    }
-                }
-            }
-
-
-            //expert
-            Item{
-                id: box_expert
-
-                height: parent.height
-                width: height * 1.5
-
-                anchors {
                     right: parent.right
                     bottom: parent.bottom
+                    margins: detail_panel.panel_margin
                 }
 
-                //expert text
-                Rectangle {
-                    color: "#222222"
-                    height: parent.height * 2/3
-                    width: parent.width
-                    anchors.top: parent.top
+                //basic
+                Item {
+                    id: box_basic
+                    height: parent.height
+                    width: height * 1.5
 
-                    Text {
-                        text: "EXPERT"
-                        font.family: font_hemi_head.name
+                    anchors {
+                        left: parent.left
+                        bottom: parent.bottom
+                    }
+
+                    //basic text
+                    Rectangle {
+                        color: "#222222"
+                        height: parent.height * 2 / 3
+                        width: parent.width
+                        anchors.top: parent.top
+
+                        Text {
+                            text: "BASIC"
+                            font.family: font_hemi_head.name
+                            color: "#DDDDDD"
+                            font.pixelSize: parent.height * 0.375
+                            anchors{
+                                bottom: parent.bottom
+                                left: parent.left
+                                margins: parent.width * 0.03
+                            }
+                        }
+                    }
+
+                    //score
+                    Rectangle {
                         color: "#DDDDDD"
-                        font.pixelSize: parent.height * 0.375
-                        anchors{
-                            bottom: parent.bottom
-                            left: parent.left
-                            margins: parent.width * 0.03
+                        height: parent.height / 3
+                        width: parent.width
+
+                        anchors.bottom:  parent.bottom
+
+                        Text {
+                            id: highscore_basic
+                            text: "0000000"
+                            font.family: font_hemi_head.name
+                            color: "#444444"
+                            font.pixelSize: parent.height * 0.75
+                            anchors.left: parent.left
+                            anchors.margins: parent.width * 0.03
+                        }
+                    }
+                    //difficulty_val
+                    Image {
+                        source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
+                        fillMode: Image.PreserveAspectFit
+                        width: parent.width / 2
+                        height: parent.height
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            text: detail_display_basic_difficulty
+
+                            width: parent.width * 0.7
+                            height: width
+
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: font_hemi_head.name
+                            font.pixelSize: parent.height * 0.3
+
                         }
                     }
                 }
 
-                //score
-                Rectangle {
-                    color: "#DDDDDD"
-                    height: parent.height / 3
-                    width: parent.width
-                    anchors.bottom:  parent.bottom
 
-                    Text {
-                        id: highscore_expert
-                        text: "0000000"
-                        font.family: font_hemi_head.name
-                        color: "#444444"
-                        font.pixelSize: parent.height * 0.75
-                        anchors.left: parent.left
-                        anchors.margins: parent.width * 0.03
-                    }
-                }
+                //expert
+                Item{
+                    id: box_expert
 
-                //difficulty_val
-                Image {
-                    source: "qrc:/ui/songselect/image/difficulty_frame_expert.png"
-                    fillMode: Image.PreserveAspectFit
-                    width: parent.width / 2
                     height: parent.height
+                    width: height * 1.5
+
                     anchors {
                         right: parent.right
-                        verticalCenter: parent.verticalCenter
+                        bottom: parent.bottom
                     }
-                    Text {
-                        text: detail_display_expert_difficulty
 
-                        width: parent.width * 0.7
-                        height: width
-
-                        anchors.right: parent.right
+                    //expert text
+                    Rectangle {
+                        color: "#222222"
+                        height: parent.height * 2/3
+                        width: parent.width
                         anchors.top: parent.top
 
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        font.family: font_hemi_head.name
-                        font.pixelSize: parent.height * 0.3
+                        Text {
+                            text: "EXPERT"
+                            font.family: font_hemi_head.name
+                            color: "#DDDDDD"
+                            font.pixelSize: parent.height * 0.375
+                            anchors{
+                                bottom: parent.bottom
+                                left: parent.left
+                                margins: parent.width * 0.03
+                            }
+                        }
+                    }
+
+                    //score
+                    Rectangle {
+                        color: "#DDDDDD"
+                        height: parent.height / 3
+                        width: parent.width
+                        anchors.bottom:  parent.bottom
+
+                        Text {
+                            id: highscore_expert
+                            text: "0000000"
+                            font.family: font_hemi_head.name
+                            color: "#444444"
+                            font.pixelSize: parent.height * 0.75
+                            anchors.left: parent.left
+                            anchors.margins: parent.width * 0.03
+                        }
+                    }
+
+                    //difficulty_val
+                    Image {
+                        source: "qrc:/ui/songselect/image/difficulty_frame_expert.png"
+                        fillMode: Image.PreserveAspectFit
+                        width: parent.width / 2
+                        height: parent.height
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: detail_display_expert_difficulty
+
+                            width: parent.width * 0.7
+                            height: width
+
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: font_hemi_head.name
+                            font.pixelSize: parent.height * 0.3
+                        }
                     }
                 }
             }
-        }
 
-        DropShadow {
-            anchors.fill: box_container
-            source: box_container
-            horizontalOffset: box_container.width * 0.01
-            verticalOffset: horizontalOffset
+            DropShadow {
+                anchors.fill: box_container
+                source: box_container
+                horizontalOffset: box_container.width * 0.01
+                verticalOffset: horizontalOffset
+            }
         }
     }
 
-    //
-    Rectangle{
+
+    //detail_panel mask
+    Item {
         id: mask_rec
-        height: parent.height
-        width: parent.width / 2
-        anchors.right: parent.right
+        anchors.fill: parent
         visible: false
+        Rectangle{
+            height: parent.height
+            width: parent.width / 2
+            anchors.right: parent.right
+        }
     }
-    OpacityMask{
-        source: detail_panel
-        anchors.fill: mask_rec
-        maskSource: mask_rec
-    }
+
+
 
 
     //preview
@@ -784,12 +834,6 @@ Item {
         if(is_secondlayer){
             is_secondlayer = false
             dir.stopPreview()
-
-            detail_display_jacket = ""
-            detail_display_artist = ""
-            detail_display_title = ""
-            detail_display_basic_difficulty = 0
-            detail_display_expert_difficulty = 0
         }
     }
 
@@ -836,6 +880,7 @@ Item {
     Component.onDestruction: {
         disconnect_all();
     }
+
 
     FontLoader {
         id: font_Genjyuu_XP_bold
