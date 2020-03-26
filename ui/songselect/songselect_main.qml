@@ -641,43 +641,42 @@ Item {
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
         var list = [];
-        switch (method) {
-            case "Artist":
-                songs_meta.forEach(function(data,index){
-                    list.push([index,-1])
-                })
-                list.sort(function(a,b){
-                        if(songs_meta[a[0]][1].toUpperCase() < songs_meta[b[0]][1].toUpperCase() )
-                            return -1
-                        else
-                            return 1
-                    });
-                break;
 
-            case "Title":
-                songs_meta.forEach(function(data,index){
-                    list.push([index,-1])
-                })
-                list.sort(function(a,b){
-                    if( songs_meta[a[0]][2].toUpperCase() < songs_meta[b[0]][2].toUpperCase() )
-                        return -1
-                    else
-                        return 1
-                });
-                break;
-
-            case "Level":
-                for(var i = 1; i <= 10; i++ ){
-                    songs_meta.forEach(function(data,index){
-                        if(data[6] == i)
-                            list.push([index,6])
-                        if(data[7] == i)
-                            list.push([index,7])
-                    });
-                }
-                break;
+        if (method === "Level") {
+            songs_meta.forEach((data, index) => {
+                                   list_insert_normal(index, "Basic")
+                                   list_insert_normal(index, "Expert")
+                               })
         }
+        else
+            songs_meta.forEach((data, index) => { list_insert_normal(index, method) })
+
         return list
+
+        function get_meta_value (index, type) {
+            switch (type) {
+            case "Artist": case 1: return [songs_meta[index][1].toUpperCase(), 1]
+            case "Title": case 2: return [songs_meta[index][2].toUpperCase(), 2]
+            case "Basic": case 6: return [songs_meta[index][6], 6]
+            case "Expert": case 7: return [songs_meta[index][7], 7]
+            }
+        }
+
+        function list_insert_normal (index, type) {
+            var str, dif
+            [str, dif] = get_meta_value(index, type)
+            var contain = false
+
+            for (var i = 0; i < list.length; i++) {
+                if (str < get_meta_value(list[i][0], list[i][1])[0]) {
+                    list.splice(i, 0, [index, dif])
+                    contain = true
+                    break
+                }
+            }
+
+            if (!contain) { list.push([index, dif]) }
+        }
     }
 
     function right_press () {
