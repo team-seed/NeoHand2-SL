@@ -9,7 +9,7 @@ Item {
     property bool is_expert: false
 
     // 0 = select sorting mode , 1 = select song
-    property bool current_state: false
+    property bool is_secondlayer: false
     property bool is_level: false
 
     property string detail_display_jacket: ""
@@ -94,7 +94,7 @@ Item {
 
         anchors {
             right: parent.horizontalCenter
-            rightMargin: current_state ? width : 0
+            rightMargin: is_secondlayer ? width : 0
             verticalCenter: parent.verticalCenter
 
             Behavior on rightMargin {
@@ -131,8 +131,19 @@ Item {
                 }
 
                 function sortbythis () {
-                    secondlayer_listview.model = song_sorting(sortfunc)
+                    //secondlayer_listview.currentIndex = -1
                     is_level = (sortfunc == "Level")
+                    secondlayer_listview.model = song_sorting(sortfunc)
+                    if (is_level) {
+                        secondlayer_listview.model.every( (element,index) => {
+                             if(songs_meta[element[0]][element[1]] >= lv){
+                                secondlayer_listview.currentIndex = index
+                                return false
+                             }
+                             return true
+                         })
+                    }
+
                 }
             }   
         }
@@ -172,6 +183,11 @@ Item {
                     easing.type: Easing.OutExpo
                 }
             }
+
+            function level_change(current_level){
+                currentIndex = model.get_level_index(current_level)
+            }
+
         }
 
     }
@@ -182,7 +198,7 @@ Item {
 
         width: parent.width / 4
         height: parent.height
-        opacity: current_state ? 1 : 0
+        opacity: is_secondlayer ? 1 : 0
         anchors {
             right: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
@@ -197,10 +213,10 @@ Item {
 
         Component {
             id: secondlayer_delegate
-
             Item {
+                id: current_song
                 property int song_index: secondlayer_listview.model[index][0]
-                property int song_difficulty: secondlayer_listview.model[index][1]
+                property int song_difficulty: Math.max(secondlayer_listview.model[index][1], 6)
 
                 width: secondlayer.width
                 height: secondlayer.height / 5
@@ -276,8 +292,9 @@ Item {
 
         ListView {
             id: secondlayer_listview
-            y: parent.height * 0.4 - (currentItem !== null ? currentItem.y : 0)
+            //property int current_level: is_level ? songs_meta[currentItem.song_index][currentItem.song_difficulty] : 0
 
+            y: parent.height * 0.4 - (currentItem !== null ? currentItem.y : 0)
             height: parent.height / 5 * count
             width: secondlayer.width
             model: []
@@ -296,7 +313,7 @@ Item {
             }
 
             onCurrentIndexChanged: {
-                if (current_state) {
+                if (is_secondlayer) {
                     dir.stopPreview();
                     dir.playEffect();
                     player_timer.restart();
@@ -307,6 +324,8 @@ Item {
                     detail_display_basic_difficulty = songs_meta[currentItem.song_index][6]
                     detail_display_expert_difficulty = songs_meta[currentItem.song_index][7]
                 }
+
+                if (is_level) firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
             }
 
             Component.onCompleted: positionViewAtIndex(0, ListView.Contain)
@@ -662,18 +681,18 @@ Item {
     }
 
     function right_press () {
-        if (current_state) {
+        if (is_secondlayer) {
             is_expert = !is_expert
         }
         else {
-            current_state = true
+            is_secondlayer = true
             firstlayer_listview.currentItem.sortbythis()
         }
     }
 
     function left_press () {
-        if(current_state){
-            current_state = false
+        if(is_secondlayer){
+            is_secondlayer = false
             dir.stopPreview()
 
             detail_display_jacket = ""
@@ -685,13 +704,11 @@ Item {
     }
 
     function up_press() {
-        (current_state ? secondlayer_listview : firstlayer_listview).decrementCurrentIndex()
-
+        (is_secondlayer ? secondlayer_listview : firstlayer_listview).decrementCurrentIndex()
     }
 
     function down_press () {
-        (current_state ? secondlayer_listview : firstlayer_listview).incrementCurrentIndex()
-
+        (is_secondlayer ? secondlayer_listview : firstlayer_listview).incrementCurrentIndex()
     }
 
     function to_main () {
@@ -700,8 +717,12 @@ Item {
     }
 
     function select() {
-        disconnect_all();
-        destruct.start();
+        if(!is_secondlayer){
+            is_secondlayer = true
+            firstlayer_listview.currentItem.sortbythis()
+        }
+        //disconnect_all();
+        //destruct.start();
     }
 
     Component.onCompleted: {
