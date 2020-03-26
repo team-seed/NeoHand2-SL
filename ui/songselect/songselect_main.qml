@@ -36,7 +36,15 @@ Item {
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
-            anchors.fill: parent
+            //width: parent.width * 1.1
+            height: parent.height
+            anchors{
+                bottom:  parent.bottom
+                right:  parent.right
+                left: parent.left
+                bottomMargin: - parent.height / 10
+                rightMargin: - parent.height / 16
+            }
             opacity: .5
         }
 
@@ -51,28 +59,60 @@ Item {
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
-            width : parent.width
-            height : parent.height
-            anchors{
-                bottom:  parent.bottom
-                right:  parent.right
-                bottomMargin: parent.height / 5
-                rightMargin: parent.height / 8
-            }
+            anchors.fill: parent
+
         }
 
     }
 
     //button hint
-    Rectangle{
-        width : parent.width / 4
-        height : parent.height / 8
-        color: "white"
-        opacity: 0.7
+    Item {
         z : 100
+        width : parent.width * 0.3
+        height : parent.height / 8
         anchors{
             bottom: parent.bottom
             left: parent.left
+        }
+
+        Item {
+            id: bottombar_container
+            anchors.fill: parent
+
+            Image {
+                id: bottombar_frame
+                source: "qrc:/ui/songselect/image/top_bar.png"
+                fillMode: Image.PreserveAspectCrop
+                horizontalAlignment: Image.AlignRight
+                //width: parent.width * 1.1
+                height: parent.height
+                anchors{
+                    bottom:  parent.bottom
+                    right:  parent.right
+                    left: parent.left
+                    bottomMargin: - parent.height / 10
+                    rightMargin: - parent.height / 16
+                }
+                opacity: .5
+            }
+
+            ColorOverlay{
+                anchors.fill: bottombar_frame
+                source: bottombar_frame
+                color: "red"
+                opacity: .5
+            }
+
+            transform: Rotation {origin.y: bottombar_container.height / 2; axis { x:1; y:0; z:0 } angle: 180}
+        }
+
+        Image {
+            id: btmbar_img
+            source: "qrc:/ui/songselect/image/top_bar.png"
+            fillMode: Image.PreserveAspectCrop
+            horizontalAlignment: Image.AlignRight
+            anchors.fill: parent
+            transform: Rotation {origin.y: btmbar_img.height / 2; axis { x:1; y:0; z:0 } angle: 180}
         }
     }
 
@@ -354,8 +394,16 @@ Item {
         height: parent.height
 
         anchors {
-            left : parent.horizontalCenter
+            right : parent.right
+            rightMargin: is_secondlayer ? 0 : width
             verticalCenter: parent.verticalCenter
+        }
+
+        Behavior on anchors.rightMargin {
+            NumberAnimation{
+                duration: 250
+                easing.type: Easing.OutExpo
+            }
         }
 
         //jacket
@@ -373,6 +421,13 @@ Item {
 
             fillMode: Image.PreserveAspectFit
             source: detail_display_jacket //"file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+        }
+
+        DropShadow {
+            anchors.fill: current_jacket
+            source: current_jacket
+            horizontalOffset: current_jacket.width * 0.02
+            verticalOffset: horizontalOffset
         }
 
         //bar background
@@ -559,6 +614,7 @@ Item {
                 }
             }
 
+
             //expert
             Item{
                 id: box_expert
@@ -636,7 +692,29 @@ Item {
                 }
             }
         }
+
+        DropShadow {
+            anchors.fill: box_container
+            source: box_container
+            horizontalOffset: box_container.width * 0.01
+            verticalOffset: horizontalOffset
+        }
     }
+
+    //
+    Rectangle{
+        id: mask_rec
+        height: parent.height
+        width: parent.width / 2
+        anchors.right: parent.right
+        visible: false
+    }
+    OpacityMask{
+        source: detail_panel
+        anchors.fill: mask_rec
+        maskSource: mask_rec
+    }
+
 
     //preview
     Timer {
