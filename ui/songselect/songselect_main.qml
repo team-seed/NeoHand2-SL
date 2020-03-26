@@ -329,6 +329,16 @@ Item {
             }
 
             Component.onCompleted: positionViewAtIndex(0, ListView.Contain)
+
+            function level_dif_change(){
+                for(var i = 0; i <count ;i++){
+                    if( i != currentIndex && model[i][0] == model[currentIndex][0] ){
+                        currentIndex = i
+                        firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
+                        break;
+                    }
+                }
+            }
         }
 
     }
@@ -681,7 +691,10 @@ Item {
 
     function right_press () {
         if (is_secondlayer) {
-            is_expert = !is_expert
+            if (is_level)
+                secondlayer_listview.level_dif_change()
+            else
+                is_expert = !is_expert
         }
         else {
             is_secondlayer = true
