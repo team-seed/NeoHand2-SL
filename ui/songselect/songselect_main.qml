@@ -45,23 +45,33 @@ Item {
                 bottomMargin: - parent.height / 10
                 rightMargin: - parent.height / 16
             }
-            visible: false
-        }
-        ConicalGradient{
-            anchors.fill: topbar_frame
-            source: topbar_frame
-            gradient: Gradient{
-                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
-                GradientStop{ position: 1; color: "transparent" }
+            //visible: false
+
+            layer.enabled: true
+            layer.effect: Item {
+                OpacityMask {
+                    maskSource: topbar_img
+                }
+
+                ConicalGradient{
+                    //anchors.fill: topbar_frame
+                    //source: topbar_frame
+                    gradient: Gradient{
+                        GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
+                        GradientStop{ position: 1; color: "transparent" }
+                    }
+                    NumberAnimation on angle{
+                        duration: 500
+                        loops: Animation.Infinite
+                        from: 360
+                        to: 0
+                    }
+                    opacity: 0.8
+                }
             }
-            NumberAnimation on angle{
-                duration: 500
-                loops: Animation.Infinite
-                from: 360
-                to: 0
-            }
-            opacity: 0.8
         }
+
+
 
         Image {
             id: topbar_img
@@ -69,11 +79,20 @@ Item {
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
+            visible: false
         }
+
         ColorOverlay{
             anchors.fill: topbar_img
             source: topbar_img
             color: "#222222"
+            opacity: 0.5
+        }
+
+        Rectangle {
+            id: tmp
+            anchors.fill: parent
+            visible: false
         }
 
     }
@@ -149,113 +168,6 @@ Item {
         anchors.fill:parent
     }
 
-    //select sort
-    Item {
-        id: firstlayer
-
-        width: parent.width / 4
-        height: parent.height
-
-        anchors {
-            right: parent.horizontalCenter
-            rightMargin: is_secondlayer ? width : 0
-            verticalCenter: parent.verticalCenter
-
-            Behavior on rightMargin {
-                NumberAnimation{
-                    duration: 250
-                    easing.type: Easing.OutCubic
-                }
-            }
-        }
-
-        //first layer bg
-        Image {
-            //id: name
-            source: "qrc:/ui/songselect/image/first_layer_background.png"
-            anchors.fill: parent
-        }
-
-        Component {
-            id: firstlayer_delegate
-
-            Item {
-                width: firstlayer.width
-                height: firstlayer.height / 5
-
-
-                Image {
-                    source: "qrc:/ui/songselect/image/" + path
-                    anchors.fill: parent
-                }
-
-                Image {
-                    source: "qrc:/ui/songselect/image/first_layer_delegate.png"
-                    anchors.fill: parent
-                }
-
-                function sortbythis () {
-                    //secondlayer_listview.currentIndex = -1
-                    is_level = (sortfunc == "Level")
-                    secondlayer_listview.model = song_sorting(sortfunc)
-                    if (is_level) {
-                        secondlayer_listview.model.every( (element,index) => {
-                             if(songs_meta[element[0]][element[1]] >= lv){
-                                secondlayer_listview.currentIndex = index
-                                return false
-                             }
-                             return true
-                         })
-                    }
-
-                }
-            }   
-        }
-
-        //白外框
-        Component {
-            id: firstlayer_hl
-
-            Rectangle {
-                color: "transparent"
-                radius: 10
-                z:3
-                border {
-                    color: "white"
-                    width: 10
-                }
-            }
-        }
-
-        ListView {
-            id: firstlayer_listview
-            y: parent.height * 0.4 - currentItem.y
-
-            height: parent.height / 5 * count
-            width: firstlayer.width
-            model: sort_selection_list
-            delegate: firstlayer_delegate
-            orientation: ListView.Vertical
-            interactive: false
-
-            //highlight: firstlayer_hl
-            //highlightMoveDuration: 0
-
-            Behavior on y {
-                NumberAnimation {
-                    duration: 250
-                    easing.type: Easing.OutExpo
-                }
-            }
-
-            function level_change(current_level){
-                currentIndex = model.get_level_index(current_level)
-            }
-
-        }
-
-    }
-
     //select song
     Item {
         id: secondlayer
@@ -277,6 +189,7 @@ Item {
 
         Component {
             id: secondlayer_delegate
+
             Item {
                 id: current_song
                 property int song_index: secondlayer_listview.model[index][0]
@@ -284,6 +197,8 @@ Item {
 
                 width: secondlayer.width
                 height: secondlayer.height / 5
+
+                visible: (y < songselect_main_container.height || y > -height)
 
                 Rectangle {
                     color: "#222222"
@@ -386,10 +301,16 @@ Item {
                     detail_display_title = songs_meta[currentItem.song_index][2]
                     detail_display_basic_difficulty = songs_meta[currentItem.song_index][6]
                     detail_display_expert_difficulty = songs_meta[currentItem.song_index][7]
+
                     effect_color = songs_meta[currentItem.song_index][5]
+
+                    if (is_level) {
+                        is_expert = (currentItem.song_difficulty == 7)
+                        firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
+                    }
                 }
 
-                if (is_level) firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
+
             }
 
             function level_dif_change(){
@@ -401,6 +322,168 @@ Item {
                     }
                 }
             }
+        }
+
+        //arrows
+        Item {
+            id: secondlayer_arrows
+            anchors.fill: parent
+            property double offset: 0
+
+            Image {
+                id: secondlayer_uparrow
+
+                source: "qrc:/ui/songselect/image/select_arrow_new.png"
+                fillMode: Image.PreserveAspectFit
+                height: parent.width / 10
+                width: height
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: - parent.height / 8 - parent.offset
+
+                transformOrigin: Item.Center
+                rotation: -90
+            }
+
+            Image {
+                id: secondlayer_downarrow
+
+                source: "qrc:/ui/songselect/image/select_arrow_new.png"
+                fillMode: Image.PreserveAspectFit
+                height: parent.width / 10
+                width: height
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: parent.height / 8 + parent.offset
+
+                transformOrigin: Item.Center
+                rotation: 90
+            }
+
+            SequentialAnimation on offset {
+                loops: Animation.Infinite
+                NumberAnimation {
+                    duration: 500
+                    from: -to;
+                    to: secondlayer_uparrow.width / 4
+                    easing.type: Easing.InCirc
+                }
+                NumberAnimation {
+                    duration: 500
+                    from: secondlayer_uparrow.width / 4; to: -from
+                    easing.type: Easing.OutCirc
+                }
+            }
+        }
+
+        Glow {
+            source: secondlayer_arrows
+            anchors.fill: source
+            color: "#222222"
+        }
+    }
+
+    //select sort
+    Item {
+        id: firstlayer
+
+        width: parent.width / 4
+        height: parent.height
+
+        anchors {
+            right: parent.horizontalCenter
+            rightMargin: is_secondlayer ? width : 0
+            verticalCenter: parent.verticalCenter
+
+            Behavior on rightMargin {
+                NumberAnimation{
+                    duration: 250
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
+
+        //first layer bg
+        Image {
+            //id: name
+            source: "qrc:/ui/songselect/image/first_layer_background.png"
+            anchors.fill: parent
+        }
+
+        Component {
+            id: firstlayer_delegate
+
+            Item {
+                width: firstlayer.width
+                height: firstlayer.height / 5
+                visible: (y < songselect_main_container.height || y > -height)
+
+                Image {
+                    source: "qrc:/ui/songselect/image/" + path
+                    anchors.fill: parent
+                }
+
+                Image {
+                    source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                    anchors.fill: parent
+                }
+
+                function sortbythis () {
+                    //secondlayer_listview.currentIndex = -1
+                    is_level = (sortfunc == "Level")
+                    secondlayer_listview.model = song_sorting(sortfunc)
+                    if (is_level) {
+                        secondlayer_listview.model.every( (element,index) => {
+                             if(songs_meta[element[0]][element[1]] >= lv){
+                                secondlayer_listview.currentIndex = index
+                                return false
+                             }
+                             return true
+                         })
+                    }
+
+                }
+            }
+        }
+
+        //白外框
+        Component {
+            id: firstlayer_hl
+
+            Rectangle {
+                color: "transparent"
+                radius: 10
+                z:3
+                border {
+                    color: "white"
+                    width: 10
+                }
+            }
+        }
+
+        ListView {
+            id: firstlayer_listview
+            y: parent.height * 0.4 - currentItem.y
+
+            height: parent.height / 5 * count
+            width: firstlayer.width
+            model: sort_selection_list
+            delegate: firstlayer_delegate
+            orientation: ListView.Vertical
+            interactive: false
+
+            //highlight: firstlayer_hl
+            //highlightMoveDuration: 0
+
+            Behavior on y {
+                NumberAnimation {
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                }
+            }
+
+            function level_change(current_level){
+                currentIndex = model.get_level_index(current_level)
+            }
+
         }
 
     }
@@ -511,7 +594,7 @@ Item {
                 color: "#222222"
             }
 
-            // title & artist
+            //title & artist
             Item {
                 anchors {
                     top: current_bar.top
@@ -589,10 +672,19 @@ Item {
                     id: box_basic
                     height: parent.height
                     width: height * 1.5
+                    z: is_expert ? 4 : 5
 
                     anchors {
                         left: parent.left
+                        leftMargin: is_expert ? box_container.width - box_basic.width : 0
                         bottom: parent.bottom
+                    }
+
+                    Behavior on anchors.leftMargin {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutExpo
+                        }
                     }
 
                     //basic text
@@ -633,6 +725,7 @@ Item {
                             anchors.margins: parent.width * 0.03
                         }
                     }
+
                     //difficulty_val
                     Image {
                         source: "qrc:/ui/songselect/image/difficulty_frame_basic.png"
@@ -662,17 +755,25 @@ Item {
                     }
                 }
 
-
                 //expert
                 Item{
                     id: box_expert
 
                     height: parent.height
                     width: height * 1.5
+                    z: is_expert ? 5 : 4
 
                     anchors {
                         right: parent.right
+                        rightMargin: is_expert ? box_container.width - box_expert.width : 0
                         bottom: parent.bottom
+                    }
+
+                    Behavior on anchors.rightMargin {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutExpo
+                        }
                     }
 
                     //expert text
@@ -739,6 +840,47 @@ Item {
                         }
                     }
                 }
+
+                BrightnessContrast {
+                    id: box_effect
+                    anchors.fill: source
+                    source: is_expert ? box_basic : box_expert
+                    z: 4
+                    brightness: -0.65
+                    contrast: -0.65
+                }
+
+                //arrow
+                Image {
+                    id: box_arrow
+
+                    source: "qrc:/ui/songselect/image/select_arrow_new.png"
+                    fillMode: Image.PreserveAspectFit
+                    height: parent.height / 5
+                    width: height
+                    anchors.centerIn: parent
+
+                    SequentialAnimation on anchors.horizontalCenterOffset {
+                        loops: Animation.Infinite
+                        NumberAnimation {
+                            duration: 500
+                            from: -to;
+                            to: box_arrow.width / 4
+                            easing.type: Easing.InCirc
+                        }
+                        NumberAnimation {
+                            duration: 500
+                            from: box_arrow.width / 4; to: -from
+                            easing.type: Easing.OutCirc
+                        }
+                    }
+                }
+
+                Glow {
+                    anchors.fill: box_arrow
+                    source: box_arrow
+                    color: "#222222"
+                }
             }
 
             DropShadow {
@@ -762,9 +904,6 @@ Item {
             anchors.right: parent.right
         }
     }
-
-
-
 
     //preview
     Timer {
@@ -851,7 +990,7 @@ Item {
     }
 
     function select() {
-        if(!is_secondlayer){
+        if(!is_secondlayer) {
             is_secondlayer = true
             firstlayer_listview.currentItem.sortbythis()
         }
