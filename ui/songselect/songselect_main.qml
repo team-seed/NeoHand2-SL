@@ -12,6 +12,9 @@ Item {
     property bool is_secondlayer: false
     property bool is_level: false
 
+    //in sort by level, difficulty changes should not replay bgm
+    property bool bgmplay: true
+
     property string detail_display_jacket: ""
     property string detail_display_title: ""
     property string detail_display_artist: ""
@@ -284,9 +287,12 @@ Item {
 
             onCurrentIndexChanged: {
                 if (is_secondlayer) {
-                    dir.stopPreview();
-                    dir.playEffect();
-                    player_timer.restart();
+                    if (bgmplay) {
+                        dir.stopPreview();
+                        dir.playEffect();
+                        player_timer.restart();
+                    }
+                    bgmplay = true
 
                     detail_display_jacket = "file:///" + songs_meta[currentItem.song_index][0] + "/jacket"
                     detail_display_artist = songs_meta[currentItem.song_index][1]
@@ -308,6 +314,7 @@ Item {
             function level_dif_change(){
                 for(var i = 0; i <count ;i++){
                     if( i != currentIndex && model[i][0] == model[currentIndex][0] ){
+                        bgmplay = false
                         currentIndex = i
                         firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
                         break;
@@ -903,7 +910,7 @@ Item {
         interval: 1000
         repeat: false
         onTriggered: {
-            //dir.playPreview("file:///" + songs_meta[song_index][0] + "/audio.wav", songs_meta[song_index][4])
+            dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
         }
     }
 
