@@ -976,7 +976,9 @@ Item {
             dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
         }
     }
-/*
+
+
+    /*
     //count down
     Rectangle{
         height: 100
@@ -1000,6 +1002,15 @@ Item {
         Component.onCompleted: count_down_timer.start()
     }
 */
+
+    onIs_secondlayerChanged: {
+        if(is_secondlayer)
+            player_timer.restart();
+        else{
+            dir.stopPreview();
+            player_timer.stop()
+        }
+    }
 
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
