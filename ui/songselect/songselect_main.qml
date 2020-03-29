@@ -12,6 +12,9 @@ Item {
     property bool is_secondlayer: false
     property bool is_level: false
 
+    //in sort by level, difficulty changes should not replay bgm
+    property bool bgmplay: true
+
     property string detail_display_jacket: ""
     property string detail_display_title: ""
     property string detail_display_artist: ""
@@ -356,9 +359,12 @@ Item {
 
             onCurrentIndexChanged: {
                 if (is_secondlayer) {
-                    dir.stopPreview();
-                    dir.playEffect();
-                    player_timer.restart();
+                    if (bgmplay) {
+                        dir.stopPreview();
+                        dir.playEffect();
+                        player_timer.restart();
+                    }
+                    bgmplay = true
 
                     detail_display_jacket = "file:///" + songs_meta[currentItem.song_index][0] + "/jacket"
                     detail_display_artist = songs_meta[currentItem.song_index][1]
@@ -380,6 +386,7 @@ Item {
             function level_dif_change(){
                 for(var i = 0; i <count ;i++){
                     if( i != currentIndex && model[i][0] == model[currentIndex][0] ){
+                        bgmplay = false
                         currentIndex = i
                         firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
                         break;
@@ -474,20 +481,31 @@ Item {
 
         Component {
             id: firstlayer_delegate
-
             Item {
                 width: firstlayer.width
                 height: firstlayer.height / 5
                 visible: (y < songselect_main_container.height || y > -height)
-
-                Image {
-                    source: "qrc:/ui/songselect/image/" + path
+                Item {
+                    id: firstlayer_container
                     anchors.fill: parent
+                    Image {
+                        source: "qrc:/ui/songselect/image/" + path
+                        anchors.fill: parent
+                    }
+
+                    Image {
+                        source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                        anchors.fill: parent
+                    }
                 }
 
-                Image {
-                    source: "qrc:/ui/songselect/image/first_layer_delegate.png"
-                    anchors.fill: parent
+                BrightnessContrast {
+                    source: firstlayer_container
+                    anchors.fill: source
+                    z: 4
+                    brightness: -0.4
+                    contrast: -0.6
+                    visible:(is_secondlayer && ! parent.ListView.isCurrentItem)
                 }
 
                 function sortbythis () {
@@ -496,29 +514,14 @@ Item {
                     secondlayer_listview.model = song_sorting(sortfunc)
                     if (is_level) {
                         secondlayer_listview.model.every( (element,index) => {
-                             if(songs_meta[element[0]][element[1]] >= lv){
-                                secondlayer_listview.currentIndex = index
-                                return false
-                             }
-                             return true
-                         })
+                                                             if(songs_meta[element[0]][element[1]] >= lv){
+                                                                 secondlayer_listview.currentIndex = index
+                                                                 return false
+                                                             }
+                                                             return true
+                                                         })
                     }
 
-                }
-            }
-        }
-
-        //白外框
-        Component {
-            id: firstlayer_hl
-
-            Rectangle {
-                color: "transparent"
-                radius: 10
-                z:3
-                border {
-                    color: "white"
-                    width: 10
                 }
             }
         }
@@ -533,9 +536,6 @@ Item {
             delegate: firstlayer_delegate
             orientation: ListView.Vertical
             interactive: false
-
-            //highlight: firstlayer_hl
-            //highlightMoveDuration: 0
 
             Behavior on y {
                 NumberAnimation {
@@ -972,7 +972,7 @@ Item {
         interval: 1000
         repeat: false
         onTriggered: {
-            //dir.playPreview("file:///" + songs_meta[song_index][0] + "/audio.wav", songs_meta[song_index][4])
+            dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
         }
     }
 
