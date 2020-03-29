@@ -413,6 +413,7 @@ Item {
                 width: firstlayer.width
                 height: firstlayer.height / 5
                 visible: (y < songselect_main_container.height || y > -height)
+
                 Item {
                     id: firstlayer_container
                     anchors.fill: parent
@@ -422,9 +423,9 @@ Item {
                     }
 
                     Image {
-                        source: "qrc:/ui/songselect/image/first_layer_delegate.png"
-                        anchors.fill: parent
-                    }
+                            source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                            anchors.fill: parent
+                        }
                 }
 
                 BrightnessContrast {
@@ -906,6 +907,30 @@ Item {
             dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
         }
     }
+/*
+    //count down
+    Rectangle{
+        height: 100
+        width: 100
+        anchors{
+            top:parent.top
+            right: parent.right
+        }
+        //opacity: 0
+        Text {
+            id:count_down
+            property int  time : 99
+            text: time
+        }
+    }
+    Timer{
+        id: count_down_timer
+        interval: 1000
+        repeat: true
+        onTriggered: count_down.text = (count_down.time -=1)
+        Component.onCompleted: count_down_timer.start()
+    }
+*/
 
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
