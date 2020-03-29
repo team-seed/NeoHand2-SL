@@ -45,33 +45,25 @@ Item {
                 bottomMargin: - parent.height / 10
                 rightMargin: - parent.height / 16
             }
-            //visible: false
-
-            layer.enabled: true
-            layer.effect: Item {
-                OpacityMask {
-                    maskSource: topbar_img
-                }
-
-                ConicalGradient{
-                    //anchors.fill: topbar_frame
-                    //source: topbar_frame
-                    gradient: Gradient{
-                        GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
-                        GradientStop{ position: 1; color: "transparent" }
-                    }
-                    NumberAnimation on angle{
-                        duration: 500
-                        loops: Animation.Infinite
-                        from: 360
-                        to: 0
-                    }
-                    opacity: 0.8
-                }
-            }
+            visible: false
         }
 
+        ConicalGradient{
+            anchors.fill: topbar_frame
+            source: topbar_frame
+            gradient: Gradient{
+                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
+                GradientStop{ position: 1; color: "transparent" }
+            }
+            NumberAnimation on angle{
+                duration: 500
+                loops: Animation.Infinite
+                from: 360
+                to: 0
+            }
+            opacity: 0.8
 
+        }
 
         Image {
             id: topbar_img
@@ -86,7 +78,7 @@ Item {
             anchors.fill: topbar_img
             source: topbar_img
             color: "#222222"
-            opacity: 0.5
+            //opacity: 0.5
         }
 
         Rectangle {
