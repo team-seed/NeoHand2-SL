@@ -18,17 +18,22 @@ Item {
     property int detail_display_basic_difficulty: 0
     property int detail_display_expert_difficulty: 0
 
+    property double pulse_bpm: 140
+
     property string effect_color: "white"
+
+    property int track_count: 4
 
     CustomSongselect { id: dir }
 
     //round count
     Item {
-        z : 100
-        width : parent.width * 0.3
-        height : parent.height / 8
+        z: 100
+        width: parent.width * 0.25
+        height: parent.height / 10
         anchors{
             top: parent.top
+            topMargin: height / 8
             left: parent.left
         }
 
@@ -37,54 +42,108 @@ Item {
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
-            height: parent.height
-            anchors{
-                bottom:  parent.bottom
-                right:  parent.right
-                left: parent.left
-                bottomMargin: - parent.height / 10
-                rightMargin: - parent.height / 16
-            }
-            visible: false
-        }
-
-        ConicalGradient{
-            anchors.fill: topbar_frame
-            source: topbar_frame
-            gradient: Gradient{
-                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
-                GradientStop{ position: 1; color: "transparent" }
-            }
-            NumberAnimation on angle{
-                duration: 500
-                loops: Animation.Infinite
-                from: 360
-                to: 0
-            }
-            opacity: 0.8
-
-        }
-
-        Image {
-            id: topbar_img
-            source: "qrc:/ui/songselect/image/top_bar.png"
-            fillMode: Image.PreserveAspectCrop
-            horizontalAlignment: Image.AlignRight
             anchors.fill: parent
             visible: false
+        }
+
+        Item {
+            id: topbar_img
+            anchors.fill: parent
+
+            Image {
+                property double mg: parent.height / 10
+
+                source: "qrc:/ui/songselect/image/top_bar.png"
+                fillMode: Image.PreserveAspectCrop
+                horizontalAlignment: Image.AlignRight
+                anchors.fill: parent
+
+                anchors {
+                    //topMargin: mg
+                    //bottomMargin: mg
+                    rightMargin: mg * 3
+                }
+            }
+
+            visible: false
+        }
+
+        OpacityMask {
+            id: topbar_masked
+            anchors.fill: parent
+            source: topbar_frame
+            maskSource: topbar_img
+            invert: true
+            visible: false
+            opacity: 0.5
+        }
+
+        ColorOverlay {
+            id: topbar_light
+            anchors.fill: parent
+            source: topbar_masked
+            color: is_secondlayer ? effect_color : "white"
+
+            NumberAnimation on opacity {
+                duration: 60000 / pulse_bpm
+                loops: Animation.Infinite
+                from: 0.9
+                to: 0.5
+                easing.type: Easing.OutCubic
+            }
         }
 
         ColorOverlay{
+            id: topbar_overlay
             anchors.fill: topbar_img
             source: topbar_img
             color: "#222222"
-            //opacity: 0.5
         }
 
-        Rectangle {
-            id: tmp
+        Item {
+            id: topbar_text
             anchors.fill: parent
-            visible: false
+            Text {
+                id: topbar_number
+                text: switch (track_count) {
+                      case 0: return "Event"
+                      case 1: return "1"
+                      case 2: return "2"
+                      case 3: return "3"
+                      case 4: return "EX "
+                      }
+                anchors.left: parent.left
+                anchors.leftMargin: parent.height * 0.35
+
+                color: "white"
+                font.family: font_hemi_head.name
+                font.pixelSize: parent.height * 0.8
+            }
+
+            Text {
+                text: switch (track_count) {
+                      case 0: return ""
+                      case 1: return "st track"
+                      case 2: return "nd track"
+                      case 3: return "rd track"
+                      case 4: return "track"
+                      }
+                anchors.left: topbar_number.right
+                //anchors.leftMargin: parent.height * 0.1
+                anchors.verticalCenter: topbar_number.verticalCenter
+
+                color: "#DDDDDD"
+                font.family: font_hemi_head.name
+                font.pixelSize: parent.height * 0.6
+            }
+        }
+
+        DropShadow {
+            anchors.fill: parent
+            source: topbar_text
+            horizontalOffset: parent.height * 0.04
+            verticalOffset: horizontalOffset
+            color: "#666666"
         }
 
     }
@@ -93,7 +152,7 @@ Item {
     Item {
         id: bottombar
         z : 100
-        width : parent.width * 0.3
+        width : parent.width * 0.32
         height : parent.height / 8
         anchors{
             bottom: parent.bottom
@@ -103,43 +162,58 @@ Item {
         transform: Rotation { origin.y: bottombar.height / 2; axis { x:1; y:0; z:0 } angle: 180 }
 
         Image {
-            id: bottombar_frame
-            source: "qrc:/ui/songselect/image/top_bar.png"
-            fillMode: Image.PreserveAspectCrop
-            horizontalAlignment: Image.AlignRight
-            height: parent.height
-            anchors{
-                bottom:  parent.bottom
-                right:  parent.right
-                left: parent.left
-                bottomMargin: - parent.height / 10
-                rightMargin: - parent.height / 16
-            }
-            visible: false
-        }
-
-        ConicalGradient{
-            anchors.fill: bottombar_frame
-            source: bottombar_frame
-            gradient: Gradient{
-                GradientStop{ position: 0; color: is_secondlayer ? effect_color : "white" }
-                GradientStop{ position: 1; color: "transparent" }
-            }
-            NumberAnimation on angle{
-                duration: 500
-                loops: Animation.Infinite
-                from: 360
-                to: 0
-            }
-            opacity: 0.8
-        }
-
-        Image {
-            id: btmbar_img
+            id: btmbar_frame
             source: "qrc:/ui/songselect/image/top_bar.png"
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
+            visible: false
+        }
+
+        Item {
+            id: btmbar_img
+            anchors.fill: parent
+
+            Image {
+                property double mg: parent.height / 10
+
+                source: "qrc:/ui/songselect/image/top_bar.png"
+                fillMode: Image.PreserveAspectCrop
+                horizontalAlignment: Image.AlignRight
+                anchors.fill: parent
+
+                anchors {
+                    //topMargin: mg
+                    bottomMargin: mg
+                    rightMargin: mg * 1.5
+                }
+            }
+
+            visible: false
+        }
+
+        OpacityMask {
+            id: btmbar_masked
+            anchors.fill: parent
+            source: btmbar_frame
+            maskSource: btmbar_img
+            invert: true
+            visible: false
+        }
+
+        ColorOverlay {
+            id: btmbar_overlay
+            anchors.fill: parent
+            source: btmbar_masked
+            color: is_secondlayer ? effect_color : "white"
+
+            NumberAnimation on opacity {
+                duration: 60000 / pulse_bpm
+                loops: Animation.Infinite
+                from: 0.9
+                to: 0.5
+                easing.type: Easing.OutCubic
+            }
         }
 
         ColorOverlay{
@@ -147,8 +221,6 @@ Item {
             source: btmbar_img
             color: "#222222"
         }
-
-
     }
 
     Sort_list { id: sort_selection_list }
@@ -554,20 +626,18 @@ Item {
                 anchors.fill: bar_bg
 
                 NumberAnimation on opacity {
-                    duration: 1000
+                    duration: 60000 / pulse_bpm
                     loops: Animation.Infinite
-                    easing.type: Easing.OutCubic
-                    from: 1
+                    //easing.type: Easing.InExpo
+                    from: 0.8
                     to: 0.5
                 }
 
                 gradient: Gradient{
                     orientation: Gradient.Horizontal
                     GradientStop{ position: 1; color: effect_color }
-                    GradientStop{ position: 0; color: "transparent" }
+                    GradientStop{ position: 0.5; color: "transparent" }
                 }
-
-                opacity: 0.8
             }
 
             //bar
@@ -883,7 +953,6 @@ Item {
             }
         }
     }
-
 
     //detail_panel mask
     Item {
