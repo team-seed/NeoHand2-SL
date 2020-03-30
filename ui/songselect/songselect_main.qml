@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
 import custom.songselect 1.0
 
@@ -26,8 +27,54 @@ Item {
     property string effect_color: "white"
 
     property int track_count: 4
+    property int time_remaining: 99
 
     CustomSongselect { id: dir }
+
+    Shape{
+
+        width:  parent.width / 8
+        height: width
+        z:999
+
+        antialiasing: true
+
+        anchors{
+            top: parent.top
+            right: parent.right
+        }
+        ShapePath{
+            strokeWidth: -1
+            fillColor: "#222222"
+            startX: parent.width
+            startY: 0
+            PathLine {x:parent.parent.width; y:0; }
+            PathLine {x:parent.parent.width; y:parent.width; }
+            PathLine {x:parent.parent.width - parent.width; y:0; }
+        }
+
+        Text {
+            id:count_down
+            height: parent.height / 4
+            width: height * 1.2
+            transformOrigin: Text.Center
+            rotation: 45
+            anchors {
+                top: parent.top
+                right: parent.right
+                topMargin: parent.height / 8
+                rightMargin: parent.width / 6
+            }
+
+            text: time_remaining.toString()
+            color: "#888888"
+            font.family: font_hemi_head.name
+            font.pixelSize: parent.height * 0.4
+
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
 
     //round count
     Item {
@@ -506,7 +553,13 @@ Item {
                     z: 4
                     brightness: -0.4
                     contrast: -0.6
-                    visible:(is_secondlayer && ! parent.ListView.isCurrentItem)
+                    opacity: (is_secondlayer && !parent.ListView.isCurrentItem) ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation{
+                            duration: 250
+                            easing.type: Easing.OutExpo
+                        }
+                    }
                 }
 
                 function sortbythis () {
@@ -977,31 +1030,16 @@ Item {
         }
     }
 
-
-    /*
     //count down
-    Rectangle{
-        height: 100
-        width: 100
-        anchors{
-            top:parent.top
-            right: parent.right
-        }
-        //opacity: 0
-        Text {
-            id:count_down
-            property int  time : 99
-            text: time
-        }
-    }
+
+
     Timer{
         id: count_down_timer
         interval: 1000
         repeat: true
-        onTriggered: count_down.text = (count_down.time -=1)
+        onTriggered: if(time_remaining > 0) time_remaining --
         Component.onCompleted: count_down_timer.start()
     }
-*/
 
     onIs_secondlayerChanged: {
         if(is_secondlayer)
