@@ -31,7 +31,7 @@ Item {
 
     CustomSongselect { id: dir }
 
-    //counting triangle
+    //count down bar
     Shape{
         id: counting_bg
         width:  parent.width / 7.4
@@ -705,9 +705,29 @@ Item {
                     }
 
                     Image {
-                            source: "qrc:/ui/songselect/image/first_layer_delegate.png"
-                            anchors.fill: parent
+                        source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                        anchors.fill: parent
+
+                        layer.enabled: (!is_secondlayer && parent.parent.ListView.isCurrentItem) ? true : false
+                        layer.effect: Colorize{
+                            saturation: 0
+                            SequentialAnimation on lightness {
+                                loops: Animation.Infinite
+                                NumberAnimation{
+                                    duration: 1000
+                                    easing: Easing.OutExpo
+                                    from: 0
+                                    to: 0.4
+                                }
+                                NumberAnimation{
+                                    duration: 1000
+                                    easing: Easing.InExpo
+                                    from: 0.4
+                                    to: 0
+                                }
+                            }
                         }
+                    }
                 }
 
                 BrightnessContrast {
@@ -724,6 +744,8 @@ Item {
                         }
                     }
                 }
+
+
 
                 function sortbythis () {
                     //secondlayer_listview.currentIndex = -1
@@ -1238,9 +1260,7 @@ Item {
         }
     }
 
-    //count down
-
-
+    //count down timer
     Timer{
         id: count_down_timer
         interval: 1000
