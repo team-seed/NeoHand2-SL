@@ -27,7 +27,7 @@ Item {
     property string effect_color: "white"
 
     property int track_count: 4
-    property int time_remaining: 99
+    property int time_remaining: -1
 
     Behavior on effect_color {
         ColorAnimation { duration: 250 }
@@ -138,7 +138,7 @@ Item {
                 rightMargin: parent.width / 6
             }
 
-            text: time_remaining.toString()
+            text: (time_remaining >= 0) ? time_remaining.toString() : "∞"
             color: "#888888"
             font.family: font_hemi_head.name
             font.pixelSize: parent.height * 0.4
@@ -349,28 +349,37 @@ Item {
 
     Sort_list { id: sort_selection_list }
 
-    //temp background
+    //background
     Rectangle {
         anchors.fill: parent
         color: "#222222"
     }
 
     Rectangle {
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        x: -width
 
         gradient: Gradient {
             orientation: Gradient.Horizontal
-
             GradientStop { position: 0; color: "transparent" }
-            GradientStop { color: effect_color
-                NumberAnimation on position {
-                    loops: Animation.Infinite
-                    duration: 2000
-                    from: 0; to: 1
-                }
-            }
+            GradientStop { position: 0.5; color: is_secondlayer ? effect_color : "white" }
             GradientStop { position: 1; color: "transparent" }
+        }
 
+        NumberAnimation on x {
+            //running: is_secondlayer
+            duration: 3000
+            loops: Animation.Infinite
+            alwaysRunToEnd: true
+            from: -width; to: width
+        }
+
+        opacity: is_secondlayer ? 1 : 0.1
+
+        Behavior on opacity {
+            NumberAnimation { duration: 250 }
         }
     }
 
@@ -508,7 +517,7 @@ Item {
                     anchors.fill: middle_frame
                     source: decoration
                     maskSource: middle_frame
-                    opacity: 0.1
+                    opacity: 0.05
 
                     visible: current_song.ListView.isCurrentItem
                 }
@@ -623,8 +632,6 @@ Item {
                         is_expert = (currentItem.song_difficulty == 7)
                         firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
                     }
-
-                    change_anim.restart()
                 }
 
 
@@ -747,19 +754,19 @@ Item {
 
                         layer.enabled: (!is_secondlayer && parent.parent.ListView.isCurrentItem) ? true : false
                         layer.effect: Colorize{
-                            saturation: 0
-                            SequentialAnimation on lightness {
+                            hue: 0
+                            SequentialAnimation on saturation {
                                 loops: Animation.Infinite
                                 NumberAnimation{
                                     duration: 750
                                     easing.type: Easing.OutCubic
                                     from: 0
-                                    to: 0.3
+                                    to: 0.5
                                 }
                                 NumberAnimation{
                                     duration: 750
                                     easing.type: Easing.InCubic
-                                    from: 0.3
+                                    from: 0.5
                                     to: 0
                                 }
                             }
@@ -1313,6 +1320,10 @@ Item {
             dir.stopPreview();
             player_timer.stop()
         }
+    }
+
+    onDetail_display_jacketChanged: {
+        change_anim.restart()
     }
 
     //[[index,dif(-1,6,7)]]
