@@ -29,6 +29,10 @@ Item {
     property int track_count: 4
     property int time_remaining: 99
 
+    Behavior on effect_color {
+        ColorAnimation { duration: 250 }
+    }
+
     CustomSongselect { id: dir }
 
     Shape{
