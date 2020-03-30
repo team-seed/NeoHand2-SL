@@ -25,7 +25,7 @@ Item {
 
     property string effect_color: "white"
 
-    property int track_count: 4
+    property int track_count: 0
 
     CustomSongselect { id: dir }
 
@@ -46,6 +46,7 @@ Item {
             fillMode: Image.PreserveAspectCrop
             horizontalAlignment: Image.AlignRight
             anchors.fill: parent
+            mipmap: true
             visible: false
         }
 
@@ -60,6 +61,8 @@ Item {
                 fillMode: Image.PreserveAspectCrop
                 horizontalAlignment: Image.AlignRight
                 anchors.fill: parent
+                mipmap: true
+
 
                 anchors {
                     //topMargin: mg
@@ -132,12 +135,11 @@ Item {
                       case 4: return "track"
                       }
                 anchors.left: topbar_number.right
-                //anchors.leftMargin: parent.height * 0.1
                 anchors.verticalCenter: topbar_number.verticalCenter
 
                 color: "#DDDDDD"
                 font.family: font_hemi_head.name
-                font.pixelSize: parent.height * 0.6
+                font.pixelSize: parent.height * 0.5
             }
         }
 
@@ -263,92 +265,183 @@ Item {
                 property int song_difficulty: Math.max(secondlayer_listview.model[index][1], 6)
 
                 width: secondlayer.width
-                height: secondlayer.height / 5
+                height: secondlayer.height / 6
 
                 visible: (y < songselect_main_container.height || y > -height)
 
-                Rectangle {
-                    color: "#222222"
-                    opacity: 0.7
-                    width: parent.width * 0.7
-                    height: parent.height
-                    anchors{
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
+                transform: Scale {
+                    origin.x: current_song.width / 2
+                    origin.y: current_song.height / 2
+                    xScale: current_song.ListView.isCurrentItem ? 1 : 0.75
+                    yScale: current_song.ListView.isCurrentItem ? 1 : 0.75
+
+                    Behavior on xScale {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutExpo
+                        }
                     }
-                    Text {
-                        text: songs_meta[song_index][2]
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        anchors.centerIn: parent
-                        wrapMode: Text.WordWrap
-                        width: parent.width
-                        font.family: font_Genjyuu_XP_bold.name
-                        font.pixelSize: parent.height / 8
+
+                    Behavior on yScale {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutExpo
+                        }
                     }
                 }
 
-                Rectangle{
+                Rectangle {
+                    width: parent.width
+                    height: parent.height * 0.1
+                    anchors.top: parent.top
+                    color: "#222222"
+                    opacity: 0.5
+                }
+
+                Rectangle {
+                    id: middle_frame
+                    width: parent.width
+                    height: parent.height * 0.8
+                    anchors.centerIn: parent
+                    //color: songs_meta[song_index][5]
+
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0; color: "#222222" }
+                        GradientStop { position: 0.22; color: songs_meta[song_index][5] }
+                    }
+
+                    layer.enabled: true
+                    layer.effect: HueSaturation { saturation: -0.1; lightness: -0.1 }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: parent.height * 0.8
+                    anchors.centerIn: parent
+                    opacity: 0.5
+
+                    gradient: Gradient {
+                        GradientStop { position: 0.18; color: "transparent" }
+                        GradientStop { position: 0.2; color: "#222222" }
+                        GradientStop { position: 0.8; color: "#222222" }
+                        GradientStop { position: 0.82; color: "transparent" }
+                    }
+
+                }
+
+                Item {
+                    id: decoration
+
+                    anchors.fill: middle_frame
+
+                    Image {
+                        source: "qrc:/ui/songselect/image/second_layer_delegate_decoration.png"
+
+                        height: parent.height
+                        fillMode: Image.PreserveAspectFit
+
+                        NumberAnimation on x {
+                            running: current_song.ListView.isCurrentItem
+                            duration: 3000
+                            loops: Animation.Infinite
+                            from: -width
+                            to: decoration.width
+                        }
+                    }
+                    visible: false
+                }
+
+                OpacityMask {
+                    anchors.fill: middle_frame
+                    source: decoration
+                    maskSource: middle_frame
+                    opacity: 0.1
+
+                    visible: current_song.ListView.isCurrentItem
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: parent.height * 0.1
+                    anchors.bottom: parent.bottom
+                    color: "#222222"
+                    opacity: 0.5
+                }
+
+                Text {
+                    id: delegate_text
+                    anchors {
+                        right: parent.right
+                        rightMargin: parent.height * 0.1
+                        left: secondlayer_dif_img.right
+                        verticalCenter: parent.verticalCenter
+                    }
+
+                    height: parent.height * 0.45
+
+                    text: songs_meta[song_index][2]
                     color: "white"
-                    opacity: 0.7
-                    width: parent.width * 0.3
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    wrapMode: Text.WordWrap
+                    font.family: font_Genjyuu_XP_bold.name
+                    fontSizeMode: Text.Fit
+                    font.pixelSize: height * 0.8
+
+                    style: "Raised"
+                    styleColor: "#222222"
+                }
+
+                Image {
+                    id: secondlayer_dif_img
+                    source: "qrc:/ui/songselect/image/difficulty_frame_" +  ( (!is_level && is_expert) || (is_level && song_difficulty == 7) ? "expert.png" : "basic.png")
+                    fillMode: Image.PreserveAspectFit
+                    width: height * 0.75
                     height: parent.height
-                    anchors{
+                    transform: Rotation{ origin.x: secondlayer_dif_img.width / 2; axis {x: 0; y: 1; z: 0} angle: 180 }
+                    anchors {
                         left: parent.left
                         verticalCenter: parent.verticalCenter
                     }
-                    Image {
-                        id: secondlayer_dif_img
-                        source: "qrc:/ui/songselect/image/difficulty_frame_" +  ( (!is_level && is_expert) || (is_level && song_difficulty == 7) ? "expert.png" : "basic.png")
-                        fillMode: Image.PreserveAspectFit
-                        width: parent.width
-                        height: parent.height
-                        transform: Rotation{origin.x: secondlayer_dif_img.width / 2 ; axis {x: 0; y: 1; z: 0} angle: 180}
-                        anchors {
-                            left: parent.left
-                            verticalCenter: parent.verticalCenter
-                        }
-                    }
-                    Text {
-                        text: is_level ? songs_meta[song_index][song_difficulty] : (is_expert ? songs_meta[song_index][7] : songs_meta[song_index][6])
-                        font.family: font_hemi_head.name
-                        color: "white"
-                        font.pixelSize: parent.height * 0.3
-                        anchors.left: secondlayer_dif_img.left
-                        leftPadding: secondlayer_dif_img.width / 6
-                        topPadding: secondlayer_dif_img.height / 10
-                    }
                 }
-            }
-        }
 
-        //白外框
-        Component {
-            id: secondlayer_hl
-            Rectangle {
-                color: "transparent"
-                radius: 10
-                border {
+                Text {
+                    text: is_level ? songs_meta[song_index][song_difficulty] : (is_expert ? songs_meta[song_index][7] : songs_meta[song_index][6])
+
+                    width: secondlayer_dif_img.width * 0.5
+                    height: width * 1.5
+
+                    anchors.left: secondlayer_dif_img.left
+                    anchors.top: secondlayer_dif_img.top
+
                     color: "white"
-                    width: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: font_hemi_head.name
+                    font.pixelSize: secondlayer_dif_img.height * 0.3
+
                 }
 
+                layer.enabled: !ListView.isCurrentItem
+                layer.effect: BrightnessContrast {
+                    brightness: -0.4
+                    contrast: -0.2
+                }
             }
         }
 
         ListView {
             id: secondlayer_listview
 
-            y: parent.height * 0.4 - (currentItem !== null ? currentItem.y : 0)
+            y: parent.height * 5 / 12 - (currentItem !== null ? currentItem.y : 0)
             height: parent.height / 5 * count
             width: secondlayer.width
             model: []
             delegate: secondlayer_delegate
             orientation: ListView.Vertical
             interactive: false
-
-            highlight: secondlayer_hl
-            highlightMoveDuration: 0
 
             Behavior on y {
                 NumberAnimation {
@@ -378,6 +471,8 @@ Item {
                         is_expert = (currentItem.song_difficulty == 7)
                         firstlayer_listview.level_change(songs_meta[currentItem.song_index][currentItem.song_difficulty])
                     }
+
+                    change_anim.restart()
                 }
 
 
@@ -576,7 +671,16 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
 
+            opacity: is_secondlayer ? 1 : 0
+
             Behavior on anchors.rightMargin {
+                NumberAnimation{
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                }
+            }
+
+            Behavior on opacity {
                 NumberAnimation{
                     duration: 250
                     easing.type: Easing.OutExpo
@@ -597,7 +701,7 @@ Item {
                 }
 
                 fillMode: Image.PreserveAspectFit
-                source: detail_display_jacket //"file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/jacket.png"
+                source: detail_display_jacket
             }
 
             DropShadow {
@@ -619,7 +723,12 @@ Item {
                     verticalCenter: current_bar.verticalCenter
                 }
 
-                color: "#222222"
+                gradient: Gradient {
+                    orientation: Gradient.Horizontal
+
+                    GradientStop { position: 0.02; color: "transparent" }
+                    GradientStop { position: 0.04; color: "#222222" }
+                }
                 opacity: 0.5
             }
 
@@ -672,11 +781,12 @@ Item {
                 Text {
                     id: current_title
                     height: current_artist.height * 2
+                    width: parent.width
 
                     anchors {
                         top: parent.top
                         left: parent.left
-                        right: parent.right
+                        //right: parent.right
                     }
 
                     text: detail_display_title
@@ -696,11 +806,12 @@ Item {
                     id: current_artist
 
                     height: parent.height / 3
+                    width: parent.width
 
                     anchors {
                         bottom: parent.bottom
                         left: parent.left
-                        right: parent.right
+                        //right: parent.right
                     }
 
                     text: detail_display_artist
@@ -952,6 +1063,35 @@ Item {
                 horizontalOffset: box_container.width * 0.01
                 verticalOffset: horizontalOffset
             }
+
+            ParallelAnimation {
+                id: change_anim
+
+                NumberAnimation {
+                    target: current_jacket
+                    property: "anchors.leftMargin"
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                    from: 0; to: detail_panel.panel_margin
+                }
+
+                NumberAnimation {
+                    targets: [current_title, current_artist]
+                    property: "anchors.leftMargin"
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                    from: -detail_panel.panel_margin; to: 0
+                }
+
+                NumberAnimation {
+                    targets: [current_title, current_artist, current_jacket]
+                    property: "opacity"
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                    from: 0; to: 1
+                }
+            }
+
         }
     }
 
