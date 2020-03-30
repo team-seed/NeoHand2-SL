@@ -35,6 +35,74 @@ Item {
 
     CustomSongselect { id: dir }
 
+    //count down bar
+    Shape{
+        id: counting_bg
+        width:  parent.width / 7.4
+        height: width
+        z:999
+
+        antialiasing: true
+
+        anchors{
+            top: parent.top
+            right: parent.right
+        }
+        ShapePath{
+            strokeWidth: -1
+            fillColor: "white"
+            startX: parent.width
+            startY: 0
+            PathLine {x:parent.parent.width; y:0; }
+            PathLine {x:parent.parent.width; y:parent.width; }
+            PathLine {x:parent.parent.width - parent.width; y:0; }
+        }
+        layer.enabled: true
+        layer.effect: LinearGradient{
+            start: Qt.point(0,0)
+            end: Qt.point(counting_bg.width,counting_bg.height)
+            gradient: Gradient{
+                GradientStop{ position: 1; color: "transparent" }
+                GradientStop{
+                    color: "pink"
+                    SequentialAnimation on position{
+                        loops: Animation.Infinite
+                        NumberAnimation {
+                            duration: 500
+                            from: 0
+                            to: 1
+                        }
+                        NumberAnimation {
+                            duration: 500
+                            from: 1
+                            to: 0
+                        }
+                    }
+                }
+                GradientStop{ position: 0; color: "transparent" }
+            }
+
+            NumberAnimation on opacity {
+                running: false
+                duration: 60000 / pulse_bpm
+                loops: Animation.Infinite
+                from: 0.8
+                to: 0.5
+            }
+
+            layer.enabled: true
+            layer.effect: HueSaturation {
+                lightness: 0.5
+                NumberAnimation on hue {
+                    loops: Animation.Infinite
+                    duration: 1000
+                    from: -1
+                    to: 1
+                }
+            }
+        }
+
+    }
     Shape{
 
         width:  parent.width / 8
@@ -641,9 +709,29 @@ Item {
                     }
 
                     Image {
-                            source: "qrc:/ui/songselect/image/first_layer_delegate.png"
-                            anchors.fill: parent
+                        source: "qrc:/ui/songselect/image/first_layer_delegate.png"
+                        anchors.fill: parent
+
+                        layer.enabled: (!is_secondlayer && parent.parent.ListView.isCurrentItem) ? true : false
+                        layer.effect: Colorize{
+                            saturation: 0
+                            SequentialAnimation on lightness {
+                                loops: Animation.Infinite
+                                NumberAnimation{
+                                    duration: 1000
+                                    easing: Easing.OutExpo
+                                    from: 0
+                                    to: 0.4
+                                }
+                                NumberAnimation{
+                                    duration: 1000
+                                    easing: Easing.InExpo
+                                    from: 0.4
+                                    to: 0
+                                }
+                            }
                         }
+                    }
                 }
 
                 BrightnessContrast {
@@ -660,6 +748,8 @@ Item {
                         }
                     }
                 }
+
+
 
                 function sortbythis () {
                     //secondlayer_listview.currentIndex = -1
@@ -1174,9 +1264,7 @@ Item {
         }
     }
 
-    //count down
-
-
+    //count down timer
     Timer{
         id: count_down_timer
         interval: 1000
