@@ -20,5 +20,6 @@
         <file>ui/songselect/image/sorting_options_title.png</file>
         <file>ui/songselect/image/neohand2BG.png</file>
         <file>ui/songselect/image/select_arrow_new.png</file>
+        <file>ui/songselect/image/second_layer_delegate_decoration.png</file>
     </qresource>
 </RCC>
