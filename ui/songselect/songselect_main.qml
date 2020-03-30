@@ -350,10 +350,43 @@ Item {
     Sort_list { id: sort_selection_list }
 
     //temp background
+    Rectangle {
+        anchors.fill: parent
+        color: "#222222"
+    }
+
+    Rectangle {
+        anchors.fill: parent
+
+        gradient: Gradient {
+            orientation: Gradient.Horizontal
+
+            GradientStop { position: 0; color: "transparent" }
+            GradientStop { color: effect_color
+                NumberAnimation on position {
+                    loops: Animation.Infinite
+                    duration: 2000
+                    from: 0; to: 1
+                }
+            }
+            GradientStop { position: 1; color: "transparent" }
+
+        }
+    }
+
     Image {
-        id: tmp_bg
-        source: "qrc:/ui/songselect/image/neohand2BG.png"
-        anchors.fill:parent
+        id: background
+        source: "qrc:/ui/songselect/image/background_frame.png"
+        anchors.fill: parent
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#222222"
+
+        opacity: is_secondlayer ? 0.5 : 0
+
+        Behavior  on opacity { NumberAnimation { duration: 250 } }
     }
 
     //select song
@@ -718,15 +751,15 @@ Item {
                             SequentialAnimation on lightness {
                                 loops: Animation.Infinite
                                 NumberAnimation{
-                                    duration: 1000
-                                    easing: Easing.OutExpo
+                                    duration: 750
+                                    easing.type: Easing.OutCubic
                                     from: 0
-                                    to: 0.4
+                                    to: 0.3
                                 }
                                 NumberAnimation{
-                                    duration: 1000
-                                    easing: Easing.InExpo
-                                    from: 0.4
+                                    duration: 750
+                                    easing.type: Easing.InCubic
+                                    from: 0.3
                                     to: 0
                                 }
                             }
