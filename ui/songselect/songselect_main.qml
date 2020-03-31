@@ -22,12 +22,12 @@ Item {
     property int detail_display_basic_difficulty: 0
     property int detail_display_expert_difficulty: 0
 
-    property double pulse_bpm: 140
+    property double pulse_bpm: 60
 
     property string effect_color: "white"
 
     property int track_count: 4
-    property int time_remaining: -1
+    property int time_remaining: 99
 
     Behavior on effect_color {
         ColorAnimation { duration: 250 }
@@ -210,6 +210,7 @@ Item {
             color: is_secondlayer ? effect_color : "white"
 
             NumberAnimation on opacity {
+                id: topbar_light_animation
                 duration: 60000 / pulse_bpm
                 loops: Animation.Infinite
                 from: 0.9
@@ -332,6 +333,7 @@ Item {
             color: is_secondlayer ? effect_color : "white"
 
             NumberAnimation on opacity {
+                id: btm_bar_animation
                 duration: 60000 / pulse_bpm
                 loops: Animation.Infinite
                 from: 0.9
@@ -364,23 +366,35 @@ Item {
         gradient: Gradient {
             orientation: Gradient.Horizontal
             GradientStop { position: 0; color: "transparent" }
-            GradientStop { position: 0.5; color: is_secondlayer ? effect_color : "white" }
+            GradientStop { position: 0.5; color: is_secondlayer ? effect_color : "pink" }
             GradientStop { position: 1; color: "transparent" }
         }
 
         NumberAnimation on x {
             //running: is_secondlayer
-            duration: 3000
+            duration: 4000
             loops: Animation.Infinite
             alwaysRunToEnd: true
             from: -width; to: width
         }
 
-        opacity: is_secondlayer ? 1 : 0.1
+        opacity: is_secondlayer ? 1 : .25
 
         Behavior on opacity {
             NumberAnimation { duration: 250 }
         }
+
+        layer.enabled: !is_secondlayer
+        layer.effect: HueSaturation {
+            lightness: 0.5
+            NumberAnimation on hue {
+                loops: Animation.Infinite
+                duration: 1000
+                from: -1
+                to: 1
+            }
+        }
+
     }
 
     Image {
@@ -617,6 +631,7 @@ Item {
                         dir.stopPreview();
                         dir.playEffect();
                         player_timer.restart();
+                        pulse_bpm = songs_meta[currentItem.song_index][8]
                     }
                     bgmplay = true
 
@@ -923,6 +938,7 @@ Item {
                 anchors.fill: bar_bg
 
                 NumberAnimation on opacity {
+                    id: bar_bg_animation
                     duration: 60000 / pulse_bpm
                     loops: Animation.Infinite
                     //easing.type: Easing.InExpo
@@ -1301,6 +1317,9 @@ Item {
         repeat: false
         onTriggered: {
             dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
+            topbar_light_animation.restart()
+            btm_bar_animation.restart()
+            bar_bg_animation.restart()
         }
     }
 
@@ -1314,8 +1333,13 @@ Item {
     }
 
     onIs_secondlayerChanged: {
-        if(is_secondlayer)
+        if(is_secondlayer && secondlayer_listview.count != 0){
             player_timer.restart();
+            pulse_bpm = songs_meta[secondlayer_listview.currentItem.song_index][8]
+            topbar_light_animation.restart()
+            btm_bar_animation.restart()
+            bar_bg_animation.restart()
+        }
         else{
             dir.stopPreview();
             player_timer.stop()
@@ -1325,6 +1349,7 @@ Item {
     onDetail_display_jacketChanged: {
         change_anim.restart()
     }
+
 
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
@@ -1384,6 +1409,10 @@ Item {
         if(is_secondlayer){
             is_secondlayer = false
             dir.stopPreview()
+            pulse_bpm = 60
+            topbar_light_animation.restart()
+            btm_bar_animation.restart()
+            bar_bg_animation.restart()
         }
     }
 

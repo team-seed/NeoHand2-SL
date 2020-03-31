@@ -142,10 +142,18 @@ private:
                     }
                 }
                 else list.append(-1);
+
+                if (obj.contains("PREVIEW_BPM")) {
+                    QJsonValue value = obj.value("PREVIEW_BPM");
+                    if (value.isDouble()) {
+                        list.append(value.toVariant().toDouble());
+                    }
+                }
+                else list.append(-1);
             }
         }
 
-        if (list.size()!=8)
+        if (list.size()!=9)
             return false;
 
         songs_meta.insert(0, list);

@@ -84,7 +84,7 @@ Column {
     function page_switch() {
         switch (select_index){
             case 0:
-                pageloader.source = "/ui/game/game_main.qml"
+                pageloader.source = "/ui/songselect/songselect_main.qml"
                 break
             case 1:
                 pageloader.source = "button_test.qml"
