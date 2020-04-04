@@ -1426,7 +1426,8 @@ Item {
 
     function to_main () {
         //pageloader.source = "/ui/option/option_menu.qml"
-        Qt.quit()
+        pageloader.source = "/ui/result.qml"
+        //Qt.quit()
     }
 
     function select() {
