@@ -48,7 +48,7 @@ public slots:
         if(loop)
             plist.setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
         music.setPlaylist(&plist);
-        music.setVolume(100);
+        music.setVolume(50);
         music.setPosition(start);
         music.play();
         connect(&music,QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error),

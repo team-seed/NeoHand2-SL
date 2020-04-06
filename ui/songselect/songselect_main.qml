@@ -629,7 +629,7 @@ Item {
                 if (is_secondlayer) {
                     if (bgmplay) {
                         dir.stopPreview();
-                        dir.playEffect();
+                        dir.play_secondlayer();
                         player_timer.restart();
                         pulse_bpm = songs_meta[currentItem.song_index][8]
                     }
@@ -844,6 +844,11 @@ Item {
 
             function level_change(current_level){
                 currentIndex = model.get_level_index(current_level)
+            }
+
+            onCurrentIndexChanged: {
+                if(!is_secondlayer)
+                    dir.play_firstlayer()
             }
 
         }
@@ -1394,6 +1399,7 @@ Item {
 
     function right_press () {
         if (is_secondlayer) {
+            dir.play_difficulty();
             if (is_level)
                 secondlayer_listview.level_dif_change()
             else
@@ -1428,8 +1434,8 @@ Item {
 
     function to_main () {
         //pageloader.source = "/ui/option/option_menu.qml"
-        pageloader.source = "/ui/result.qml"
-        //Qt.quit()
+        //pageloader.source = "/ui/result.qml"
+        Qt.quit()
     }
 
     function select() {

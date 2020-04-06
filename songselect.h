@@ -22,14 +22,21 @@ class songselect : public QObject {
 public:
     songselect () {
         reload_song_meta();
-        effect_player.init(QUrl("qrc:/sound_effect/song_select.wav"));
         page.init(QUrl("qrc:/sound_effect/boom.wav"));
         accept.init(QUrl("qrc:/sound_effect/accept.wav"));
         decline.init(QUrl("qrc:/sound_effect/decline.wav"));
+        firstlayer.init(QUrl("qrc:/sound_effect/1layer.wav"));
+        secondlayer.init(QUrl("qrc:/sound_effect/2layer.wav"));
+        dif_change.init(QUrl("qrc:/sound_effect/difficulty.wav"));
     }
 
     ~songselect(){
-        effect_player.destruct();
+        page.destruct();
+        accept.destruct();
+        decline.destruct();
+        firstlayer.destruct();
+        secondlayer.destruct();
+        dif_change.destruct();
     }
 
     void reload_song_meta() {
@@ -70,16 +77,24 @@ public slots:
         page.play();
     }
 
-    void playEffect() {
-        effect_player.play();
-    }
-
     void play_accept() {
         accept.play();
     }
 
     void play_decline() {
         decline.play();
+    }
+
+    void play_firstlayer(){
+        firstlayer.play();
+    }
+
+    void play_secondlayer(){
+        secondlayer.play();
+    }
+
+    void play_difficulty(){
+        dif_change.play();
     }
 private:
     bool song_meta_parse (QString& filepath) {
@@ -178,10 +193,13 @@ private:
     QVariantList songs_meta;
 
     musicplayer music_player;
-    soundfx effect_player;
+
     soundfx page;
     soundfx accept;
     soundfx decline;
+    soundfx firstlayer;
+    soundfx secondlayer;
+    soundfx dif_change;
 };
 
 #endif // SONGSELECT_H
