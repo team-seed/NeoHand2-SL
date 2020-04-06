@@ -2,7 +2,10 @@
     <qresource prefix="/">
         <file>sound_effect/click.wav</file>
         <file>sound_effect/hold.wav</file>
-        <file>sound_effect/songselect_click.wav</file>
         <file>sound_effect/swipe.wav</file>
+        <file>sound_effect/song_select.wav</file>
+        <file>sound_effect/boom.wav</file>
+        <file>sound_effect/decline.wav</file>
+        <file>sound_effect/accept.wav</file>
     </qresource>
 </RCC>

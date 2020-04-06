@@ -1401,6 +1401,7 @@ Item {
         }
         else {
             is_secondlayer = true
+            dir.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
     }
@@ -1409,6 +1410,7 @@ Item {
         if(is_secondlayer){
             is_secondlayer = false
             dir.stopPreview()
+            dir.play_decline()
             pulse_bpm = 60
             topbar_light_animation.restart()
             btm_bar_animation.restart()
@@ -1445,7 +1447,7 @@ Item {
         mainqml.downpress_signal.connect(down_press)
         mainqml.escpress_signal.connect(to_main)
         mainqml.enterpress_signal.connect(select)
-
+        dir.play_page()
     }
 
     function disconnect_all() {

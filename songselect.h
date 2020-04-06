@@ -22,9 +22,10 @@ class songselect : public QObject {
 public:
     songselect () {
         reload_song_meta();
-        //effect_player.init(10, QUrl("qrc:/ui/songselect/songselect_click.wav"));
-        effect_player.init(QUrl("qrc:/sound_effect/songselect_click.wav"));
-
+        effect_player.init(QUrl("qrc:/sound_effect/song_select.wav"));
+        page.init(QUrl("qrc:/sound_effect/boom.wav"));
+        accept.init(QUrl("qrc:/sound_effect/accept.wav"));
+        decline.init(QUrl("qrc:/sound_effect/decline.wav"));
     }
 
     ~songselect(){
@@ -65,10 +66,21 @@ public slots:
         music_player.stop_bgm();
     }
 
+    void play_page() {
+        page.play();
+    }
+
     void playEffect() {
         effect_player.play();
     }
 
+    void play_accept() {
+        accept.play();
+    }
+
+    void play_decline() {
+        decline.play();
+    }
 private:
     bool song_meta_parse (QString& filepath) {
         QVariantList list;
@@ -166,8 +178,10 @@ private:
     QVariantList songs_meta;
 
     musicplayer music_player;
-    //Effect_play effect_player;
     soundfx effect_player;
+    soundfx page;
+    soundfx accept;
+    soundfx decline;
 };
 
 #endif // SONGSELECT_H
