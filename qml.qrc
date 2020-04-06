@@ -13,5 +13,6 @@
         <file>ui/game/game_main.qml</file>
         <file>ui/songselect/songselect_main.qml</file>
         <file>ui/songselect/Sort_list.qml</file>
+        <file>ui/result.qml</file>
     </qresource>
 </RCC>

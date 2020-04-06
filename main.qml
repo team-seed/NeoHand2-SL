@@ -33,7 +33,8 @@ Item {
         focus: true
         asynchronous: true
 
-        source: "qrc:/ui/option/option_menu.qml"
+        source: "qrc:/ui/result.qml"
+        //source: "qrc:/ui/option/option_menu.qml"
     }
 
     // insert animations here
