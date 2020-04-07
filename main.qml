@@ -11,6 +11,9 @@ Item {
 
     property string version: "NH2:SL2.20200309.1b"
 
+    property var global_song_meta: null
+    property var global_is_expert: false
+
     // disable mouse functions
     MouseArea {
         anchors.fill: parent

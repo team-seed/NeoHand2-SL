@@ -4,27 +4,32 @@ import QtGraphicalEffects 1.0
 import custom.songselect 1.0
 
 Item {
+    property var current_song_meta: dir.content[1]
+
     property int song_index: 1
     property var songs_meta: dir.content
     property double pulse_bpm: 60
+    property string song_color: "white"
     property bool is_expert: true
     property var score: 0987654
-    property var best_score: 0876543
+    property var best_score: 0
     property color bgcolor: "#778899"
 
     property var exact_number: 0123
     property var close_number: 4567
     property var break_number: 8907
     property var max_combo: 2345
-    id: panel
+
     CustomSongselect { id: dir }
 
+    // temp background
     Rectangle{
         id: background
         anchors.fill: parent
         color: bgcolor
     }
 
+    // top bar, finalized
     Item {
         id: top_bar
         z: 100
@@ -81,7 +86,7 @@ Item {
             id: topbar_light
             anchors.fill: parent
             source: topbar_masked
-            color: "white"
+            color: song_color
 
             NumberAnimation on opacity {
                 id: topbar_light_animation
@@ -113,22 +118,6 @@ Item {
                 font.family: font_hemi_head.name
                 font.pixelSize: parent.height * 0.8
             }
-            /*
-            Text {
-                text: switch (track_count) {
-                      case 0: return ""
-                      case 1: return "st track"
-                      case 2: return "nd track"
-                      case 3: return "rd track"
-                      case 4: return "track"
-                      }
-                anchors.left: topbar_number.right
-                anchors.verticalCenter: topbar_number.verticalCenter
-
-                color: "#DDDDDD"
-                font.family: font_hemi_head.name
-                font.pixelSize: parent.height * 0.5
-            }*/
         }
 
         DropShadow {
@@ -141,62 +130,54 @@ Item {
 
     }
 
-    ///
     // jacket_container
-    ///
     Rectangle{
         id: jacket_container
-        z:100
-        width: parent.width *0.4
-        color: bgcolor
+        width: parent.width * 0.4
         anchors {
             top: top_bar.bottom
             bottom: parent.bottom
             left: parent.left
         }
+        color: "gray"
+
         // jacket
         Image {
-            id: current_jacket
-
-            width:   parent.width * 0.7
-            height: parent.height * 0.9
-
-            anchors {
-                bottom: parent.bottom
-                bottomMargin: parent.height * 0.05
-                left: parent.left
-                leftMargin:  parent.width * 0.15
-            }
+            width: parent.width * 0.85
+            height: width
+            anchors.centerIn: parent
 
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + songs_meta[song_index][0] + "/jacket"
-        }
-        //  Failed, Clear, Full Combo, Perfect
-        Rectangle{
-            z:101
-            height: parent.width * 0.2
-            width: parent.height
-            anchors{
-                bottom: parent.verticalCenter
-                left: parent.left
-            }
-            color: "white"
-            transform: Rotation { origin.x: 0; origin.y: 0 ; axis { x: 0; y: 0; z: 1 }angle: 45}
-            Text{
-                anchors.fill: parent
-                text: "CLEAR"
-                font.family: font_Genjyuu_XP_bold.name
-                font.pixelSize: height
-                minimumPixelSize: 10
-
-                fontSizeMode: Text.Fit
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                style: Text.Raised
-                styleColor: "black"
-            }
+            source: "file:///" + current_song_meta[0] + "/jacket"
         }
     }
+
+    //  Failed, Clear, Full Combo, Perfect
+    //  ==========================!! TO BE REPLACED !!===============================
+    /*Rectangle{
+        z:101
+        height: parent.width * 0.2
+        width: parent.height
+        anchors{
+            bottom: parent.verticalCenter
+            left: parent.left
+        }
+        color: "white"
+        transform: Rotation { origin.x: 0; origin.y: 0 ; axis { x: 0; y: 0; z: 1 } angle: 45}
+        Text{
+            anchors.fill: parent
+            text: "CLEAR"
+            font.family: font_Genjyuu_XP_bold.name
+            font.pixelSize: height
+            minimumPixelSize: 10
+
+            fontSizeMode: Text.Fit
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            style: Text.Raised
+            styleColor: "black"
+        }
+    }*/
 
     ///
     // song_information
@@ -206,10 +187,11 @@ Item {
         property double panel_margin: width / 16
         height: parent.height * 0.25
         anchors {
-            left: top_bar.right
+            left: jacket_container.right
             right: parent.right
             top:parent.top
         }
+
         //bar
         Rectangle {
             id: current_bar
@@ -247,7 +229,7 @@ Item {
                     //right: parent.right
                 }
 
-                text: songs_meta[song_index][2]
+                text: current_song_meta[2]
                 color: "white"
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
@@ -272,7 +254,7 @@ Item {
                     //right: parent.right
                 }
 
-                text: songs_meta[song_index][1]
+                text: current_song_meta[1]
                 color: "white"
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
@@ -285,6 +267,7 @@ Item {
             }
 
         }
+
         // song difficult
         Image {
             id: diff
@@ -298,7 +281,7 @@ Item {
             }
 
             Text {
-                text: is_expert ? songs_meta[song_index][7] : songs_meta[song_index][6]
+                text: is_expert ? current_song_meta[7] : current_song_meta[6]
 
                 width: parent.width * 0.7
                 height: width
@@ -431,7 +414,7 @@ Item {
             }
             Text{
                 id:best_score_txt
-                text: best_score
+                text: best_score.toString().padStart(7, "0")
                 width: parent.width * 0.6
                 height:  parent.height
                 anchors{

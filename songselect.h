@@ -176,7 +176,7 @@ private:
                         list.append(value.toVariant().toDouble());
                     }
                 }
-                else list.append(-1);
+                else list.append(60);
             }
         }
 
