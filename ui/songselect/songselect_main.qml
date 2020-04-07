@@ -36,120 +36,122 @@ Item {
     CustomSongselect { id: dir }
 
     //count down bar
-    Shape{
-        id: counting_bg
-        width:  parent.width / 7.4
-        height: width
+    Item {
+        id: count_bar
         z:999
-
-        antialiasing: true
-
         anchors{
             top: parent.top
             right: parent.right
         }
-        ShapePath{
-            strokeWidth: -1
-            fillColor: "white"
-            startX: parent.width
-            startY: 0
-            PathLine {x:parent.parent.width; y:0; }
-            PathLine {x:parent.parent.width; y:parent.width; }
-            PathLine {x:parent.parent.width - parent.width; y:0; }
-        }
-        layer.enabled: true
-        layer.effect: LinearGradient{
-            start: Qt.point(0,0)
-            end: Qt.point(counting_bg.width,counting_bg.height)
-            gradient: Gradient{
-                GradientStop{ position: 1; color: "transparent" }
-                GradientStop{
-                    color: "pink"
-                    SequentialAnimation on position{
-                        loops: Animation.Infinite
-                        NumberAnimation {
-                            duration: 500
-                            from: 0
-                            to: 1
-                        }
-                        NumberAnimation {
-                            duration: 500
-                            from: 1
-                            to: 0
-                        }
-                    }
-                }
-                GradientStop{ position: 0; color: "transparent" }
-            }
-
-            NumberAnimation on opacity {
-                running: false
-                duration: 60000 / pulse_bpm
-                loops: Animation.Infinite
-                from: 0.8
-                to: 0.5
-            }
-
-            layer.enabled: true
-            layer.effect: HueSaturation {
-                lightness: 0.5
-                NumberAnimation on hue {
-                    loops: Animation.Infinite
-                    duration: 1000
-                    from: -1
-                    to: 1
-                }
-            }
-        }
-
-    }
-    Shape{
-
         width:  parent.width / 8
         height: width
-        z:999
-
-        antialiasing: true
-
-        anchors{
-            top: parent.top
-            right: parent.right
-        }
-        ShapePath{
-            strokeWidth: -1
-            fillColor: "#222222"
-            startX: parent.width
-            startY: 0
-            PathLine {x:parent.parent.width; y:0; }
-            PathLine {x:parent.parent.width; y:parent.width; }
-            PathLine {x:parent.parent.width - parent.width; y:0; }
-        }
-
-        Text {
-            id:count_down
-            height: parent.height / 4
-            width: height * 1.2
-            transformOrigin: Text.Center
-            rotation: 45
-            anchors {
+        Shape{
+            id: counting_bg
+            width:  parent.width * 1.05
+            height: width
+            anchors{
                 top: parent.top
                 right: parent.right
-                topMargin: parent.height / 8
-                rightMargin: parent.width / 6
+            }
+            antialiasing: true
+
+            ShapePath{
+                strokeWidth: -1
+                fillColor: "white"
+                startX: parent.width
+                startY: 0
+                PathLine {x:parent.parent.width; y:0; }
+                PathLine {x:parent.parent.width; y:parent.width; }
+                PathLine {x:parent.parent.width - parent.width; y:0; }
+            }
+            layer.enabled: true
+            layer.effect: LinearGradient{
+                start: Qt.point(0,0)
+                end: Qt.point(counting_bg.width,counting_bg.height)
+                gradient: Gradient{
+                    GradientStop{ position: 1; color: "transparent" }
+                    GradientStop{
+                        color: "pink"
+                        SequentialAnimation on position{
+                            loops: Animation.Infinite
+                            NumberAnimation {
+                                duration: 500
+                                from: 0
+                                to: 1
+                            }
+                            NumberAnimation {
+                                duration: 500
+                                from: 1
+                                to: 0
+                            }
+                        }
+                    }
+                    GradientStop{ position: 0; color: "transparent" }
+                }
+
+                NumberAnimation on opacity {
+                    running: false
+                    duration: 60000 / pulse_bpm
+                    loops: Animation.Infinite
+                    from: 0.8
+                    to: 0.5
+                }
+
+                layer.enabled: true
+                layer.effect: HueSaturation {
+                    lightness: 0.5
+                    NumberAnimation on hue {
+                        loops: Animation.Infinite
+                        duration: 1000
+                        from: -1
+                        to: 1
+                    }
+                }
             }
 
-            text: (time_remaining >= 0) ? time_remaining.toString() : "∞"
-            color: "#888888"
-            font.family: font_hemi_head.name
-            font.pixelSize: parent.height * 0.4
+        }
+        Shape{
+            anchors.fill:parent
 
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            antialiasing: true
+
+            ShapePath{
+                strokeWidth: -1
+                fillColor: "#222222"
+                startX: parent.width
+                startY: 0
+                PathLine {x:parent.parent.width; y:0; }
+                PathLine {x:parent.parent.width; y:parent.width; }
+                PathLine {x:parent.parent.width - parent.width; y:0; }
+            }
+
+            Text {
+                id:count_down
+                height: parent.height / 4
+                width: height * 1.2
+                transformOrigin: Text.Center
+                rotation: 45
+                anchors {
+                    top: parent.top
+                    right: parent.right
+                    topMargin: parent.height / 8
+                    rightMargin: parent.width / 6
+                }
+
+                text: (time_remaining >= 0) ? time_remaining.toString() : "∞"
+                color: "#888888"
+                font.family: font_hemi_head.name
+                font.pixelSize: parent.height * 0.4
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 
     //round count
     Item {
+        id: round_count
         z: 100
         width: parent.width * 0.25
         height: parent.height / 10
@@ -734,18 +736,22 @@ Item {
             verticalCenter: parent.verticalCenter
 
             Behavior on rightMargin {
+                id: layerchange_animation
                 NumberAnimation{
                     duration: 250
                     easing.type: Easing.OutCubic
                 }
             }
+
         }
 
         //first layer bg
         Image {
-            //id: name
+            id: firstlayer_img
             source: "qrc:/ui/songselect/image/first_layer_background.png"
-            anchors.fill: parent
+            //anchors.fill: parent
+            height: parent.height
+            width: parent.width
         }
 
         Component {
@@ -804,8 +810,6 @@ Item {
                     }
                 }
 
-
-
                 function sortbythis () {
                     //secondlayer_listview.currentIndex = -1
                     is_level = (sortfunc == "Level")
@@ -850,7 +854,6 @@ Item {
                 if(!is_secondlayer)
                     dir.play_firstlayer()
             }
-
         }
 
     }
@@ -1433,9 +1436,9 @@ Item {
     }
 
     function to_main () {
-        //pageloader.source = "/ui/option/option_menu.qml"
+        pageloader.source = "/ui/option/option_menu.qml"
         //pageloader.source = "/ui/result.qml"
-        Qt.quit()
+        //Qt.quit()
     }
 
     function select() {
@@ -1448,18 +1451,24 @@ Item {
     }
 
     Component.onCompleted: {
+        mainqml.escpress_signal.connect(to_main)
+        dir.play_page()
+
+        op_anim.start()
+    }
+
+    function connect_all() {
         mainqml.rightpress_signal.connect(right_press)
         mainqml.leftpress_signal.connect(left_press)
         mainqml.uppress_signal.connect(up_press)
         mainqml.downpress_signal.connect(down_press)
-        mainqml.escpress_signal.connect(to_main)
         mainqml.enterpress_signal.connect(select)
-        dir.play_page()
     }
 
     function disconnect_all() {
         mainqml.rightpress_signal.disconnect(right_press)
         mainqml.leftpress_signal.disconnect(left_press)
+        mainqml.uppress_signal.disconnect(up_press)
         mainqml.downpress_signal.disconnect(down_press)
         mainqml.escpress_signal.disconnect(to_main)
         mainqml.enterpress_signal.disconnect(select)
@@ -1478,5 +1487,8 @@ Item {
     FontLoader {
         id: font_hemi_head
         source: "/font/hemi-head-bd-it.ttf"
+    }
+    Songselect_op_anim{
+        id:op_anim
     }
 }

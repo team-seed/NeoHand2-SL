@@ -14,5 +14,6 @@
         <file>ui/songselect/songselect_main.qml</file>
         <file>ui/songselect/Sort_list.qml</file>
         <file>ui/result.qml</file>
+        <file>ui/songselect/Songselect_op_anim.qml</file>
     </qresource>
 </RCC>
