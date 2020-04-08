@@ -21,5 +21,7 @@
         <file>ui/songselect/image/select_arrow_new.png</file>
         <file>ui/songselect/image/second_layer_delegate_decoration.png</file>
         <file>ui/songselect/image/background_frame.png</file>
+        <file>ui/songselect/image/particle.png</file>
+        <file>ui/songselect/image/particle2.png</file>
     </qresource>
 </RCC>

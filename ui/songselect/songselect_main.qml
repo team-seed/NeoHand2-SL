@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
+import QtQuick.Particles 2.12
 import custom.songselect 1.0
 
 Item {
@@ -356,10 +357,11 @@ Item {
     //background
     Rectangle {
         anchors.fill: parent
-        color: "#222222"
+        color: is_secondlayer ? "#222222" : "#AAAAAA"
+        Behavior on color { ColorAnimation { duration: 250 } }
     }
 
-    Rectangle {
+    /*Rectangle {
         width: parent.width
         height: parent.height
         anchors.verticalCenter: parent.verticalCenter
@@ -397,13 +399,16 @@ Item {
             }
         }
 
+        visible: false
+
     }
 
     Image {
         id: background
         source: "qrc:/ui/songselect/image/background_frame.png"
         anchors.fill: parent
-    }
+        visible: false
+    }*/
 
     Rectangle {
         anchors.fill: parent
@@ -411,7 +416,67 @@ Item {
 
         opacity: is_secondlayer ? 0.5 : 0
 
-        Behavior  on opacity { NumberAnimation { duration: 250 } }
+        Behavior on opacity { NumberAnimation { duration: 250 } }
+    }
+
+    ParticleSystem {
+        id: particle_sys
+        anchors.fill: parent
+
+        layer.enabled: true
+        layer.effect: ColorOverlay { color: is_secondlayer ? effect_color : "#222222" }
+
+        ImageParticle {
+            anchors.fill: parent
+            system: particle_sys
+            groups: ["R"]
+
+            source: "qrc:/ui/songselect/image/particle2.png"
+        }
+
+        Emitter {
+
+            id: glow
+            system: particle_sys
+            group: "R"
+
+            x: 0
+            height: 1 //parent.height / 20
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -parent.height / 4
+
+            emitRate: 300
+
+            lifeSpan: 5000
+
+            onEmitParticles: {
+                for (var i = 0; i<particles.length; i++) {
+                    var particle = particles[i]
+                    var rand = Math.random()
+
+                    particle.startSize = Math.floor(rand * 5) * 5 + 15
+                    particle.endSize = particle.startSize
+                    particle.alpha = 0.6 - rand * 0.3
+                    particle.x = particle_sys.width * ((1 - rand) * -0.2)
+                    particle.initialVX = particle_sys.width * (rand * 0.04 + 0.25)
+                    particle.initialVY = particle_sys.height * ((rand * 0.4) + 0.1)
+
+                }
+            }
+        }
+
+        Affector {
+            system: particle_sys
+            groups: ["R"]
+            anchors.fill: parent
+            onAffectParticles: {
+                for (var i = 0; i<particles.length; i++) {
+                    var particle = particles[i]
+                    particle.ay = (particle_sys.height / 4 - particle.y) * 20 + particle.x * 6
+                    particle.update = true
+                }
+            }
+        }
     }
 
     //select song
@@ -974,7 +1039,7 @@ Item {
                     left: parent.left
                 }
 
-                color: "#222222"
+                color: effect_color //"#222222"
             }
 
             //title & artist
@@ -1358,7 +1423,6 @@ Item {
         change_anim.restart()
     }
 
-
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
         var list = [];
@@ -1478,7 +1542,6 @@ Item {
         disconnect_all();
     }
 
-
     FontLoader {
         id: font_Genjyuu_XP_bold
         source: "/font/GenJyuuGothicX-P-Bold.ttf"
@@ -1488,6 +1551,7 @@ Item {
         id: font_hemi_head
         source: "/font/hemi-head-bd-it.ttf"
     }
+
     Songselect_op_anim{
         id:op_anim
     }
