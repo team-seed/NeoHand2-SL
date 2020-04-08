@@ -9,7 +9,7 @@ Item {
     width: Screen.width
     height: Screen.height
 
-    property string version: "NH2:SL2.20200309.1b"
+    property string version: "NH2:SL2.20200408.1b"
 
     property var global_song_meta: null
     property var global_is_expert: false
@@ -38,10 +38,12 @@ Item {
 
         //source: "qrc:/ui/result.qml"
         source: "qrc:/ui/option/option_menu.qml"
+
+        onLoaded: transitionB.quit()
     }
 
     // insert animations here
-    TransitionB{
+    TransitionB {
         id: transitionB
     }
 

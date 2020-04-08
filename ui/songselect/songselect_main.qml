@@ -1500,7 +1500,7 @@ Item {
     }
 
     function to_main () {
-        transitionB.quit()
+        //transitionB.quit()
         pageloader.source = "/ui/option/option_menu.qml"
         //pageloader.source = "/ui/result.qml"
         //Qt.quit()
