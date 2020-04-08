@@ -41,6 +41,9 @@ Item {
     }
 
     // insert animations here
+    TransitionB{
+        id: transitionB
+    }
 
     // press signal
     signal uppress_signal()
