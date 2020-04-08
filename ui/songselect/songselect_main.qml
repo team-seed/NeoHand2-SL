@@ -1514,10 +1514,11 @@ Item {
         }
         else{
             dir.play_accept();
-            global_song_meta = songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]]
+            global_song_meta = songs_meta[secondlayer_listview.currentItem.song_index]
             global_is_expert = is_expert
             transitionB.start()
             dir.stopPreview()
+            pageloader.source = "/ui/game/Game.qml"
         }
     }
 

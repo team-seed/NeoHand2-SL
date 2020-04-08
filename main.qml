@@ -13,6 +13,7 @@ Item {
 
     property var global_song_meta: null
     property var global_is_expert: false
+    property int final_score: 0
 
     // disable mouse functions
     MouseArea {

@@ -16,9 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.cpp \
+    Game_process.cpp \
+    gesture.cpp \
     main.cpp
 
 HEADERS += \
+    ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.hpp \
+    Game_process.h \
+    Game_timer.h \
+    gesture.h \
     input_handler.h \
     musicplayer.h \
     songselect.h \
@@ -36,3 +43,8 @@ RESOURCES += \
     images.qrc \
     qml.qrc \
     sound_effect.qrc
+
+LIBS += \
+    -lrt \
+    -lpthread \
+    -lopencv_videoio \
