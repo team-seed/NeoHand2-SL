@@ -1358,7 +1358,6 @@ Item {
         change_anim.restart()
     }
 
-
     //[[index,dif(-1,6,7)]]
     function song_sorting (method) {
         var list = [];
@@ -1436,6 +1435,7 @@ Item {
     }
 
     function to_main () {
+        transitionB.quit()
         pageloader.source = "/ui/option/option_menu.qml"
         //pageloader.source = "/ui/result.qml"
         //Qt.quit()
@@ -1444,10 +1444,16 @@ Item {
     function select() {
         if(!is_secondlayer) {
             is_secondlayer = true
+            dir.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
-        //disconnect_all();
-        //destruct.start();
+        else{
+            dir.play_accept();
+            global_song_meta = songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]]
+            global_is_expert = is_expert
+            transitionB.start()
+            dir.stopPreview()
+        }
     }
 
     Component.onCompleted: {
@@ -1488,6 +1494,7 @@ Item {
         id: font_hemi_head
         source: "/font/hemi-head-bd-it.ttf"
     }
+
     Songselect_op_anim{
         id:op_anim
     }
