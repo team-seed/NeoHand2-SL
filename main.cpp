@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
     Input_handler *widget = new Input_handler();
     const QUrl url (QStringLiteral("qrc:/main.qml"));
 
+    widget->engine()->rootContext()->setContextProperty("rootPath", QDir::currentPath());
+
     widget->setSource(url);
     widget->init();
     widget->showFullScreen();

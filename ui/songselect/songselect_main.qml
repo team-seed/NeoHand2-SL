@@ -3,6 +3,7 @@ import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
 import QtQuick.Particles 2.12
 import custom.songselect 1.0
+import QtMultimedia 5.8
 
 Item {
     id: songselect_main_container
@@ -696,6 +697,8 @@ Item {
                 if (is_secondlayer) {
                     if (bgmplay) {
                         dir.stopPreview();
+                        song_smoothing.stop()
+                        bgm_player.volume = 1
                         dir.play_secondlayer();
                         player_timer.restart();
                         pulse_bpm = songs_meta[currentItem.song_index][8]
@@ -1386,13 +1389,23 @@ Item {
     //preview
     Timer {
         id: player_timer
-        interval: 1000
+        interval: 1500
         repeat: false
-        onTriggered: {
-            dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
-            topbar_light_animation.restart()
-            btm_bar_animation.restart()
-            bar_bg_animation.restart()
+        onTriggered: song_smoothing.start()
+    }
+
+    SequentialAnimation {
+        id: song_smoothing
+        loops: 1
+        ScriptAction { script: bgm_player.volume = 0 }
+        PauseAnimation { duration: 750 }
+        ScriptAction {
+            script: {
+                dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
+                topbar_light_animation.restart()
+                btm_bar_animation.restart()
+                bar_bg_animation.restart()
+            }
         }
     }
 
@@ -1405,9 +1418,29 @@ Item {
         Component.onCompleted: count_down_timer.start()
     }
 
+    Audio{
+        id: bgm_player
+        source: "file:///" + rootPath + "/bgm.mp3"
+        loops: Audio.Infinite
+        Behavior on volume {
+            NumberAnimation{
+                duration: 500
+            }
+        }
+    }
+
+    Timer{
+        id:bgm_delay
+        interval: 1500
+        repeat: false
+        onTriggered: bgm_player.play()
+    }
+
     onIs_secondlayerChanged: {
         if(is_secondlayer && secondlayer_listview.count != 0){
-            player_timer.restart();
+            song_smoothing.stop()
+            player_timer.restart()
+            bgm_player.volume = 1
             pulse_bpm = songs_meta[secondlayer_listview.currentItem.song_index][8]
             topbar_light_animation.restart()
             btm_bar_animation.restart()
@@ -1415,6 +1448,7 @@ Item {
         }
         else{
             dir.stopPreview();
+            bgm_player.volume = 1
             player_timer.stop()
         }
     }
@@ -1483,6 +1517,7 @@ Item {
         if(is_secondlayer){
             is_secondlayer = false
             dir.stopPreview()
+            bgm_player.volume = 1
             dir.play_decline()
             pulse_bpm = 60
             topbar_light_animation.restart()
@@ -1518,13 +1553,15 @@ Item {
             global_is_expert = is_expert
             transitionB.start()
             dir.stopPreview()
+            player_timer.stop()
+            bgm_player.volume = 1
         }
     }
 
     Component.onCompleted: {
         mainqml.escpress_signal.connect(to_main)
         dir.play_page()
-
+        bgm_delay.start()
         op_anim.start()
     }
 
