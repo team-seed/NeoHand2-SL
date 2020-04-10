@@ -863,13 +863,14 @@ Item {
                     }
                 }
 
-                BrightnessContrast {
-                    source: firstlayer_container
-                    anchors.fill: source
+                layer.enabled: !ListView.isCurrentItem
+                layer.effect: BrightnessContrast {
+                    //source: firstlayer_container
+                    //anchors.fill: source
                     z: 4
-                    brightness: -0.4
-                    contrast: -0.6
-                    opacity: (is_secondlayer && !parent.ListView.isCurrentItem) ? 1 : 0
+                    brightness: (is_secondlayer) ? -0.6 : -0.3
+                    contrast: (is_secondlayer) ? -0.6 : -0.3
+                    //opacity: (is_secondlayer) ? 1 : 0.25
                     Behavior on opacity {
                         NumberAnimation{
                             duration: 250
@@ -1517,6 +1518,7 @@ Item {
         if(is_secondlayer){
             is_secondlayer = false
             dir.stopPreview()
+            song_smoothing.stop()
             bgm_player.volume = 1
             dir.play_decline()
             pulse_bpm = 60
