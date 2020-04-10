@@ -1431,7 +1431,7 @@ Item {
 
     Timer{
         id:bgm_delay
-        interval: 1500
+        interval: 400
         repeat: false
         onTriggered: bgm_player.play()
     }
@@ -1548,19 +1548,19 @@ Item {
             firstlayer_listview.currentItem.sortbythis()
         }
         else{
-            dir.play_accept();
+            dir.play_page();
             global_song_meta = songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]]
             global_is_expert = is_expert
             transitionB.start()
             dir.stopPreview()
             player_timer.stop()
-            bgm_player.volume = 1
+            bgm_player.volume = 0
         }
     }
 
     Component.onCompleted: {
         mainqml.escpress_signal.connect(to_main)
-        dir.play_page()
+
         bgm_delay.start()
         op_anim.start()
     }
