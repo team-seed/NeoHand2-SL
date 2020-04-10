@@ -40,7 +40,7 @@ Item {
         //source: "qrc:/ui/result.qml"
         source: "qrc:/ui/option/option_menu.qml"
 
-        onLoaded: gesture_engine_start()//transitionB.quit()
+        onLoaded: transitionB.quit()
     }
 
     // insert animations here
