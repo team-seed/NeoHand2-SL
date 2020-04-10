@@ -40,7 +40,7 @@ Item {
         //source: "qrc:/ui/result.qml"
         source: "qrc:/ui/option/option_menu.qml"
 
-        onLoaded: transitionB.quit()
+        onLoaded: gesture_engine_start()//transitionB.quit()
     }
 
     // insert animations here
@@ -67,6 +67,17 @@ Item {
     signal spacerelease_signal()
     signal bksprelease_signal()
     signal escrelease_signal()
+
+    //hand engine
+    signal click_trigger()
+    signal click_untrigger()
+    signal swipe_trigger(var id, var gesture)
+    signal handA_update(var x,var y,var ges)
+    signal handB_update(var x,var y,var ges)
+
+    //hand engine (output signal)
+    signal gesture_engine_start()
+    signal gesture_engine_stop()
 
     Component.onCompleted: {
 

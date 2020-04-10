@@ -3,85 +3,87 @@
 
 //#include "../mediapipe/mediapipe/landmarks_to_shm/landmarks_to_shm.h"
 #include "../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.hpp"
-#include <boost/interprocess/managed_shared_memory.hpp>
 #include <QObject>
 #include <QTimer>
 #include <QtMath>
 #include <QtDebug>
-
 #include <iostream>
+#include <QVariantList>
+constexpr int NO_HAND = -2;
+struct gesture_t:ShmConfig::Normalized2DPoint{
+    int position;
 
-struct gesture_t{
-    float x, y;
-    int id;
-
-    gesture_t(float _x = 0.f, float _y = 0.f,int _id = -1)
-        :x(_x), y(_y), id(_id){}
+    gesture_t(Normalized2DPoint n = {0.f,0.f,NO_HAND}, int _position = -1)
+        :Normalized2DPoint{n}, position(_position) {}
 
     gesture_t& operator =(const gesture_t &ges)
     {
-        x = ges.x; y = ges.y; id = ges.id;
+        x = ges.x; y =ges.y;  gesture = (ges.gesture > 0 ? 1 : ges.gesture);
+        position = ges.position;
         return *this;
     }
 
-    gesture_t operator -(const gesture_t &ges) const
+    bool operator ==(const gesture_t ges)
     {
-        return gesture_t(x-ges.x, y-ges.y, id);
+        return (x == ges.x && y ==ges.y && gesture == ges.gesture);
     }
+
+
 };
 
 std::ostream& operator <<(std::ostream& os, const gesture_t &ges);
 
-class Gesture : public QObject
+class Gesture_engine : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int hand_pos READ pos NOTIFY posChanged )
 
 public slots:
-    //get x,y,id
     void Get();
 
-    void start() {
+    void engine_start() {
         tracking_timer.start();
     }
 
+    void engine_stop(){
+        tracking_timer.stop();
+    }
+
 signals:
-    void up_swipe();
-    void down_swipe();
-    void left_swipe();
-    void right_swipe();
-    void trigger();
-    void untrigger();
+    int swipe_trigger(QVariant,QVariant);
+    void click_trigger();
+    void click_untrigger();
 
-    void posChanged();
-
+    void handA_update(QVariant,QVariant,QVariant);
+    void handB_update(QVariant,QVariant,QVariant);
 public:
-    Gesture();
+    Gesture_engine();
 
-    //click or hold
-    void check_type();
-    //swipe
-    void check_movement();
+    void init(ShmConfig::Gesture *_shm){
+        shm = _shm;
+    }
+private:
+    float distance(gesture_t *cur_ges,gesture_t *last_ges);
+    void check_gesture();
 
+    void ges_swap();
+    void check_hand();
     void normalize();
-    int pos();
+    void emit_pos0();
+    void emit_pos1();
 
-    //數值更新寫在 GET() 開頭
-    int cur_gest;
+    int hand_num = 0;
+    int last_hand_num = 0;
 
-    float upperbound = 0.87f;
-    float lowerbound = 0.13f;
-    float ceiling = 0.08f;
-    float floor = 0.92f;
-    int position, last_position;
-    int height, last_height;
-    gesture_t ges_last;
-    gesture_t ges_cur;
+    double x_filter = 0.13f;
+    double y_filter = 0.08f;
 
-#ifdef SECOND_HAND
-    gesture_t ges_last_second;
-    gesture_t ges_cur_second;
-#endif
+    double x_threshold = 0.04f;
+    double y_threshold = 0.04f;
+
+    gesture_t ges_last[2];
+    gesture_t ges_cur[2];
+
+    ShmConfig::Gesture *shm;
 
     QTimer tracking_timer;
 };

@@ -1,86 +1,149 @@
-#include "gesture.h"
-#include <boost/interprocess/shared_memory_object.hpp>
-Gesture::Gesture(){
+#include "gesture_engine.h"
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+
+Gesture_engine::Gesture_engine()
+{
     tracking_timer.setTimerType(Qt::PreciseTimer);
     tracking_timer.setInterval(4);
     QObject::connect(&tracking_timer, SIGNAL(timeout()), this, SLOT(Get()));
-
-    ges_cur = gesture_t(0, 0, -1);
-    ges_last = gesture_t(0, 0, -1);
 }
 
-int Gesture::pos() {
-    return position;
+void Gesture_engine::emit_pos0() {
+    emit handA_update(ges_cur[1].x,ges_cur[0].y,ges_cur[0].gesture);
+}
+void Gesture_engine::emit_pos1() {
+    emit handB_update(ges_cur[1].x,ges_cur[1].y,ges_cur[1].gesture);
 }
 
-void Gesture::normalize(){
-    if ((ges_cur.x > upperbound) || (ges_cur.x < lowerbound))
-        position = -1;
-    else
-        position = qMin(15, qFloor((ges_cur.x - lowerbound) * 16 / (upperbound - lowerbound)));
+void Gesture_engine::check_hand() {
 
-    if ((ges_cur.y > floor) || (ges_cur.y < ceiling))
-        height = -1;
-    else
-        height = qMin(15, qFloor((ges_cur.y - ceiling) * 16 / (floor - ceiling)));
+    int cur[] = {0, 0, 1, 1};
+    int last[] = {0, 1, 0, 1};
+    float min_dis = 10000000;
+    int min_index = -1;
+    int count = ( hand_num ==1 ) ? 2 : 4;
+
+    for(int i=0; i < count; i++){
+        if(ges_last[last[i]].gesture != NO_HAND){
+            float d = distance(&ges_cur[cur[i]], &ges_last[last[i]]);
+            min_index = d < min_dis ? i : min_index;
+            min_dis = d < min_dis ? d : min_dis;
+        }
+    }
+
+    if(min_index == 1 || min_index == 2){
+        ges_swap();
+        if(hand_num == 1)   ges_cur[0].gesture = NO_HAND;
+    }
+    else{
+        if(hand_num == 1)   ges_cur[1].gesture = NO_HAND;
+    }
 }
 
-void Gesture::Get(){
-    ges_last = ges_cur;
-    // Create a new segment with given name and size
-    boost::interprocess::managed_shared_memory segment(
-        boost::interprocess::open_or_create, ShmConfig::shmName, ShmConfig::shmSize);
+void Gesture_engine::normalize(){
+    for(int i= 0 ; i < 2 ; i++){
+        if( ges_cur[i].gesture !=- 1 ){
+            if ((ges_cur[i].x > (1 - x_filter)) || (ges_cur[i].x < x_filter))
+                ges_cur[i].position = NO_HAND;
+            else
+                ges_cur[i].position = ges_cur[i].x * ( 1 / ( 1 - 2*x_filter) );
 
-    // Construct an variable in shared memory
-    ShmConfig::Gesture *ges = segment.find<ShmConfig::Gesture>(
-        ShmConfig::shmbbCenterGestureName).first;
+            if ((ges_cur[i].y > (1 - y_filter)) || (ges_cur[i].y < y_filter))
+                ges_cur[i].position = NO_HAND;
+            else
+                ges_cur[i].position = ges_cur[i].y * ( 1 / ( 1 - 2*y_filter) );
+        }
+    }
 
-    ges_cur = {ges[0].lm.x, ges[0].lm.x, ges[0].gesture};
+}
 
-    last_position = position;
-    last_height = height;
+void Gesture_engine::Get(){
+    ges_last[0] = ges_cur[0];
+    ges_last[1] = ges_cur[1];
+    last_hand_num = hand_num;
+    {
+        // lock start
+        boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(shm->mutex);
+        if(!shm->gestureUpdate){
+            shm->condEmpty.wait(lock);
+        }
+        hand_num = shm->outputHandNum;
+        for(int i= 0 ; i <hand_num ; i++)
+            ges_cur[i] = boost::move(shm->lm[i]);
 
+        // Notify the other process that the buffer is empty
+        shm->condFull.notify_one();
+        shm->gestureUpdate = false;
+        // lock end
+     }
+
+    check_hand();
     normalize();
-    emit posChanged();
 
-    check_type();
-    check_movement();
-
-}
-void Gesture::check_type(){
-    //手勢改變
-    if (ges_cur.id != ges_last.id) {
-        if (ges_cur.id == -1 && cur_gest != -1) {
-            cur_gest = -1;
-            emit untrigger();
-        }
-        //ges1 介於0~10
-        else if (0 <= ges_cur.id && ges_cur.id < 10 && cur_gest != 0) {
-            cur_gest = 0;
-            emit trigger();
-        }
-    }
+    check_gesture();
 }
 
 
-void Gesture::check_movement(){
 
-    if (position != -1 && last_position != -1 && position != last_position) {
-        int x = position - last_position;
-        if (x > 0) emit right_swipe();
-        else emit left_swipe();
+void Gesture_engine::check_gesture(){
+
+    for(int i= 0 ; i <2 ; i++){
+
+        if ( ges_cur[i].gesture != ges_last[i].gesture ) {
+            if (ges_cur[i].gesture == 1){
+                //qDebug()<< i <<": trigger";
+                emit click_trigger();
+            }
+            else if(ges_last[i].gesture == 1){
+                //qDebug()<< i <<": untrigger";
+                emit click_untrigger();
+            }
+        }
+
+        if (ges_cur[i].gesture != NO_HAND && ges_last[i].gesture != NO_HAND ){
+            float x = ges_cur[i].x - ges_last[i].x ;
+            float y = ges_cur[i].y - ges_last[i].y ;
+
+            if(x > x_threshold){
+                //qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
+                emit swipe_trigger(3,ges_cur[i].position);
+            }
+            else if( x < -x_threshold){
+                //qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
+                emit swipe_trigger(2,ges_cur[i].position);
+            }
+
+
+            if( y > y_threshold){
+                //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
+                emit swipe_trigger(0,ges_cur[i].position);
+            }
+            else if(y < -y_threshold){
+                //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
+                emit swipe_trigger(1,ges_cur[i].position);
+            }
+        }
     }
 
-    if (height != -1 && last_height != -1 && height != last_height) {
-        int y = height - last_height;
-        if (y > 0) emit down_swipe();
-        else emit up_swipe();
-    }
+    //emit posChanged();
+}
+
+float Gesture_engine::distance(gesture_t *cur_ges,gesture_t *last_ges){
+    return qSqrt(qPow(cur_ges->x - last_ges->x, 2) +qPow(cur_ges->y - last_ges->y, 2)) ;
+}
+
+void Gesture_engine::ges_swap(){
+    gesture_t tmp;
+    tmp = ges_cur[0];
+    ges_cur[0] = ges_cur[1];
+    ges_cur[1] = tmp;
 }
 
 std::ostream& operator <<(std::ostream& os, const gesture_t &ges)
 {
-    os << "gesture: " << ges.x << " " << ges.y << " " << ges.id << "\n";
+    //os << "gesture: " << ges.x << " " << ges.y << " " << ges.id << "\n";
     return os;
 }
+
 

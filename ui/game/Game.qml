@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.0
 
 import custom.game.process 1.0
 import custom.game.timer 1.0
-import gesture 1.0
+
 
 import "game_extension.js" as EXT
 
@@ -42,7 +42,7 @@ Item {
 
     CustomGameTimer { id: game_customtimer }
 
-    Gesture { id: gesture_engine }
+    //Gesture { id: gesture_engine }
 
     Combo {
         id: game_core

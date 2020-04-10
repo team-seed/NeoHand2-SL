@@ -18,14 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.cpp \
     Game_process.cpp \
-    gesture.cpp \
+    gesture_engine.cpp \
     main.cpp
 
 HEADERS += \
     ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.hpp \
     Game_process.h \
     Game_timer.h \
-    gesture.h \
+    gesture_engine.h \
     input_handler.h \
     musicplayer.h \
     songselect.h \

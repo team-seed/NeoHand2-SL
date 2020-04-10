@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QQmlEngine>
 #include <QWidget>
-
+#include "gesture_engine.h"
 class Input_handler : public QQuickWidget
 {
     Q_OBJECT
@@ -40,7 +40,9 @@ public:
     }
     //~Input_handler();
 
-    void init () {
+    void init (ShmConfig::Gesture *shm) {
+        gesture_engine.init(shm);
+
         //press signal to qml signal
         QObject::connect(this, SIGNAL(uppress_signal()), (QObject*)rootObject(), SIGNAL(uppress_signal()));
         QObject::connect(this, SIGNAL(downpress_signal()), (QObject*)rootObject(), SIGNAL(downpress_signal()));
@@ -61,6 +63,16 @@ public:
         QObject::connect(this, SIGNAL(spacerelease_signal()), (QObject*)rootObject(), SIGNAL(spacerelease_signal()));
         QObject::connect(this, SIGNAL(bksprelease_signal()), (QObject*)rootObject(), SIGNAL(bksprelease_signal()));
 
+        //hand engine signal
+        QObject::connect(&gesture_engine, SIGNAL(swipe_trigger(QVariant,QVariant)), (QObject*)rootObject(), SIGNAL(swipe_trigger(QVariant,QVariant)));
+        QObject::connect(&gesture_engine, SIGNAL(click_trigger()), (QObject*)rootObject(), SIGNAL(click_trigger()));
+        QObject::connect(&gesture_engine, SIGNAL(click_untrigger()), (QObject*)rootObject(), SIGNAL(click_untrigger()));
+        QObject::connect(&gesture_engine, SIGNAL(handA_update(QVariant,QVariant,QVariant)), (QObject*)rootObject(), SIGNAL(handA_update(QVariant,QVariant,QVariant)));
+        QObject::connect(&gesture_engine, SIGNAL(handB_update(QVariant,QVariant,QVariant)), (QObject*)rootObject(), SIGNAL(handB_update(QVariant,QVariant,QVariant)));
+
+        //hand engine signal (output signal)
+        QObject::connect((QObject*)rootObject(), SIGNAL(gesture_engine_start()), &gesture_engine, SLOT(engine_start()));
+        QObject::connect((QObject*)rootObject(), SIGNAL(gesture_engine_stop()), &gesture_engine, SLOT(engine_stop()));
     }
 
     void keyPressEvent(QKeyEvent *event)
@@ -94,6 +106,8 @@ public:
             case Qt::Key_Backspace: emit bksprelease_signal();  break;
         }
     }
+
+    Gesture_engine gesture_engine;
 };
 
 #endif // INPUT_HANDLER_H
