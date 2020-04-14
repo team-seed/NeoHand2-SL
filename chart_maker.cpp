@@ -121,5 +121,79 @@ bool chart_maker::song_chart_parse (QString filepath) {
 }
 
 void chart_maker::chart_toList() {
+    QVariantList data;
+    data.clear();
 
+    for (int section = 0; section < song_chart.size(); section++) {
+        double beat_time = 60000 * song_chart[section].beats / song_chart[section].bpm;
+
+        int max_time = 0;
+
+        for (int n = 0; n < song_chart[section].notes.size(); n++) {
+            QVariantList nList;
+            nList.clear();
+
+            nList.push_back(song_chart[section].notes[n].type);
+            nList.push_back(song_chart[section].notes[n].gesture);
+            nList.push_back(song_chart[section].bpm);
+
+            // hold
+            if (song_chart[section].notes[n].type == 1) {
+                int t = song_chart[section].notes[n].time;
+                int l = song_chart[section].notes[n].left;
+                int r = song_chart[section].notes[n].right;
+
+                for (int s = 0; s < song_chart[section].notes[n].path.size(); s++) {
+                    QVariantList slideList;
+                    slideList.clear();
+
+                    slideList.push_back(song_chart[section].notes[n].type);
+                    slideList.push_back(song_chart[section].notes[n].gesture);
+                    slideList.push_back(song_chart[section].bpm);
+                    slideList.push_back(t);
+                    slideList.push_back(l);
+                    slideList.push_back(r);
+                    slideList.push_back(song_chart[section].notes[n].path[s].time);
+                    slideList.push_back(song_chart[section].notes[n].path[s].left);
+                    slideList.push_back(song_chart[section].notes[n].path[s].right);
+
+                    data.push_back(slideList);
+
+                    t = song_chart[section].notes[n].path[s].time;
+                    l = song_chart[section].notes[n].path[s].left;
+                    r = song_chart[section].notes[n].path[s].right;
+                }
+
+                if (t > max_time) max_time = t;
+            }
+            // swipe
+            else {
+                nList.push_back(song_chart[section].notes[n].time);
+                nList.push_back(song_chart[section].notes[n].left);
+                nList.push_back(song_chart[section].notes[n].right);
+
+                if (song_chart[section].notes[n].type == 2)
+                    nList.push_back(song_chart[section].notes[n].direction);
+
+                data.push_back(nList);
+
+                if (song_chart[section].notes[n].time > max_time)
+                    max_time = song_chart[section].notes[n].time;
+            }
+        }
+
+        for (double i = song_chart[section].offset; i < max_time; i += beat_time) {
+            QVariantList beat_line;
+            beat_line.clear();
+
+            beat_line.push_back(-1);
+            beat_line.push_back(song_chart[section].bpm);
+            beat_line.push_back(qRound(i));
+
+            data.push_back(beat_line);
+        }
+    }
+
+    qml_chart = data;
+    return;
 }

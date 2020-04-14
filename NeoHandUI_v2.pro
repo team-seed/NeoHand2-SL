@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     chart_maker.h \
+    game_clock.h \
     input_handler.h \
     musicplayer.h \
     songselect.h \

@@ -2,14 +2,16 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtGraphicalEffects 1.0
 
-
-
-import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
+import custom.chart_maker 1.0
 
 Item {
     id: game_main
 
+    property double hispeed: 1.0
+
     anchors.fill: parent
+
+    CustomChartMaker { id: chart_maker }
 
     // temporary backgrond
     Rectangle {
@@ -31,10 +33,6 @@ Item {
         anchors.centerIn: parent
 
         scale: game_main.width / width
-
-        function generating_notes () {
-
-        }
     }
 
     function to_main () {
@@ -46,6 +44,7 @@ Item {
     }
 
     Component.onCompleted: {
+        game_lane.generating_notes()
         mainqml.escpress_signal.connect(to_main)
     }
 

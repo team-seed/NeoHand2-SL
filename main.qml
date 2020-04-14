@@ -11,10 +11,12 @@ Item {
     width: Screen.width
     height: Screen.height
 
-    property string version: "NH2:SL2.20200408.1b"
+    property string version: "NH2:SL2.20200414.1b"
 
     property var global_song_meta: null
     property var global_is_expert: false
+
+    property int global_offset: 0
 
     // soundfx handler
     CustomSoundFX { id: soundfx }
@@ -38,12 +40,12 @@ Item {
         height: parent.height
         width: height * 16/9
         anchors.centerIn: parent
-        focus: true
+        //focus: true
         asynchronous: true
 
         //source: "qrc:/ui/result.qml"
-        //source: "qrc:/ui/option/option_menu.qml"
-        source: "qrc:/ui/game/game_main.qml"
+        source: "qrc:/ui/option/option_menu.qml"
+        //source: "qrc:/ui/game/game_main.qml"
 
         onLoaded: transitionB.quit()
     }

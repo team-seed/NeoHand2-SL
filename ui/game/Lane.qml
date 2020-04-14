@@ -1,6 +1,8 @@
 import QtQuick 2.12
 import QtGraphicalEffects 1.0
 
+import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
+
 Item {
     id: lane_main
 
@@ -8,6 +10,7 @@ Item {
     property alias hold_note_container: hold_note_container
     property alias click_note_container: click_note_container
     property alias swipe_note_container: swipe_note_container
+    property alias barline_container: barline_container
 
     property double lane_angle: 52.5
     property double lane_length_multiplier: 8
@@ -114,6 +117,12 @@ Item {
 
         // note containers
         Item {
+            id: barline_container
+            anchors.fill: play_area
+            z: 0
+        }
+
+        Item {
             id: hold_note_container
             anchors.fill: play_area
             z: 1
@@ -153,6 +162,27 @@ Item {
         id: swipe_note_container
         anchors.fill: parent
         z: 3
+    }
+
+    function generating_notes () {
+        chart_maker.song_chart_parse(global_song_meta[0] + (global_is_expert ? "/expert.json" : "/basic.json"))
+        chart_maker.chart.forEach (value => {
+            if (Array.isArray(value)) {
+                switch (value[0]) { // note type
+                    case 0: NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
+                    case 1: NOTE_GENERATOR.make_hold(value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]); break
+                    case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]); break
+                    case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
+                }
+
+                //if (value[0] != -1) total_note_count += 1
+            }
+            else {
+                console.log(value);
+            }
+        })
+
+        // do something more?
     }
 
     Component.onCompleted: {
