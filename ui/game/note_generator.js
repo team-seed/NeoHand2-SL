@@ -38,7 +38,40 @@ function make_click (gesture, bpm, time, left, right) {
 
 function make_hold (gest, bpm, s_time, s_left, s_right, e_time, e_left, e_right) {}
 
-function make_swipe (dirc, bpm, time, left, right) {}
+function make_swipe (dirc, bpm, time, left, right) {
+    if (swipe_component == null)
+        swipe_component = Qt.createComponent("qrc:/ui/game/swipe_note.qml")
+
+
+    if (swipe_component.status == Component.Ready) {
+        var dynamicObject
+        dynamicObject = swipe_component.createObject(swipe_note_container)
+
+        if (dynamicObject == null) {
+            console.log("Error on creating barline.")
+            console.log(swipe_component.errorString())
+            return false
+        }
+
+        dynamicObject.time = time + global_offset
+        dynamicObject.bpm = bpm
+
+        dynamicObject.left_pos = left
+        dynamicObject.right_pos = right
+
+        dynamicObject.direction = dirc
+
+        //gesture serves no purpose in this version
+        //dynamicObject.gesture = gesture
+    }
+    else {
+        console.log("Error on loading barline.")
+        console.log(swipe_component.errorString())
+        return false
+    }
+
+    return true
+}
 
 function make_barline (bpm, time) {
     if (barline_component == null)

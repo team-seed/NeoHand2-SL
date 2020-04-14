@@ -14,6 +14,7 @@ Item {
 
     property double lane_angle: 45
     property double lane_length_multiplier: 4
+    property double speed_base_multiplier: 4
 
     property double top_area: 0
     property double top_width: 0
@@ -75,18 +76,20 @@ Item {
 
         // divider
         Row {
+            property int line_width: 5
+
             id: divider_container
-            width: play_area.width / 2 + 10
+            width: play_area.width / 2  - line_width
             height: play_area.height
             anchors.centerIn: play_area
             spacing: width / 2
-            opacity: 0.5
+            opacity: 0.75
             Repeater {
                 model: 3
                 Rectangle {
-                    width: 5
+                    width: divider_container.line_width
                     height: divider_container.height
-                    color: "white"
+                    color: "#AAAAAA"
                     antialiasing: true
                 }
             }

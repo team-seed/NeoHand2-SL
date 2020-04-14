@@ -34,7 +34,7 @@ Item {
         radius: height / 15
     }
 
-    y: (bpm * hispeed * window * lane_length_multiplier * 2) / parent.height + (parent.height - judge_position)
+    y: (bpm * hispeed * window * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position)
 
     onYChanged: { if (y > parent.height) _click.destroy() }
 }

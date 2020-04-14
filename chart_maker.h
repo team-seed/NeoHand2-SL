@@ -2,7 +2,7 @@
 #define CHART_MAKER_H
 
 #include <QObject>
-#include <Qurl>
+#include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
