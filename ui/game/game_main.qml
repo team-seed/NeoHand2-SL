@@ -8,7 +8,7 @@ import custom.game_clock 1.0
 Item {
     id: game_main
 
-    property int duration_before_start: 3000
+    //property int duration_before_start: 3000
     property double hispeed: 1.0
 
     anchors.fill: parent
@@ -40,7 +40,7 @@ Item {
 
     Timer {
         id: game_start_countdown
-        interval: duration_before_start
+        interval: game_timer.duration_before_start
         onTriggered: game_timer.game_start()
     }
 

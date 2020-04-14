@@ -79,10 +79,10 @@ Item {
             property int line_width: 5
 
             id: divider_container
-            width: play_area.width / 2  - line_width
+            width: play_area.width / 2
             height: play_area.height
             anchors.centerIn: play_area
-            spacing: width / 2
+            spacing: width / 2 - line_width
             opacity: 0.75
             Repeater {
                 model: 3
@@ -182,7 +182,8 @@ Item {
                 switch (value[0]) { // note type
                     case 0: NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
                     case 1: NOTE_GENERATOR.make_hold(value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]); break
-                    case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]); break
+                    case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]);
+                                               NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
                     case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
                 }
 
@@ -198,12 +199,14 @@ Item {
     }
 
     Component.onCompleted: {
-        var left_top = swipe_note_container.mapFromItem(play_area, 0, 0)
-        var right_top = swipe_note_container.mapFromItem(play_area, play_area.width, 0)
-        var left_bottom = swipe_note_container.mapFromItem(play_area, 0, height * lane_length_multiplier)
+        var left_top = swipe_note_container.mapFromItem(lane_container, 0, 0)
+        var right_top = swipe_note_container.mapFromItem(lane_container, width, 0)
+        var left_bottom = swipe_note_container.mapFromItem(lane_container, 0, height * lane_length_multiplier)
 
         top_area = left_top.y
         top_width = Math.abs(right_top.x - left_top.x) / width
-        bottom_area = 1 - top_area
+        bottom_area = height - top_area
+
+        console.log(top_area, top_width, bottom_area)
     }
 }
