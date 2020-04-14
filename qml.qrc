@@ -16,5 +16,6 @@
         <file>ui/result.qml</file>
         <file>ui/songselect/Songselect_op_anim.qml</file>
         <file>TransitionB.qml</file>
+        <file>ui/game/Lane.qml</file>
     </qresource>
 </RCC>

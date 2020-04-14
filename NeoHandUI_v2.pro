@@ -15,14 +15,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    main.cpp
-
 HEADERS += \
+    chart_maker.h \
     input_handler.h \
     musicplayer.h \
     songselect.h \
-    soundfx.h
+    soundfx.h \
+    soundfx_handler.h
+
+SOURCES += \
+    chart_maker.cpp \
+    main.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -35,4 +38,5 @@ RESOURCES += \
     fonts.qrc \
     images.qrc \
     qml.qrc \
+    script.qrc \
     sound_effect.qrc

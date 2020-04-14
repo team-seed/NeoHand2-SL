@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 
+import custom.soundfx 1.0
+
 Item {
     id: mainqml
     visible: true
@@ -13,6 +15,9 @@ Item {
 
     property var global_song_meta: null
     property var global_is_expert: false
+
+    // soundfx handler
+    CustomSoundFX { id: soundfx }
 
     // disable mouse functions
     MouseArea {
@@ -37,14 +42,30 @@ Item {
         asynchronous: true
 
         //source: "qrc:/ui/result.qml"
-        source: "qrc:/ui/option/option_menu.qml"
+        //source: "qrc:/ui/option/option_menu.qml"
+        source: "qrc:/ui/game/game_main.qml"
 
         onLoaded: transitionB.quit()
+    }
+
+    Timer {
+        property string next_page: ""
+
+        id: page_change_timer
+        interval: 2000
+        onTriggered: {
+            pageloader.source = next_page
+        }
     }
 
     // insert animations here
     TransitionB {
         id: transitionB
+    }
+
+    function change_page (path) {
+        page_change_timer.next_page = path
+        page_change_timer.restart()
     }
 
     // press signal
