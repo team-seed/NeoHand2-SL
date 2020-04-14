@@ -23,5 +23,6 @@
         <file>ui/songselect/image/background_frame.png</file>
         <file>ui/songselect/image/particle.png</file>
         <file>ui/songselect/image/particle2.png</file>
+        <file>ui/songselect/image/result_score_frame.png</file>
     </qresource>
 </RCC>

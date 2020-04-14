@@ -9,11 +9,14 @@ Item {
     property int song_index: 1
     property var songs_meta: dir.content
     property double pulse_bpm: 60
-    property string song_color: "white"
+    property string song_color: mainqml.global_song_meta ? mainqml.global_song_meta[4] : "white"
     property bool is_expert: true
+    property string text_color: "#CFCFCF"
+
+
     property var score: 0987654
-    property var best_score: 0
-    property color bgcolor: "#778899"
+    property var best_score: 999999
+    property color bgcolor: "#222222"
 
     property var exact_number: 0123
     property var close_number: 4567
@@ -33,7 +36,7 @@ Item {
     Item {
         id: top_bar
         z: 100
-        width: parent.width * 0.5
+        width: parent.width * 0.45
         height: parent.height * 0.15
         anchors{
             top: parent.top
@@ -131,21 +134,24 @@ Item {
     }
 
     // jacket_container
-    Rectangle{
+    Item{
         id: jacket_container
         width: parent.width * 0.4
+        height: parent.height - top_bar.height
         anchors {
-            top: top_bar.bottom
             bottom: parent.bottom
             left: parent.left
         }
-        color: "gray"
 
         // jacket
         Image {
             width: parent.width * 0.85
             height: width
-            anchors.centerIn: parent
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                verticalCenter: parent.verticalCenter
+
+            }
 
             fillMode: Image.PreserveAspectFit
             source: "file:///" + current_song_meta[0] + "/jacket"
@@ -201,9 +207,10 @@ Item {
             anchors{
                 top: parent.top
                 left: parent.left
-                margins: song_information.panel_margin
+                topMargin: song_information.panel_margin
+                leftMargin: song_information.panel_margin * 1.5
             }
-            color: "#222222"
+            color: song_color
         }
 
         // title & artist
@@ -230,7 +237,7 @@ Item {
                 }
 
                 text: current_song_meta[2]
-                color: "white"
+                color: text_color
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
                 minimumPixelSize: 10
@@ -255,7 +262,7 @@ Item {
                 }
 
                 text: current_song_meta[1]
-                color: "white"
+                color: text_color
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
                 minimumPixelSize: 10
@@ -289,7 +296,7 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
 
-                color: "white"
+                color: text_color
                 horizontalAlignment: Text.AlignHCenter
                 font.family: font_hemi_head.name
                 font.pixelSize: parent.height * 0.3
@@ -302,31 +309,57 @@ Item {
     ///
     // score_panel
     ///
-    Rectangle {
+    Item {
         id: score_panel
         height: parent.height * 0.25
+        width: parent.width * 0.56
         anchors{
             top: song_information.bottom
             left: song_information.left
-            right: parent.right
-            rightMargin:  parent.width / 20
         }
-        color: "white"
+        Image {
+            id: score_panel_img
+            source: "qrc:/ui/songselect/image/result_score_frame.png"
+            anchors.fill: parent
+            fillMode: Image.Stretch
+            horizontalAlignment: Image.AlignLeft
+            visible: false
+        }
+        LinearGradient{
+            anchors.fill: score_panel_img
+
+            gradient: Gradient{
+                orientation: Gradient.Horizontal
+                GradientStop{ position: 1; color: song_color }
+                GradientStop{ position: 0.1; color: "#222222"}
+                GradientStop{ position: 0; color: "transparent" }
+            }
+            opacity: 0.5
+            layer.enabled: true
+            layer.effect: OpacityMask{
+
+                maskSource : score_panel_img
+            }
+        }
+
         // score_txt
         Text {
             id: score_text
             property int cur_score: 0
             anchors.fill:parent
             text: score_panel.scoreStr(cur_score)
+            color: text_color
 
-            font.family: font_Genjyuu_XP_bold.name
+            font.family: font_Roboto_Medium.name
             font.pixelSize: height
             minimumPixelSize: 10
 
             fontSizeMode: Text.Fit
             verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
             style: Text.Raised
-            styleColor: "black"
+
+
 
             Component.onCompleted:
             {
@@ -385,16 +418,52 @@ Item {
             right: parent.right
         }
         // best_score_bar
-        Rectangle{
+        Item{
             id:best
             property var top_margin: best.height * 0.7
-            height: bottom_panel.height * 0.15
+            height: bottom_panel.height * 0.125
             width: bottom_panel.width * 0.6
             anchors{
                 top: bottom_panel.top
-                right: bottom_panel.right
+                right: parent.right
+                rightMargin:  parent.parent.width / 14.75
             }
-            color: "white"
+            Item{
+                width: parent.width / 1.5
+                height: parent.height * 2
+                transform: Rotation { origin.x: best.width / 2; axis { x:0; y:1; z:0 } angle: 180}
+                Image {
+                    id: delta_score_bg
+                    source: "qrc:/ui/songselect/image/top_bar.png"
+                    fillMode: Image.PreserveAspectCrop
+                    horizontalAlignment: Image.AlignRight
+                    anchors.fill: parent
+                }
+                ColorOverlay{
+                    anchors.fill: parent
+                    source: delta_score_bg
+                    color: "steelblue"
+                    opacity: 0.4
+                }
+            }
+            Item{
+                anchors.fill: parent
+                transform: Rotation { origin.x: best.width / 2; axis { x:0; y:1; z:0 } angle: 180}
+                Image {
+                    id: best_score_bg
+                    source: "qrc:/ui/songselect/image/top_bar.png"
+                    fillMode: Image.PreserveAspectCrop
+                    horizontalAlignment: Image.AlignRight
+                    anchors.fill: parent
+                }
+                ColorOverlay{
+                    anchors.fill: parent
+                    source: best_score_bg
+                    color: "red"
+                    opacity: 0.4
+                }
+            }
+
             Text{
                 text: "BEST"
                 width: parent.width *0.4
@@ -403,15 +472,19 @@ Item {
                     left: parent.left
                     top: parent.top
                 }
-                font.family: font_Genjyuu_XP_bold.name
+                color: text_color
+                font.family: font_Roboto_Medium.name
                 font.pixelSize: height
                 minimumPixelSize: 10
 
                 fontSizeMode: Text.Fit
                 verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignRight
+                rightPadding: 2
                 style: Text.Raised
                 styleColor: "black"
             }
+
             Text{
                 id:best_score_txt
                 text: best_score.toString().padStart(7, "0")
@@ -421,30 +494,37 @@ Item {
                     right: parent.right
                     top: parent.top
                 }
-                font.family: font_Genjyuu_XP_bold.name
+                color: text_color
+                font.family: font_Roboto_Medium.name
                 font.pixelSize: height
+                font.letterSpacing: width / 50
                 minimumPixelSize: 10
 
                 fontSizeMode: Text.Fit
                 verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignRight
                 style: Text.Raised
                 styleColor: "black"
             }
+
             Text{
                 id: delta_score
-                text: ((score - best_score)>0 ? "+" :"")+(score- best_score)
-                height: best_score_txt.height * 0.8
+                text: ((score >= best_score) ? "+" :"-") + Math.abs(score- best_score).toString().padStart(7,"0")
+                height: parent.height
                 anchors{
                     top: best_score_txt.bottom
                     left: best_score_txt.left
                     right: best_score_txt.right
                 }
-                font.family: font_Genjyuu_XP_bold.name
+                color: text_color
+                font.family: font_Roboto_Medium.name
+                font.letterSpacing: width / 50
                 font.pixelSize: height
                 minimumPixelSize: 10
 
                 fontSizeMode: Text.Fit
                 verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignRight
                 style: Text.Raised
                 styleColor: "black"
             }
@@ -467,6 +547,7 @@ Item {
                 text: "EXACT " + exact_number
                 width: parent.width
                 height: parent.height/5
+                color: text_color
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
                 minimumPixelSize: 10
@@ -481,6 +562,7 @@ Item {
                 text: "CLOSE " + close_number
                 width: parent.width
                 height: parent.height/5
+                color: text_color
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
                 minimumPixelSize: 10
@@ -496,6 +578,7 @@ Item {
                 width: parent.width
                 height: parent.height/5
 
+                color: text_color
                 font.family: font_Genjyuu_XP_bold.name
                 font.pixelSize: height
                 minimumPixelSize: 10
@@ -514,15 +597,17 @@ Item {
             anchors{
                 top: best.bottom
                 topMargin: best.top_margin
-                left: best.left
+                //left: parent.left
                 right: best.right
             }
+            color: text_color
             font.family: font_Genjyuu_XP_bold.name
-            font.pixelSize: height
+            font.pixelSize: height * 0.6
             minimumPixelSize: 10
 
             fontSizeMode: Text.Fit
             verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignRight
             style: Text.Raised
             styleColor: "black"
         }
@@ -535,22 +620,38 @@ Item {
                 leftMargin: combo.width * 0.3
                 right: combo.right
             }
+            color: text_color
             font.family: font_Genjyuu_XP_bold.name
             font.pixelSize: height
             minimumPixelSize: 10
 
             fontSizeMode: Text.Fit
             verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
             style: Text.Raised
             styleColor: "black"
         }
     }
+
+    FontLoader {
+        id: font_Roboto_Medium
+        source: "/font/Roboto-Medium.ttf"
+    }
+
     FontLoader {
         id: font_Genjyuu_XP_bold
         source: "/font/GenJyuuGothicX-P-Bold.ttf"
     }
+
     FontLoader {
         id: font_hemi_head
         source: "/font/hemi-head-bd-it.ttf"
+    }
+
+    function to_main(){
+        Qt.quit()
+    }
+    Component.onCompleted:{
+        mainqml.escpress_signal.connect(to_main)
     }
 }
