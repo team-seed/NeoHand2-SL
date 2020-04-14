@@ -12,8 +12,8 @@ Item {
     property alias swipe_note_container: swipe_note_container
     property alias barline_container: barline_container
 
-    property double lane_angle: 52.5
-    property double lane_length_multiplier: 8
+    property double lane_angle: 45
+    property double lane_length_multiplier: 4
 
     property double top_area: 0
     property double top_width: 0
@@ -22,7 +22,8 @@ Item {
     property double judge_position: 300
     property double note_height: 100
 
-    antialiasing: true
+    //antialiasing: true
+    clip: true
 
     // the whole lane itself
     Item {
@@ -33,6 +34,8 @@ Item {
 
         // lane base
         Rectangle {
+            property double node_width: width / 16
+
             id: play_area
             height: parent.height
             anchors.left: side_left.right
@@ -73,14 +76,15 @@ Item {
         // divider
         Row {
             id: divider_container
-            width: play_area.width / 2
+            width: play_area.width / 2 + 10
             height: play_area.height
             anchors.centerIn: play_area
             spacing: width / 2
+            opacity: 0.5
             Repeater {
                 model: 3
                 Rectangle {
-                    width: 4
+                    width: 5
                     height: divider_container.height
                     color: "white"
                     antialiasing: true
@@ -119,18 +123,22 @@ Item {
         Item {
             id: barline_container
             anchors.fill: play_area
+            antialiasing: true
             z: 0
         }
 
         Item {
             id: hold_note_container
             anchors.fill: play_area
+            antialiasing: true
             z: 1
         }
 
         Item {
             id: click_note_container
             anchors.fill: play_area
+            antialiasing: true
+
             z: 2
         }
 
@@ -183,6 +191,7 @@ Item {
         })
 
         // do something more?
+        game_start_countdown.restart();
     }
 
     Component.onCompleted: {
