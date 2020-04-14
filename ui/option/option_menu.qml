@@ -70,14 +70,22 @@ Column {
         mainqml.enterpress_signal.connect(page_switch)
         mainqml.rightpress_signal.connect(page_switch)
 
+        //mainqml.gesture_engine_start.connect(engine_start)
+        //mainqml.gesture_engine_stop.connect(engine_stop)
+
         //game_transition.state = "COMPLETE"
     }
 
+    signal engine_start()
+    signal engine_stop()
+
     function up(){
+        mainqml.gesture_engine_stop()
         select_index = (select_index+5) % 6
     }
 
     function down(){
+        mainqml.gesture_engine_start()
         select_index = (++select_index) % 6
     }
 
@@ -109,6 +117,10 @@ Column {
         mainqml.downpress_signal.disconnect(down)
         mainqml.rightpress_signal.disconnect(page_switch)
         mainqml.enterpress_signal.disconnect(page_switch)
+
+
+        mainqml.gesture_engine_start.disconnect(engine_start)
+        mainqml.gesture_engine_stop.disconnect(engine_stop)
     }
 
     FontLoader { id: font_Genjyuu_XP_bold; source: "qrc:/font/GenJyuuGothicX-P-Bold.ttf" }

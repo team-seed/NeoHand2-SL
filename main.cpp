@@ -5,34 +5,50 @@
 #include "Game_timer.h"
 #include "input_handler.h"
 #include "songselect.h"
+#include <unistd.h>
 int main(int argc, char *argv[])
 {
-    struct ShmPreventer{
-        ShmPreventer(){boost::interprocess::shared_memory_object::remove(ShmConfig::shmName);}
-        ~ShmPreventer(){boost::interprocess::shared_memory_object::remove(ShmConfig::shmName);}
-    }shmPreventer;
+    pid_t pid;
 
-    // Create a new segment with given name and size
-    boost::interprocess::managed_shared_memory segment(
-        boost::interprocess::open_or_create, ShmConfig::shmName, ShmConfig::shmSize);
+    pid = fork();
+    if(pid == 0){
+            system("cd ../mediapipe_playground/mediapipe; ./runHandTrackingGPU.sh");
+        }
+    else if(pid > 0){
+        struct ShmPreventer{
+            ShmPreventer(){boost::interprocess::shared_memory_object::remove(ShmConfig::shmName);}
+            ~ShmPreventer(){boost::interprocess::shared_memory_object::remove(ShmConfig::shmName);}
+        }shmPreventer;
 
-    // Construct an variable in shared memory
-    ShmConfig::Gesture *gesture = segment.construct<ShmConfig::Gesture>(
-        ShmConfig::shmbbCenterGestureName)();
+        // Create a new segment with given name and size
+        boost::interprocess::managed_shared_memory segment(
+            boost::interprocess::open_or_create, ShmConfig::shmName, ShmConfig::shmSize);
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    //insert the qml registers here
-    qmlRegisterType<songselect>("custom.songselect", 1, 0, "CustomSongselect");
-    qmlRegisterType<Game_process>("custom.game.process", 1, 0, "CustomGameProcess");
-    qmlRegisterType<Game_timer>("custom.game.timer", 1, 0, "CustomGameTimer");
+        // Construct an variable in shared memory
+        ShmConfig::Gesture *gesture = segment.construct<ShmConfig::Gesture>(
+            ShmConfig::shmbbCenterGestureName)();
 
-    QApplication app(argc, argv);
-    Input_handler *widget = new Input_handler();
-    const QUrl url (QStringLiteral("qrc:/main.qml"));
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+        //insert the qml registers here
+        qmlRegisterType<songselect>("custom.songselect", 1, 0, "CustomSongselect");
+        qmlRegisterType<Game_process>("custom.game.process", 1, 0, "CustomGameProcess");
+        qmlRegisterType<Game_timer>("custom.game.timer", 1, 0, "CustomGameTimer");
 
-    widget->setSource(url);
-    widget->init(gesture);
-    widget->showFullScreen();
+        QApplication app(argc, argv);
+        Input_handler *widget = new Input_handler();
+        const QUrl url (QStringLiteral("qrc:/main.qml"));
 
-    return app.exec();
+        widget->setSource(url);
+        widget->init(gesture);
+        widget->showFullScreen();
+
+
+        int appRet = app.exec();
+        //return app.exec();
+        segment.destroy<ShmConfig::Gesture>(ShmConfig::shmbbCenterGestureName);
+        return appRet;
+    }
+    else{
+        std::cout << "fork error\n";
+    }
 }

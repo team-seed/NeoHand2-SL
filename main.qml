@@ -40,7 +40,7 @@ Item {
         //source: "qrc:/ui/result.qml"
         source: "qrc:/ui/option/option_menu.qml"
 
-        onLoaded: transitionB.quit()
+        onLoaded:  transitionB.quit()
     }
 
     // insert animations here
@@ -80,7 +80,6 @@ Item {
     signal gesture_engine_stop()
 
     Component.onCompleted: {
-
     }
 
     Component.onDestruction: {

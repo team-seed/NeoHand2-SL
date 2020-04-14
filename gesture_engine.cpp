@@ -92,11 +92,11 @@ void Gesture_engine::check_gesture(){
 
         if ( ges_cur[i].gesture != ges_last[i].gesture ) {
             if (ges_cur[i].gesture == 1){
-                //qDebug()<< i <<": trigger";
+                qDebug()<< i <<": trigger";
                 emit click_trigger();
             }
             else if(ges_last[i].gesture == 1){
-                //qDebug()<< i <<": untrigger";
+                qDebug()<< i <<": untrigger";
                 emit click_untrigger();
             }
         }
@@ -106,21 +106,21 @@ void Gesture_engine::check_gesture(){
             float y = ges_cur[i].y - ges_last[i].y ;
 
             if(x > x_threshold){
-                //qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
+                qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
                 emit swipe_trigger(3,ges_cur[i].position);
             }
             else if( x < -x_threshold){
-                //qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
+                qDebug()<< i <<": swipe x" << ges_cur[i].gesture;
                 emit swipe_trigger(2,ges_cur[i].position);
             }
 
 
             if( y > y_threshold){
-                //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
+                qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
                 emit swipe_trigger(0,ges_cur[i].position);
             }
             else if(y < -y_threshold){
-                //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
+                qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
                 emit swipe_trigger(1,ges_cur[i].position);
             }
         }
