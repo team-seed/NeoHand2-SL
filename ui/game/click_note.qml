@@ -14,7 +14,6 @@ Item {
     id: _click
 
     height: note_height
-    width: parent.width * (right_pos - left_pos) / 16
 
     anchors {
         left: parent.left
