@@ -2,8 +2,9 @@ import QtQuick 2.12
 import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
 import QtQuick.Particles 2.12
-import custom.songselect 1.0
 import QtMultimedia 5.8
+
+import custom.songselect 1.0
 
 Item {
     id: songselect_main_container
@@ -699,7 +700,7 @@ Item {
                         dir.stopPreview();
                         song_smoothing.stop()
                         bgm_player.volume = 1
-                        dir.play_secondlayer();
+                        soundfx.play_secondlayer();
                         player_timer.restart();
                         pulse_bpm = songs_meta[currentItem.song_index][8]
                     }
@@ -921,7 +922,7 @@ Item {
 
             onCurrentIndexChanged: {
                 if(!is_secondlayer)
-                    dir.play_firstlayer()
+                    soundfx.play_firstlayer()
             }
         }
 
@@ -1501,7 +1502,7 @@ Item {
 
     function right_press () {
         if (is_secondlayer) {
-            dir.play_difficulty();
+            soundfx.play_difficulty();
             if (is_level)
                 secondlayer_listview.level_dif_change()
             else
@@ -1509,7 +1510,7 @@ Item {
         }
         else {
             is_secondlayer = true
-            dir.play_accept()
+            soundfx.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
     }
@@ -1520,7 +1521,7 @@ Item {
             dir.stopPreview()
             song_smoothing.stop()
             bgm_player.volume = 1
-            dir.play_decline()
+            soundfx.play_decline()
             pulse_bpm = 60
             topbar_light_animation.restart()
             btm_bar_animation.restart()
@@ -1537,26 +1538,26 @@ Item {
     }
 
     function to_main () {
-        //transitionB.quit()
         pageloader.source = "/ui/option/option_menu.qml"
-        //pageloader.source = "/ui/result.qml"
-        //Qt.quit()
     }
 
     function select() {
         if(!is_secondlayer) {
             is_secondlayer = true
-            dir.play_accept()
+            soundfx.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
         else{
-            dir.play_page();
+            soundfx.play_page();
             global_song_meta = songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]]
             global_is_expert = is_expert
             transitionB.start()
             dir.stopPreview()
             player_timer.stop()
             bgm_player.volume = 0
+
+            change_page("qrc:/ui/game/game_main.qml")
+            pageloader.source = ""
         }
     }
 
