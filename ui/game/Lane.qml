@@ -12,8 +12,9 @@ Item {
     property alias swipe_note_container: swipe_note_container
     property alias barline_container: barline_container
 
-    property double lane_angle: 45
-    property double lane_length_multiplier: 4
+    // default 45/4/4
+    property double lane_angle: 47.5
+    property double lane_length_multiplier: 6
     property double speed_base_multiplier: 4
 
     property double top_area: 0
@@ -25,6 +26,13 @@ Item {
 
     //antialiasing: true
     clip: true
+
+    Item {
+        id: barline_container
+        anchors.fill: parent
+        antialiasing: true
+        z: 0
+    }
 
     // the whole lane itself
     Item {
@@ -101,6 +109,7 @@ Item {
             height: parent.height
             width: parent.width / 25
             anchors.right: parent.right
+            antialiasing: true
 
             gradient: Gradient {
                 orientation: Gradient.Horizontal
@@ -114,6 +123,7 @@ Item {
             height: parent.height
             width: parent.width / 25
             anchors.left: parent.left
+            antialiasing: true
 
             gradient: Gradient {
                 orientation: Gradient.Horizontal
@@ -122,14 +132,7 @@ Item {
             }
         }
 
-        // note containers
-        Item {
-            id: barline_container
-            anchors.fill: play_area
-            antialiasing: true
-            z: 0
-        }
-
+        // note containers 
         Item {
             id: hold_note_container
             anchors.fill: play_area
@@ -141,7 +144,6 @@ Item {
             id: click_note_container
             anchors.fill: play_area
             antialiasing: true
-
             z: 2
         }
 

@@ -6,6 +6,7 @@ Item {
     property int window: game_timer.elapsed - time
 
     property int direction: 0
+    property var swipe_color: ["red", "yellow", "lightblue", "lightgreen"]
     property int swipe_height: 500
 
     property int left_pos: 0
@@ -26,19 +27,19 @@ Item {
         var p = swipe_note_container.mapFromItem(lane_container, map_x, map_y)
         x = p.x
         y = p.y - height
-        z = p.y / parent.height
+        z = p.y / parent.height + 3
     }
 
     Rectangle {
         anchors.fill: parent
-        opacity: 0.5
-        //color: "yellow"
+        opacity: 1
+        color: swipe_color[direction]
 
-        gradient: Gradient {
+        /*gradient: Gradient {
             GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 1.0; color: "yellow" }
+            GradientStop { position: 1.0; color: swipe_color[direction] }
 
-        }
+        }*/
     }
 
     transformOrigin: Item.BottomLeft
