@@ -64,7 +64,7 @@ function make_hold (gest, bpm, s_time, s_left, s_right, e_time, e_left, e_right)
         dynamicObject.end_pos = [e_left - ls, e_right - ls]
 
         //gesture serves no purpose in this version
-        dynamicObject.gesture = gesture
+        dynamicObject.gesture = gest
     }
     else {
         console.log("Error on loading hold note.")

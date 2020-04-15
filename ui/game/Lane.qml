@@ -209,6 +209,6 @@ Item {
         top_width = Math.abs(right_top.x - left_top.x) / width
         bottom_area = height - top_area
 
-        console.log(top_area, top_width, bottom_area)
+        // console.log(top_area, top_width, bottom_area)
     }
 }

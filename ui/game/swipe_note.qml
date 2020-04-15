@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtGraphicalEffects 1.0
 
 Item {
     property int time: 0
@@ -30,16 +31,16 @@ Item {
         z = p.y / parent.height + 3
     }
 
-    Rectangle {
+    RadialGradient {
         anchors.fill: parent
-        opacity: 1
-        color: swipe_color[direction]
+        opacity: 0.5
+        //color: swipe_color[direction]
+        verticalOffset: - height
 
-        /*gradient: Gradient {
-            GradientStop { position: 0.0; color: "transparent" }
+        gradient: Gradient {
+            GradientStop { position: 0.95; color: "transparent" }
             GradientStop { position: 1.0; color: swipe_color[direction] }
-
-        }*/
+        }
     }
 
     transformOrigin: Item.BottomLeft

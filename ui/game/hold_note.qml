@@ -8,7 +8,7 @@ Item {
     property int window: game_timer.elapsed - start_time
     property int duration: end_time - start_time
 
-    property string shape_color: "green"
+    property string shape_color: "orange"
 
     property var start_pos: [0, 0]
     property var end_pos: [0, 0]
@@ -58,7 +58,7 @@ Item {
         height: 20
         width: play_area.node_width * (start_pos[1] - start_pos[0])
 
-        color: "lightgreen"
+        color: "yellow"
     }
 
     onWindowChanged: { if (window - duration > 500) _hold.destroy() }
