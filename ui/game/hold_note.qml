@@ -17,7 +17,7 @@ Item {
     property int left_spacing: 0
 
     // gesture serves no purpose in this version
-    //property int gesture: 0
+    property int gesture: 0
 
     id: _hold
 
@@ -32,7 +32,7 @@ Item {
 
     antialiasing: true
     //visible: y + height > 0
-    opacity: 0.75
+    opacity: 0.5
 
     y: (bpm * hispeed * (window - duration) * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position + note_height)
 
