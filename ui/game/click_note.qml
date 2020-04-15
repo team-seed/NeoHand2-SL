@@ -6,7 +6,7 @@ Item {
     property int window: game_timer.elapsed - time
 
     // gesture serves no purpose in this version
-    // property int gesture: 0
+    property int gesture: 0
 
     property int left_pos: 0
     property int right_pos: 0
@@ -28,8 +28,8 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "royalblue"
-        opacity: 0.7
+        color: "white"
+        opacity: 0.75
         radius: height / 15
     }
 

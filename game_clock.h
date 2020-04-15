@@ -24,7 +24,7 @@ public:
         duration_before_start = 2500;
     }
 
-    int clock() { return m_time.elapsed() - duration_before_start; }
+    int clock() { return (m_time.isNull() ? - duration_before_start : (m_time.elapsed() - duration_before_start)); }
     int dbs () { return duration_before_start; }
 
 public slots:

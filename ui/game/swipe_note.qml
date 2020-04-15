@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtGraphicalEffects 1.0
 
 Item {
     property int time: 0
@@ -6,6 +7,7 @@ Item {
     property int window: game_timer.elapsed - time
 
     property int direction: 0
+    property var swipe_color: ["red", "yellow", "lightblue", "lightgreen"]
     property int swipe_height: 500
 
     property int left_pos: 0
@@ -26,18 +28,18 @@ Item {
         var p = swipe_note_container.mapFromItem(lane_container, map_x, map_y)
         x = p.x
         y = p.y - height
-        z = p.y / parent.height
+        z = p.y / parent.height + 3
     }
 
-    Rectangle {
+    RadialGradient {
         anchors.fill: parent
         opacity: 0.5
-        //color: "yellow"
+        //color: swipe_color[direction]
+        verticalOffset: - height
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 1.0; color: "yellow" }
-
+            GradientStop { position: 0.95; color: "transparent" }
+            GradientStop { position: 1.0; color: swipe_color[direction] }
         }
     }
 

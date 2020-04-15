@@ -8,7 +8,7 @@ Item {
     property int window: game_timer.elapsed - start_time
     property int duration: end_time - start_time
 
-    property string shape_color: "green"
+    property string shape_color: "orange"
 
     property var start_pos: [0, 0]
     property var end_pos: [0, 0]
@@ -17,7 +17,7 @@ Item {
     property int left_spacing: 0
 
     // gesture serves no purpose in this version
-    //property int gesture: 0
+    property int gesture: 0
 
     id: _hold
 
@@ -32,7 +32,7 @@ Item {
 
     antialiasing: true
     //visible: y + height > 0
-    opacity: 0.75
+    opacity: 0.5
 
     y: (bpm * hispeed * (window - duration) * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position + note_height)
 
@@ -58,7 +58,7 @@ Item {
         height: 20
         width: play_area.node_width * (start_pos[1] - start_pos[0])
 
-        color: "lightgreen"
+        color: "yellow"
     }
 
     onWindowChanged: { if (window - duration > 500) _hold.destroy() }
