@@ -1,7 +1,7 @@
 import QtQuick 2.12
 
 Rectangle {
-    property int time: 0
+    property int time: 2500
     property double bpm: 120.0
 
     property int window: game_timer.elapsed - time
@@ -11,7 +11,7 @@ Rectangle {
     id: _barline
     height: 5
     width: play_area.node_width * 16
-    opacity: 0.5
+    opacity: 0.3
 
     color: "white"
 

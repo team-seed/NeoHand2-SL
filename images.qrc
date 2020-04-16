@@ -26,5 +26,6 @@
         <file>ui/songselect/image/result_score_frame.png</file>
         <file>ui/game/image/swipe_note_bg.png</file>
         <file>ui/game/image/swipe_arrow_new.png</file>
+        <file>ui/game/image/game_data_frame.png</file>
     </qresource>
 </RCC>

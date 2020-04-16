@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtGraphicalEffects 1.0
 
 Item {
-    property int time: 0
+    property int time: 2500
     property double bpm: 120.0
     property int window: game_timer.elapsed - time
 

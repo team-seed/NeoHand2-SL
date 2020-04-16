@@ -10,6 +10,7 @@ Item {
 
     //property int duration_before_start: 3000
     property double hispeed: 1.0
+    property int current_score: 0
 
     anchors.fill: parent
 
