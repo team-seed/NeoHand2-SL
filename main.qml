@@ -75,7 +75,9 @@ Item {
     function handA_update(x, y, ges){
 
     }
-    function handB_update(x, y, ges)
+    function handB_update(x, y, ges){
+
+    }
 
     //hand engine (output signal)
     signal gesture_engine_start()
