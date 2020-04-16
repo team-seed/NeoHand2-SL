@@ -15,6 +15,30 @@ Item {
     property var global_is_expert: false
     property int final_score: 0
 
+    Item {
+        id: handA
+        property double normX: 0.0
+        property double normY: 0.0
+        property int gesture: -2
+        property int position: -2
+
+        onGestureChanged: {
+            if (gesture == -2) console.log("Hand A left.")
+        }
+    }
+
+    Item {
+        id: handB
+        property double normX: 0.0
+        property double normY: 0.0
+        property int gesture: -2
+        property int position: -2
+
+        onGestureChanged: {
+            if (gesture == -2) console.log("Hand B left.")
+        }
+    }
+
     // disable mouse functions
     MouseArea {
         anchors.fill: parent
@@ -40,7 +64,7 @@ Item {
         //source: "qrc:/ui/result.qml"
         source: "qrc:/ui/option/option_menu.qml"
 
-        onLoaded:  transitionB.quit()
+        onLoaded:  gesture_engine_start()//transitionB.quit()
     }
 
     // insert animations here
@@ -72,11 +96,21 @@ Item {
     signal click_trigger(var position)
     signal click_untrigger()
     signal swipe_trigger(var id, var position)
-    function handA_update(x, y, ges){
+    function handA_update(x, y, ges, position){
+        handA.normX = x
+        handA.normY = y
+        handA.gesture = ges
+        handA.position = position
 
+        //console.log("Hand A ", x.toFixed(10), y.toFixed(10), ges, position)
     }
-    function handB_update(x, y, ges){
+    function handB_update(x, y, ges, position){
+        handB.normX = x
+        handB.normY = y
+        handB.gesture = ges
+        handB.position = position
 
+        //console.log("Hand B ", x.toFixed(10), y.toFixed(10), ges, position)
     }
 
     //hand engine (output signal)
