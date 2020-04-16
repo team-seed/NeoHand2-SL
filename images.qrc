@@ -24,5 +24,7 @@
         <file>ui/songselect/image/particle.png</file>
         <file>ui/songselect/image/particle2.png</file>
         <file>ui/songselect/image/result_score_frame.png</file>
+        <file>ui/game/image/swipe_note_bg.png</file>
+        <file>ui/game/image/swipe_arrow_new.png</file>
     </qresource>
 </RCC>

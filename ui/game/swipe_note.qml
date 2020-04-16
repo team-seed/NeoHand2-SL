@@ -7,8 +7,9 @@ Item {
     property int window: game_timer.elapsed - time
 
     property int direction: 0
-    property var swipe_color: ["red", "yellow", "lightblue", "lightgreen"]
-    property int swipe_height: 500
+    property var swipe_color: ["#FF1111", "yellow", "darkturquoise", "chartreuse"]
+    property var swipe_angle: [-90, 90, 180, 0]
+    property int swipe_height: note_height * 6
 
     property int left_pos: 0
     property int right_pos: 0
@@ -24,27 +25,101 @@ Item {
     antialiasing: true
     visible: map_y > 0
 
-    onWindowChanged: {
-        var p = swipe_note_container.mapFromItem(lane_container, map_x, map_y)
-        x = p.x
-        y = p.y - height
-        z = p.y / parent.height + 3
-    }
+    onMap_yChanged: map()
 
-    RadialGradient {
+    Rectangle {
         anchors.fill: parent
-        opacity: 0.5
-        //color: swipe_color[direction]
-        verticalOffset: - height
+        opacity: 0.05
 
         gradient: Gradient {
-            GradientStop { position: 0.95; color: "transparent" }
-            GradientStop { position: 1.0; color: swipe_color[direction] }
+            GradientStop { position: 0.0; color: "transparent" }
+            GradientStop { position: 0.25; color: swipe_color[direction] }
         }
+
+        layer.enabled: true
+        layer.effect: OpacityMask { maskSource: img; invert: true }
+    }
+
+    Item {
+        id: img
+
+        property double light: 0.0
+
+        NumberAnimation on light {
+            from: 0.0; to: 1.0
+            loops: Animation.Infinite
+            duration: 500
+        }
+
+        anchors.fill: parent
+
+        Item {
+            anchors.fill: parent
+
+            Image {
+                id: arrow
+                source: "qrc:/ui/game/image/swipe_arrow_new.png"
+
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectFit
+
+                opacity: 0.6
+            }
+
+            LinearGradient {
+                source: arrow
+                anchors.fill: parent
+                gradient: Gradient {
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: img.light - 0.1; color: "transparent" }
+                    GradientStop { position: img.light; color: "white" }
+                    GradientStop { position: img.light + 0.1; color: "transparent" }
+                }
+                opacity: 1
+            }
+
+            rotation: swipe_angle[direction]
+            scale: 0.5
+        }
+
+
+        Image {
+            source: "qrc:/ui/game/image/swipe_note_bg.png"
+
+            height: note_height * 2
+            width: parent.width
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            fillMode: Image.Stretch
+
+            opacity: 0.2
+        }
+
+        layer.enabled: true
+        layer.effect: ColorOverlay { color: swipe_color[direction] }
+    }
+
+    Rectangle {
+        opacity: 0.5
+        height: note_height / 4
+        width: parent.width
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        color: swipe_color[direction]
     }
 
     transformOrigin: Item.BottomLeft
     scale: top_width + (1 - top_width) * (y + height - top_area) / bottom_area
 
     onYChanged: { if (y > parent.height) _swipe.destroy() }
+
+    function map () {
+        var p = swipe_note_container.mapFromItem(lane_container, map_x, map_y)
+        x = p.x
+        y = p.y - height
+        z = p.y / parent.height + 3
+    }
+
+    Component.onCompleted: map()
 }

@@ -15,12 +15,7 @@ Rectangle {
 
     color: "white"
 
-    onWindowChanged: {
-        var p = swipe_note_container.mapFromItem(lane_container, side_left.width, map_y)
-        x = p.x
-        y = p.y - height
-        //z = p.y / parent.height
-    }
+    onWindowChanged: map()
 
     visible: map_y > 0
 
@@ -30,4 +25,13 @@ Rectangle {
     scale: top_width + (1 - top_width) * (y + height - top_area) / bottom_area
 
     onYChanged: { if (y > parent.height) _barline.destroy() }
+
+    function map () {
+        var p = swipe_note_container.mapFromItem(lane_container, side_left.width, map_y)
+        x = p.x
+        y = p.y - height
+        //z = p.y / parent.height
+    }
+
+    Component.onCompleted: map()
 }

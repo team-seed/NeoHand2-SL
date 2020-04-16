@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+//import QtGraphicalEffects 1.0
 
 Item {
     property int start_time: 0
@@ -8,7 +9,8 @@ Item {
     property int window: game_timer.elapsed - start_time
     property int duration: end_time - start_time
 
-    property string shape_color: "orange"
+    property string shape_color: gesture == 0 ? "orange" : "deepskyblue"
+    property string line_color: gesture == 0 ? "yellow" : "palegreen"
 
     property var start_pos: [0, 0]
     property var end_pos: [0, 0]
@@ -32,7 +34,6 @@ Item {
 
     antialiasing: true
     //visible: y + height > 0
-    opacity: 0.5
 
     y: (bpm * hispeed * (window - duration) * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position + note_height)
 
@@ -48,6 +49,8 @@ Item {
             PathLine { x: play_area.node_width * start_pos[0]; y: height }
             PathLine { x: play_area.node_width * end_pos[0]; y: 0 }
         }
+
+        opacity: 0.5
     }
 
     Rectangle {
@@ -57,8 +60,9 @@ Item {
 
         height: 20
         width: play_area.node_width * (start_pos[1] - start_pos[0])
+        radius: height
 
-        color: "yellow"
+        color: line_color
     }
 
     onWindowChanged: { if (window - duration > 500) _hold.destroy() }

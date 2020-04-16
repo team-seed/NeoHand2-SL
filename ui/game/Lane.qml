@@ -15,7 +15,7 @@ Item {
     // default 45/4/4
     property double lane_angle: 47.5
     property double lane_length_multiplier: 6
-    property double speed_base_multiplier: 4
+    property double speed_base_multiplier: 8
 
     property double top_area: 0
     property double top_width: 0
@@ -185,7 +185,8 @@ Item {
                     case 0: NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
                     case 1: NOTE_GENERATOR.make_hold(value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]); break
                     case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]);
-                                               NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
+                            // NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]);
+                            break
                     case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
                 }
 

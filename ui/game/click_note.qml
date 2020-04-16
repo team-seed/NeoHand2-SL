@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtGraphicalEffects 1.0
 
 Item {
     property int time: 0
@@ -7,6 +8,7 @@ Item {
 
     // gesture serves no purpose in this version
     property int gesture: 0
+    property string note_color: gesture == 0 ? "orange" : "deepskyblue"
 
     property int left_pos: 0
     property int right_pos: 0
@@ -14,6 +16,7 @@ Item {
     id: _click
 
     height: note_height
+    opacity: 0.75
 
     anchors {
         left: parent.left
@@ -27,10 +30,19 @@ Item {
     visible: y > 0
 
     Rectangle {
+        id: rec
         anchors.fill: parent
-        color: "white"
-        opacity: 0.75
+        color: note_color //"white"
+
         radius: height / 15
+
+        Rectangle {
+            anchors.centerIn: parent
+            height: parent.height
+            width: parent.width * 0.9
+
+            color: "white"
+        }
     }
 
     y: (bpm * hispeed * window * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position)

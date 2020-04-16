@@ -190,7 +190,7 @@ void chart_maker::chart_toList() {
             beat_line.push_back(song_chart[section].bpm);
             beat_line.push_back(qRound(i));
 
-            data.push_back(beat_line);
+            if ( !data.contains(beat_line) ) data.push_back(beat_line);
         }
     }
 
