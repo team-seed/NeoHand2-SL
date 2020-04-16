@@ -69,11 +69,13 @@ Item {
     signal escrelease_signal()
 
     //hand engine
-    signal click_trigger()
+    signal click_trigger(var position)
     signal click_untrigger()
-    signal swipe_trigger(var id, var gesture)
-    signal handA_update(var x,var y,var ges)
-    signal handB_update(var x,var y,var ges)
+    signal swipe_trigger(var id, var position)
+    function handA_update(x, y, ges){
+
+    }
+    function handB_update(x, y, ges)
 
     //hand engine (output signal)
     signal gesture_engine_start()
