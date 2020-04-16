@@ -6,12 +6,6 @@ import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
 Item {
     id: lane_main
 
-    // We'll do the note generation OUTSIDE this qml, so aliases are needed here
-    property alias hold_note_container: hold_note_container
-    property alias click_note_container: click_note_container
-    property alias swipe_note_container: swipe_note_container
-    property alias barline_container: barline_container
-
     // default 45/4/4
     property double lane_angle: 47.5
     property double lane_length_multiplier: 6
