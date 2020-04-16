@@ -18,7 +18,7 @@ Item {
     property double judge_position: 300
     property double note_height: 100
 
-    //antialiasing: true
+    antialiasing: true
     clip: true
 
     Item {
