@@ -22,11 +22,11 @@ Item {
         color: "#222222"
     }
 
-    Text {
+    /*Text {
         id: name
         text: global_song_meta.toString()
         color: "white"
-    }
+    }*/
 
     Lane {
         id: game_lane
@@ -37,6 +37,8 @@ Item {
 
         scale: game_main.width / width
     }
+
+    Game_panel { id: game_panel }
 
     Timer {
         id: game_start_countdown

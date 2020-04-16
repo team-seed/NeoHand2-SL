@@ -29,7 +29,7 @@ Item {
 
     property string effect_color: "white"
 
-    property int track_count: 4
+    property int track_count: 0
     property int time_remaining: 99
 
     Behavior on effect_color {
@@ -1551,6 +1551,7 @@ Item {
             soundfx.play_page();
             global_song_meta = songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]]
             global_is_expert = is_expert
+            global_track_count = track_count
             transitionB.start()
             dir.stopPreview()
             player_timer.stop()

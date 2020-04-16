@@ -14,7 +14,8 @@ Item {
     property string version: "NH2:SL2.20200414.1b"
 
     property var global_song_meta: null
-    property var global_is_expert: false
+    property bool global_is_expert: false
+    property int global_track_count: 0
 
     property int global_offset: 0
 
