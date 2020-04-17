@@ -17,16 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.cpp \
-    Game_process.cpp \
     gesture_engine.cpp \
     main.cpp \
-    chart_maker.cpp \
-    main.cpp
+    chart_maker.cpp
 
 HEADERS += \
     ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.hpp \
-    Game_process.h \
-    Game_timer.h \
     gesture_engine.h \
     chart_maker.h \
     game_clock.h \

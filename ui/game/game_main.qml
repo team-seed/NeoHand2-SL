@@ -64,9 +64,13 @@ Item {
         mainqml.escpress_signal.connect(to_main)
         mainqml.uppress_signal.connect(hispeed_increase)
         mainqml.downpress_signal.connect(hispeed_decrease)
+
+        gesture_engine_start()
     }
 
     Component.onDestruction: {
         disconnect_all();
+
+        gesture_engine_stop()
     }
 }

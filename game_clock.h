@@ -17,7 +17,7 @@ class game_clock: public QObject {
 public:
     game_clock() {
         update_clock.setTimerType(Qt::PreciseTimer);
-        update_clock.setInterval(1); // maybe I should set this 2
+        update_clock.setInterval(4); // maybe I should set this 2
         QObject::connect(&update_clock, SIGNAL(timeout()), this, SIGNAL(clockChanged()));
         QObject::connect(&m_player, SIGNAL(music_stopped()), this, SIGNAL(game_finished()));
 

@@ -74,7 +74,7 @@ Item {
         source: "qrc:/ui/option/option_menu.qml"
         //source: "qrc:/ui/game/game_main.qml"
 
-        onLoaded:  gesture_engine_start()//transitionB.quit()
+        onLoaded:  transitionB.quit() //
     }
 
     Timer {
