@@ -15,11 +15,10 @@ Rectangle {
 
     color: "white"
 
-    onWindowChanged: map()
+    onMap_yChanged: map()
+    antialiasing: true
 
     visible: map_y > 0
-
-    //y: (bpm * hispeed * window * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height + note_height - judge_position)
 
     transformOrigin: Item.BottomLeft
     scale: top_width + (1 - top_width) * (y + height - top_area) / bottom_area

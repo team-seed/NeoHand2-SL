@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtGraphicalEffects 1.0
+import QtQuick.Particles 2.12
 
 import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
 
@@ -20,6 +21,89 @@ Item {
 
     antialiasing: true
     clip: true
+
+    ParticleSystem {
+        id: side_effect
+        anchors.fill: parent
+        opacity: 0.5
+
+        ImageParticle {
+            system: side_effect
+            groups: ["P"]
+
+            source: "qrc:/ui/songselect/image/particle2.png"
+        }
+
+        Emitter {
+            enabled: true
+            id: side_effect_emitter_right
+            system: side_effect
+            group: "P"
+
+            width: 1
+            height: top_area
+            anchors.top: parent.top
+            anchors.left: parent.horizontalCenter
+            anchors.leftMargin: parent.width * top_width / 2
+
+            emitRate: 25
+            lifeSpan: 1000
+
+            onEmitParticles: {
+                for (var i = 0; i<particles.length; i++) {
+                    var particle = particles[i];
+                    var rand = Math.random()
+
+                    particle.initialX = side_effect_emitter_right.x + 200 * (1 - rand)
+                    particle.initialY = rand * top_area
+                    particle.initialVX = 100
+                    particle.initialVY = 0
+
+                    particle.alpha = 0.3
+                    particle.initialAX = 3200 - 1600 * rand
+                    particle.initialAY = 1800 * rand
+
+                    particle.startSize = 10 * (1-rand) + 10
+                    particle.endSize = 30 * (1-rand) + 5
+                }
+            }
+        }
+
+        Emitter {
+            enabled: true
+            id: side_effect_emitter_left
+            system: side_effect
+            group: "P"
+
+            width: 1
+            height: top_area
+            anchors.top: parent.top
+            anchors.right: parent.horizontalCenter
+            anchors.rightMargin: parent.width * top_width / 2
+
+            emitRate: 25
+            lifeSpan: 1000
+
+            onEmitParticles: {
+                for (var i = 0; i<particles.length; i++) {
+                    var particle = particles[i];
+                    var rand = Math.random()
+
+                    particle.initialX = side_effect_emitter_left.x - 200 * (1 - rand)
+                    particle.initialY = rand * top_area
+                    particle.initialVX = -100
+                    particle.initialVY = 0
+
+                    particle.alpha = 0.3
+                    particle.initialAX = - 3200 + 1600 * rand
+                    particle.initialAY = 1800 * rand
+
+                    particle.startSize = 10 * (1-rand) + 10
+                    particle.endSize = 30 * (1-rand) + 5
+                }
+            }
+        }
+    }
 
     Item {
         id: barline_container
@@ -126,7 +210,7 @@ Item {
             }
         }
 
-        // note containers 
+        // note containers
         Item {
             id: hold_note_container
             anchors.fill: play_area
@@ -171,25 +255,38 @@ Item {
         z: 3
     }
 
+    Rectangle {
+        id: hand_indicator
+
+        color: "transparent"
+        border.width: 5
+        border.color: "white"
+        radius: note_height / 15
+
+        opacity: 0.5
+
+        height: width * 9 / 16
+    }
+
     function generating_notes () {
         chart_maker.song_chart_parse(global_song_meta[0] + (global_is_expert ? "/expert.json" : "/basic.json"))
         chart_maker.chart.forEach (value => {
-            if (Array.isArray(value)) {
-                switch (value[0]) { // note type
-                    case 0: NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
-                    case 1: NOTE_GENERATOR.make_hold(value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]); break
-                    case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]);
-                            // NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]);
-                            break
-                    case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
-                }
+                                       if (Array.isArray(value)) {
+                                           switch (value[0]) { // note type
+                                               case 0: NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]); break
+                                               case 1: NOTE_GENERATOR.make_hold(value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]); break
+                                               case 2: NOTE_GENERATOR.make_swipe(value[6], value[2], value[3], value[4], value[5]);
+                                               // NOTE_GENERATOR.make_click(value[1], value[2], value[3], value[4], value[5]);
+                                               break
+                                               case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
+                                           }
 
-                //if (value[0] != -1) total_note_count += 1
-            }
-            else {
-                console.log(value);
-            }
-        })
+                                           //if (value[0] != -1) total_note_count += 1
+                                       }
+                                       else {
+                                           console.log(value);
+                                       }
+                                   })
 
         // do something more?
         game_start_countdown.restart();
@@ -204,6 +301,19 @@ Item {
         top_width = Math.abs(right_top.x - left_top.x) / width
         bottom_area = height - top_area
 
-        // console.log(top_area, top_width, bottom_area)
+        var judge_left = swipe_note_container.mapFromItem(lane_container,
+                                                          side_left.width,
+                                                          lane_container.height - judge_position + note_height)
+
+        var judge_right = swipe_note_container.mapFromItem(lane_container,
+                                                           side_left.width + judge_line.width,
+                                                           lane_container.height - judge_position + note_height)
+
+        hand_indicator.width = judge_right.x - judge_left.x
+        hand_indicator.x = judge_left.x
+        hand_indicator.y = judge_left.y - hand_indicator.height
+
+
+        console.log(judge_left, judge_right)
     }
 }

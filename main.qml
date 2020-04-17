@@ -11,7 +11,7 @@ Item {
     width: Screen.width
     height: Screen.height
 
-    property string version: "NH2:SL2.20200414.1b"
+    property string version: "NH2:SL2.20200418.1b"
 
     property var global_song_meta: null
     property bool global_is_expert: false
