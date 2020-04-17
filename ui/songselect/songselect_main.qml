@@ -44,7 +44,9 @@ Item {
         z:999
         anchors{
             top: parent.top
+            topMargin: -height
             right: parent.right
+            rightMargin: -width
         }
         width:  parent.width / 8
         height: width
@@ -160,8 +162,8 @@ Item {
         height: parent.height / 10
         anchors{
             top: parent.top
-            topMargin: height / 8
             left: parent.left
+            leftMargin: -width
         }
 
         Image {
@@ -286,7 +288,9 @@ Item {
         height : parent.height / 8
         anchors{
             bottom: parent.bottom
+            bottomMargin: -height
             left: parent.left
+            leftMargin:  - width
         }
 
         transform: Rotation { origin.y: bottombar.height / 2; axis { x:1; y:0; z:0 } angle: 180 }
@@ -811,6 +815,7 @@ Item {
             //anchors.fill: parent
             height: parent.height
             width: parent.width
+            x:songselect_main_container.width
         }
 
         Component {
@@ -891,7 +896,7 @@ Item {
         ListView {
             id: firstlayer_listview
             y: parent.height * 0.4 - currentItem.y
-
+            x:songselect_main_container.width
             height: parent.height / 5 * count
             width: firstlayer.width
             model: sort_selection_list
@@ -1569,7 +1574,7 @@ Item {
         mainqml.escpress_signal.connect(to_main)
 
         bgm_delay.start()
-        op_anim.start()
+        transitionA.end_anim.finished.connect(op_anim.start)
     }
 
     function connect_all() {
@@ -1606,4 +1611,6 @@ Item {
     Songselect_op_anim{
         id:op_anim
     }
+
+
 }

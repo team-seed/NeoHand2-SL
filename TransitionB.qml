@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: transb
     anchors.fill: parent
+    property bool is_running: false
     property var transb_text_size: height * 0.05
     visible: false
 
@@ -231,6 +232,7 @@ Item {
         transb_particle_sys.start()
         transb.opacity = 1
         transb.visible = true
+        is_running = true
     }
 
     function quit(){
