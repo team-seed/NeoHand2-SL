@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/game/note_generator.js</file>
+    </qresource>
+</RCC>

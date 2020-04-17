@@ -16,20 +16,12 @@
         <file>ui/result.qml</file>
         <file>ui/songselect/Songselect_op_anim.qml</file>
         <file>TransitionB.qml</file>
-        <file>ui/game/Arrow.qml</file>
-        <file>ui/game/Barline.qml</file>
-        <file>ui/game/Bottomline.qml</file>
-        <file>ui/game/Click_note.qml</file>
-        <file>ui/game/Combo.qml</file>
-        <file>ui/game/Game.qml</file>
-        <file>ui/game/game_extension.js</file>
-        <file>ui/game/game_process_extension.js</file>
-        <file>ui/game/Hit_mark.qml</file>
-        <file>ui/game/Hold_note.qml</file>
         <file>ui/game/Lane.qml</file>
-        <file>ui/game/Metadata.qml</file>
-        <file>ui/game/Sideleft.qml</file>
-        <file>ui/game/Sideright.qml</file>
-        <file>ui/game/Swipe_note.qml</file>
+        <file>ui/game/click_note.qml</file>
+        <file>ui/game/barline.qml</file>
+        <file>ui/game/swipe_note.qml</file>
+        <file>ui/game/hold_note.qml</file>
+        <file>ui/game/Game_panel.qml</file>
+
     </qresource>
 </RCC>

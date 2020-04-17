@@ -65,10 +65,10 @@ public:
 
         //hand engine signal
         QObject::connect(&gesture_engine, SIGNAL(swipe_trigger(QVariant,QVariant)), (QObject*)rootObject(), SIGNAL(swipe_trigger(QVariant,QVariant)));
-        QObject::connect(&gesture_engine, SIGNAL(click_trigger()), (QObject*)rootObject(), SIGNAL(click_trigger()));
+        QObject::connect(&gesture_engine, SIGNAL(click_trigger(QVariant)), (QObject*)rootObject(), SIGNAL(click_trigger(QVariant)));
         QObject::connect(&gesture_engine, SIGNAL(click_untrigger()), (QObject*)rootObject(), SIGNAL(click_untrigger()));
-        QObject::connect(&gesture_engine, SIGNAL(handA_update(QVariant,QVariant,QVariant)), (QObject*)rootObject(), SLOT(handA_update(QVariant,QVariant,QVariant)));
-        QObject::connect(&gesture_engine, SIGNAL(handB_update(QVariant,QVariant,QVariant)), (QObject*)rootObject(), SLOT(handB_update(QVariant,QVariant,QVariant)));
+        QObject::connect(&gesture_engine, SIGNAL(handA_update(QVariant,QVariant,QVariant,QVariant)), (QObject*)rootObject(), SLOT(handA_update(QVariant,QVariant,QVariant,QVariant)));
+        QObject::connect(&gesture_engine, SIGNAL(handB_update(QVariant,QVariant,QVariant,QVariant)), (QObject*)rootObject(), SLOT(handB_update(QVariant,QVariant,QVariant,QVariant)));
 
         //hand engine signal (output signal)
         QObject::connect((QObject*)rootObject(), SIGNAL(gesture_engine_start()), &gesture_engine, SLOT(engine_timer_start()));

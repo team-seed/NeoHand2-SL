@@ -9,17 +9,17 @@
 #include <QtDebug>
 #include <iostream>
 #include <QVariantList>
-#include <QThread>
+
 constexpr int NO_HAND = -2;
 struct gesture_t:ShmConfig::Normalized2DPoint{
     int position;
 
-    gesture_t(Normalized2DPoint n = {0.f,0.f,NO_HAND}, int _position = -1)
+    gesture_t(Normalized2DPoint n = {0.f,0.f,NO_HAND}, int _position = NO_HAND)
         :Normalized2DPoint{n}, position(_position) {}
 
     gesture_t& operator =(const gesture_t &ges)
     {
-        x = ges.x; y =ges.y;  gesture = (ges.gesture > 0 ? 1 : ges.gesture);
+        x = ges.x; y =ges.y;  gesture = (ges.gesture >= 0 ? 1 : ges.gesture);
         position = ges.position;
         return *this;
     }
@@ -41,23 +41,23 @@ class Gesture_engine : public QObject
 public slots:
     void Get();
 
-    void engine_start() {
-        //engine_thread->start();
+    void engine_timer_start() {
         tracking_timer.start();
     }
 
-    void engine_stop(){
-        //tracking_timer.stop();
-        engine_thread->terminate();
+    void engine_timer_stop(){
+        tracking_timer.stop();
     }
 
 signals:
+    // id position
     int swipe_trigger(QVariant,QVariant);
-    void click_trigger();
+    // position
+    void click_trigger(QVariant);
     void click_untrigger();
-
-    void handA_update(QVariant,QVariant,QVariant);
-    void handB_update(QVariant,QVariant,QVariant);
+    // x y ges
+    void handA_update(QVariant,QVariant,QVariant,QVariant);
+    void handB_update(QVariant,QVariant,QVariant,QVariant);
 public:
     Gesture_engine();
 
@@ -65,18 +65,12 @@ public:
         shm = _shm;
     }
 private:
-    static void run_engine(){
-        system("cd ../mediapipe_playground/mediapipe; ./runHandTrackingGPU.sh");
-        return;
-    }
 
     float distance(gesture_t *cur_ges,gesture_t *last_ges);
     void check_gesture();
     void ges_swap();
     void check_hand();
     void normalize();
-    void emit_pos0();
-    void emit_pos1();
 
     int hand_num = 0;
     int last_hand_num = 0;
@@ -93,9 +87,6 @@ private:
     ShmConfig::Gesture *shm;
 
     QTimer tracking_timer;
-
-    //QObject *obj;
-    QThread *engine_thread= QThread::create(run_engine);
 };
 
 #endif // GESTURE_H

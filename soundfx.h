@@ -11,7 +11,6 @@ class soundfx: public QObject, public QRunnable {
     Q_OBJECT
 
 public:
-
     soundfx() {
         count = 0;
     }

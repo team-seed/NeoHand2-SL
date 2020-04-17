@@ -1,6 +1,6 @@
-#include "Game_process.h"
+#include "chart_maker.h"
 
-bool Game_process::song_chart_parse (QString filepath) {
+bool chart_maker::song_chart_parse (QString filepath) {
     QString range;
     //qDebug() << filepath;
     QFile file(filepath);
@@ -15,6 +15,7 @@ bool Game_process::song_chart_parse (QString filepath) {
     if (jsonDocument.isNull())
         qDebug() << "could not read data.";
 
+    // parsing the selected chart
     if (!jsonDocument.isNull() && (jsonError.error == QJsonParseError::NoError)) {
         if (jsonDocument.isObject()) {
             QJsonObject obj = jsonDocument.object();
@@ -111,16 +112,15 @@ bool Game_process::song_chart_parse (QString filepath) {
         }
     }
 
+    // updating the parsed qml chart
     chart_toList();
-    m_bpm_range = range;
-
-    emit bpm_rangeChanged();
     emit chartChanged();
+
     file.close();
     return true;
 }
 
-void Game_process::chart_toList() {
+void chart_maker::chart_toList() {
     QVariantList data;
     data.clear();
 
@@ -190,7 +190,7 @@ void Game_process::chart_toList() {
             beat_line.push_back(song_chart[section].bpm);
             beat_line.push_back(qRound(i));
 
-            data.push_back(beat_line);
+            if ( !data.contains(beat_line) ) data.push_back(beat_line);
         }
     }
 
