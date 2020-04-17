@@ -10,5 +10,6 @@
         <file>sound_effect/1layer.wav</file>
         <file>sound_effect/difficulty.wav</file>
         <file>sound_effect/2layer.wav</file>
+        <file>sound_effect/bgm.mp3</file>
     </qresource>
 </RCC>

@@ -23,13 +23,9 @@
         <file>ui/songselect/image/background_frame.png</file>
         <file>ui/songselect/image/particle.png</file>
         <file>ui/songselect/image/particle2.png</file>
-        <file>images/break.png</file>
-        <file>images/close.png</file>
-        <file>images/exact.png</file>
-        <file>images/mainlogo.png</file>
-        <file>images/mediapipelogo.png</file>
-        <file>images/Qtlogo.png</file>
-        <file>images/swipe_arrow.png</file>
-        <file>images/TSlogo.png</file>
+        <file>ui/songselect/image/result_score_frame.png</file>
+        <file>ui/game/image/swipe_note_bg.png</file>
+        <file>ui/game/image/swipe_arrow_new.png</file>
+        <file>ui/game/image/game_data_frame.png</file>
     </qresource>
 </RCC>

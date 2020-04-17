@@ -1,11 +1,17 @@
 #include <QQmlApplicationEngine>
 #include <QApplication>
 #include <QQuickWidget>
-#include"Game_process.h"
+#include <unistd.h>
+
+#include "chart_maker.h"
+#include "soundfx_handler.h"
+#include "game_clock.h"
+#include "Game_process.h"
 #include "Game_timer.h"
 #include "input_handler.h"
 #include "songselect.h"
-#include <unistd.h>
+
+
 int main(int argc, char *argv[])
 {
     pid_t pid;
@@ -30,18 +36,29 @@ int main(int argc, char *argv[])
 
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         //insert the qml registers here
-        qmlRegisterType<songselect>("custom.songselect", 1, 0, "CustomSongselect");
+
+        qmlRegisterType <soundfx_handler> ("custom.soundfx", 1, 0, "CustomSoundFX");
+        qmlRegisterType <songselect> ("custom.songselect", 1, 0, "CustomSongselect");
+        qmlRegisterType <chart_maker> ("custom.chart_maker", 1, 0, "CustomChartMaker");
+        qmlRegisterType <game_clock> ("custom.game_clock", 1, 0, "CustomGameClock");
+
+        // old qml registers
         qmlRegisterType<Game_process>("custom.game.process", 1, 0, "CustomGameProcess");
         qmlRegisterType<Game_timer>("custom.game.timer", 1, 0, "CustomGameTimer");
+
 
         QApplication app(argc, argv);
         Input_handler *widget = new Input_handler();
         const QUrl url (QStringLiteral("qrc:/main.qml"));
 
+
+
+
+        widget->engine()->rootContext()->setContextProperty("rootPath", QDir::currentPath());
+
         widget->setSource(url);
         widget->init(gesture);
         widget->showFullScreen();
-
 
         int appRet = app.exec();
         //return app.exec();

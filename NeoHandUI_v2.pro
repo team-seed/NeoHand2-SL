@@ -19,6 +19,8 @@ SOURCES += \
     ../mediapipe_playground/mediapipe/mediapipe/HandGesture/ShmConfig.cpp \
     Game_process.cpp \
     gesture_engine.cpp \
+    main.cpp \
+    chart_maker.cpp \
     main.cpp
 
 HEADERS += \
@@ -26,10 +28,13 @@ HEADERS += \
     Game_process.h \
     Game_timer.h \
     gesture_engine.h \
+    chart_maker.h \
+    game_clock.h \
     input_handler.h \
     musicplayer.h \
     songselect.h \
-    soundfx.h
+    soundfx.h \
+    soundfx_handler.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -42,6 +47,7 @@ RESOURCES += \
     fonts.qrc \
     images.qrc \
     qml.qrc \
+    script.qrc \
     sound_effect.qrc
 
 LIBS += \

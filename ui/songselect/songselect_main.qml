@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
 import QtQuick.Particles 2.12
+import QtMultimedia 5.8
+
 import custom.songselect 1.0
 
 Item {
@@ -27,7 +29,7 @@ Item {
 
     property string effect_color: "white"
 
-    property int track_count: 4
+    property int track_count: 0
     property int time_remaining: 99
 
     Behavior on effect_color {
@@ -427,7 +429,7 @@ Item {
         layer.effect: ColorOverlay { color: is_secondlayer ? effect_color : "#222222" }
 
         ImageParticle {
-            anchors.fill: parent
+            //anchors.fill: parent
             system: particle_sys
             groups: ["R"]
 
@@ -511,24 +513,13 @@ Item {
 
                 visible: (y < songselect_main_container.height || y > -height)
 
-                transform: Scale {
-                    origin.x: current_song.width / 2
-                    origin.y: current_song.height / 2
-                    xScale: current_song.ListView.isCurrentItem ? 1 : 0.75
-                    yScale: current_song.ListView.isCurrentItem ? 1 : 0.75
+                antialiasing: true
+                scale: ListView.isCurrentItem ? 1 : 0.75
 
-                    Behavior on xScale {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutExpo
-                        }
-                    }
-
-                    Behavior on yScale {
-                        NumberAnimation {
-                            duration: 250
-                            easing.type: Easing.OutExpo
-                        }
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutExpo
                     }
                 }
 
@@ -695,9 +686,12 @@ Item {
             onCurrentIndexChanged: {
                 if (is_secondlayer) {
                     if (bgmplay) {
-                        dir.stopPreview();
-                        dir.play_secondlayer();
-                        player_timer.restart();
+                        //dir.stopPreview();
+                        //song_smoothing.stop()
+                        //bgm_player.volume = 1
+                        song_smoothing.restart()
+                        soundfx.play_secondlayer();
+                        //player_timer.restart();
                         pulse_bpm = songs_meta[currentItem.song_index][8]
                     }
                     bgmplay = true
@@ -860,13 +854,14 @@ Item {
                     }
                 }
 
-                BrightnessContrast {
-                    source: firstlayer_container
-                    anchors.fill: source
+                layer.enabled: !ListView.isCurrentItem
+                layer.effect: BrightnessContrast {
+                    //source: firstlayer_container
+                    //anchors.fill: source
                     z: 4
-                    brightness: -0.4
-                    contrast: -0.6
-                    opacity: (is_secondlayer && !parent.ListView.isCurrentItem) ? 1 : 0
+                    brightness: (is_secondlayer) ? -0.6 : -0.3
+                    contrast: (is_secondlayer) ? -0.6 : -0.3
+                    //opacity: (is_secondlayer) ? 1 : 0.25
                     Behavior on opacity {
                         NumberAnimation{
                             duration: 250
@@ -917,7 +912,7 @@ Item {
 
             onCurrentIndexChanged: {
                 if(!is_secondlayer)
-                    dir.play_firstlayer()
+                    soundfx.play_firstlayer()
             }
         }
 
@@ -1386,14 +1381,30 @@ Item {
     //preview
     Timer {
         id: player_timer
-        interval: 1000
+        interval: 1500
         repeat: false
-        onTriggered: {
-            dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
-            topbar_light_animation.restart()
-            btm_bar_animation.restart()
-            bar_bg_animation.restart()
+        onTriggered: song_smoothing.start()
+    }
+
+    SequentialAnimation {
+        id: song_smoothing
+        PauseAnimation { duration: 1500 }
+        ScriptAction { script: { bgm_player.volume = 0; } }
+        PauseAnimation { duration: 750 }
+        ScriptAction {
+            script: {
+                bgm_player.stop()
+                dir.playPreview("file:///" + songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][0] + "/audio.wav", songs_meta[secondlayer_listview.model[secondlayer_listview.currentIndex][0]][4])
+                topbar_light_animation.restart()
+                btm_bar_animation.restart()
+                bar_bg_animation.restart()
+            }
         }
+
+        onStarted: { bgm_player.play(); bgm_player.volume = 1; dir.stopPreview(); }
+        //onStopped: { bgm_player.volume = 1; dir.stopPreview(); }
+
+        function stop_previewing () { song_smoothing.stop(); bgm_player.play(); bgm_player.volume = 1; dir.stopPreview(); }
     }
 
     //count down timer
@@ -1401,21 +1412,46 @@ Item {
         id: count_down_timer
         interval: 1000
         repeat: true
-        onTriggered: if(time_remaining > 0) time_remaining --
+        onTriggered: if (time_remaining > 0) time_remaining --
         Component.onCompleted: count_down_timer.start()
+    }
+
+    MediaPlayer {
+        id: bgm_player
+        source: "file:///" + rootPath + "/bgm.mp3"
+        loops: MediaPlayer.Infinite
+        volume: 1
+        Behavior on volume {
+            NumberAnimation {
+                duration: 500
+            }
+        }
+    }
+
+    Timer{
+        id:bgm_delay
+        interval: 400
+        repeat: false
+        onTriggered: bgm_player.play()
     }
 
     onIs_secondlayerChanged: {
         if(is_secondlayer && secondlayer_listview.count != 0){
-            player_timer.restart();
+            //song_smoothing.stop()
+            //player_timer.restart()
+            //bgm_player.volume = 1
+
+            song_smoothing.restart()
             pulse_bpm = songs_meta[secondlayer_listview.currentItem.song_index][8]
             topbar_light_animation.restart()
             btm_bar_animation.restart()
             bar_bg_animation.restart()
         }
         else{
-            dir.stopPreview();
-            player_timer.stop()
+            //dir.stopPreview();
+            //bgm_player.volume = 1
+            //player_timer.stop()
+            song_smoothing.stop_previewing()
         }
     }
 
@@ -1466,7 +1502,7 @@ Item {
 
     function right_press () {
         if (is_secondlayer) {
-            dir.play_difficulty();
+            soundfx.play_difficulty();
             if (is_level)
                 secondlayer_listview.level_dif_change()
             else
@@ -1474,7 +1510,7 @@ Item {
         }
         else {
             is_secondlayer = true
-            dir.play_accept()
+            soundfx.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
     }
@@ -1482,8 +1518,12 @@ Item {
     function left_press () {
         if(is_secondlayer){
             is_secondlayer = false
-            dir.stopPreview()
-            dir.play_decline()
+            //dir.stopPreview()
+            //song_smoothing.stop()
+            //bgm_player.volume = 1
+            song_smoothing.stop_previewing()
+
+            soundfx.play_decline()
             pulse_bpm = 60
             topbar_light_animation.restart()
             btm_bar_animation.restart()
@@ -1500,32 +1540,36 @@ Item {
     }
 
     function to_main () {
-        //transitionB.quit()
         pageloader.source = "/ui/option/option_menu.qml"
-        //pageloader.source = "/ui/result.qml"
-        //Qt.quit()
     }
 
     function select() {
         if(!is_secondlayer) {
             is_secondlayer = true
-            dir.play_accept()
+            soundfx.play_accept()
             firstlayer_listview.currentItem.sortbythis()
         }
         else{
-            dir.play_accept();
+            soundfx.play_page();
             global_song_meta = songs_meta[secondlayer_listview.currentItem.song_index]
             global_is_expert = is_expert
+            global_track_count = track_count
             transitionB.start()
-            dir.stopPreview()
-            pageloader.source = "/ui/game/Game.qml"
+
+            //dir.stopPreview()
+            //player_timer.stop()
+            //bgm_player.volume = 0
+            song_smoothing.stop_previewing()
+
+            change_page("qrc:/ui/game/game_main.qml")
+            pageloader.source = ""
         }
     }
 
     Component.onCompleted: {
         mainqml.escpress_signal.connect(to_main)
-        dir.play_page()
 
+        bgm_delay.start()
         op_anim.start()
     }
 
