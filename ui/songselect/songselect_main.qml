@@ -1572,7 +1572,6 @@ Item {
 
     Component.onCompleted: {
         mainqml.escpress_signal.connect(to_main)
-
         bgm_delay.start()
         transitionA.end_anim.finished.connect(op_anim.start)
     }
@@ -1592,6 +1591,7 @@ Item {
         mainqml.downpress_signal.disconnect(down_press)
         mainqml.escpress_signal.disconnect(to_main)
         mainqml.enterpress_signal.disconnect(select)
+        transitionA.end_anim.finished.disconnect()
     }
 
     Component.onDestruction: {

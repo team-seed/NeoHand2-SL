@@ -777,8 +777,9 @@ Item {
     }
 
     function select(){
-        cal.restart()
-        //change_page("qrc:/ui/songselect/songselect_main.qml")
+        //cal.restart()
+        transitionA.start()
+        change_page("qrc:/ui/songselect/songselect_main.qml")
     }
 
     function to_main(){
@@ -786,7 +787,11 @@ Item {
     }
 
     function disconnect_all (){
-        mainqml.enterpress_signal.disconnect(select)
+        mainqml.rightpress_signal.connect(select)
+        mainqml.leftpress_signal.connect(select)
+        mainqml.uppress_signal.connect(select)
+        mainqml.downpress_signal.connect(select)
+        mainqml.enterpress_signal.connect(select)
         mainqml.escpress_signal.disconnect(to_main)
     }
     Component.onCompleted:{
