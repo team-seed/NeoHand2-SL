@@ -25,7 +25,7 @@ Rectangle {
 
     //onYChanged: { if (y > parent.height) _barline.destroy() }
 
-    onWindowChanged: { if (window > 0) _barline.destroy() }
+    //onWindowChanged: { if (window > 0) _barline.destroy() }
 
     function map () {
         var p = swipe_note_container.mapFromItem(lane_container, side_left.width, map_y)
@@ -34,5 +34,14 @@ Rectangle {
         //z = p.y / parent.height
     }
 
+    function link () {
+        _barline.onWindowChanged.connect(()=>{if (window > 0) _barline.destroy()})
+
+        //console.log("linked - barline")
+
+    }
+
     Component.onCompleted: map()
+
+    //Component.onDestruction: console.log("destruction - barline")
 }

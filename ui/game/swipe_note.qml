@@ -125,34 +125,23 @@ Item {
         // not yet
         if (Math.abs(window) > 80) return;
 
-        // missed
-        //if (window > 120) _click.destroy();
-
         // check area, exact
-        if ( pos >= left_pos && pos < right_pos || true ) {
-            _swipe.destroy();
-            console.log("swipe exact")
-        }
-    }
-
-    function miss () {
-        if (window < 80) return
-        _swipe.destroy();
-        console.log("swipe break")
+        if ( pos >= left_pos && pos < right_pos) _swipe.destroy();
     }
 
     function link () {
-        mainqml.enterpress_signal.connect(hit)
-        _swipe.onWindowChanged.connect(miss)
+        mainqml.swipe_trigger.connect(hit)
+        _swipe.onWindowChanged.connect(()=>{ if (window > 80) _swipe.destroy() })
+        //console.log("linked - swipe note")
     }
 
     Component.onCompleted: {
         map()
-        link()
+        //link()  //for test
     }
 
     Component.onDestruction: {
         mainqml.enterpress_signal.disconnect(hit)
-        _swipe.onWindowChanged.disconnect(miss)
+        //console.log("destruction - swipe")
     }
 }

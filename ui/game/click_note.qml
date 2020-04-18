@@ -53,40 +53,29 @@ Item {
         // not yet
         if (Math.abs(window) > 120) return;
 
-        // missed
-        //if (window > 120) _click.destroy();
-
         // check area
         if ( pos >= left_pos && pos < right_pos || true ) {
             // exact
-            if (Math.abs(window) <= 50) {
-                _click.destroy();
-                console.log("click exact")
-            }
+            if (Math.abs(window) <= 50) _click.destroy();
             // close
-            else {
-                _click.destroy();
-                console.log("click close")
-            }
+            else _click.destroy();
+
         }
     }
 
-    function miss () {
-        if (window < 120) return
-        _click.destroy();
-        console.log("click break")
-    }
-
     function link () {
-        mainqml.spacepress_signal.connect(hit)
-        _click.onWindowChanged.connect(miss)
+        mainqml.click_trigger.connect(hit)
+
+        _click.onWindowChanged.connect(()=>{ if (window > 120) _click.destroy() })
+        //console.log("linked - click note")
     }
 
-    Component.onCompleted: { link() }
+    //Component.onCompleted: link() // for test
 
     Component.onDestruction: {
         mainqml.spacepress_signal.disconnect(hit)
-        _click.onWindowChanged.disconnect(miss)
+        console.log("destruction - click")
+        //_click.onWindowChanged.disconnect(miss)
         //console.log("click destroyed, timestamp " + time.toString())
     }
 }

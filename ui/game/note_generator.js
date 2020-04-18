@@ -3,15 +3,7 @@ var hold_component
 var swipe_component
 var barline_component
 
-var click_queue = []
-var swipe_queue = []
-
-const click_exact_range = 50
-const click_close_range = 120
-
-const swipe_exact_range = 40
-
-const hold_exact_range = 40
+var object_queue = []
 
 function make_click (gesture, bpm, time, left, right) {
     if (click_component == null)
@@ -37,7 +29,7 @@ function make_click (gesture, bpm, time, left, right) {
         //gesture serves no purpose in this version
         dynamicObject.gesture = gesture
 
-        click_queue.push(dynamicObject)
+        object_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading click note.")
@@ -65,7 +57,7 @@ function make_hold (gest, bpm, s_time, s_left, s_right, e_time, e_left, e_right)
 
         var ls = Math.min(s_left, e_left), rs = 16 - Math.max(s_right, e_right)
 
-        dynamicObject.start_time = s_time + global_offset
+        dynamicObject.time = s_time + global_offset
         dynamicObject.end_time = e_time + global_offset
         dynamicObject.bpm = bpm
 
@@ -77,6 +69,8 @@ function make_hold (gest, bpm, s_time, s_left, s_right, e_time, e_left, e_right)
 
         //gesture serves no purpose in this version
         dynamicObject.gesture = gest
+
+        object_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading hold note.")
@@ -113,7 +107,7 @@ function make_swipe (dirc, bpm, time, left, right) {
         //gesture serves no purpose in this version
         //dynamicObject.gesture = gesture
 
-        swipe_queue.push(dynamicObject)
+        object_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading swipe note.")
@@ -141,6 +135,8 @@ function make_barline (bpm, time) {
 
         dynamicObject.time = time + global_offset
         dynamicObject.bpm = bpm
+
+        object_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading barline.")
@@ -151,22 +147,17 @@ function make_barline (bpm, time) {
     return true
 }
 
-function click_hit (pos) {
-    //var timer = game_timer.elapsed
+function sort_queue () {
+    object_queue.sort((a, b) => a.time - b.time)
+}
 
-    /*for (var i = 0; i < click_queue.length; i++) {
-        var w = click_queue[i].window
+function dynamic_link () {
+    if (object_queue.length <= 0) dynamic_linker.stop()
 
-        if (Math.abs(w) > click_close_range) {
-            if (w > 0) {
-                click_queue[i].destroy()
-                click_queue.splice(i, 1)
-            }
-            else break
-        }
-        else {
-            click_queue[i].destroy()
-            click_queue.splice(i, 1)
-        }
-    }*/
+    let cur_time = game_timer.elapsed + 2000
+
+    while (object_queue.length && cur_time > object_queue[0].time) {
+        object_queue[0].link()
+        object_queue.shift()
+    }
 }

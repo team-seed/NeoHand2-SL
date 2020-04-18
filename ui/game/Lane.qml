@@ -331,6 +331,14 @@ Item {
 
     }
 
+    Timer {
+        id: dynamic_linker
+        interval: 1000
+        triggeredOnStart: true
+        repeat: true
+        onTriggered: NOTE_GENERATOR.dynamic_link()
+    }
+
     function generating_notes () {
         chart_maker.song_chart_parse(global_song_meta[0] + (global_is_expert ? "/expert.json" : "/basic.json"))
         chart_maker.chart.forEach (value => {
@@ -350,6 +358,8 @@ Item {
                                            console.log(value);
                                        }
                                    })
+
+        NOTE_GENERATOR.sort_queue()
 
         // do something more?
         game_start_countdown.restart();
@@ -375,6 +385,8 @@ Item {
         hand_indicator.width = judge_right.x - judge_left.x
         hand_indicator.x = judge_left.x
         hand_indicator.y = judge_left.y - hand_indicator.height
+
+        dynamic_linker.start()
 
         //mainqml.click_trigger.connect(NOTE_GENERATOR.click_hit)
     }

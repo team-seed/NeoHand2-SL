@@ -3,11 +3,11 @@ import QtQuick.Shapes 1.12
 //import QtGraphicalEffects 1.0
 
 Item {
-    property int start_time: 0
+    property int time: 0
     property int end_time: 0
     property double bpm: 120.0
-    property int window: game_timer.elapsed - start_time
-    property int duration: end_time - start_time
+    property int window: game_timer.elapsed - time
+    property int duration: end_time - time
 
     property string shape_color: gesture == 0 ? "orange" : "deepskyblue"
     property string line_color: gesture == 0 ? "yellow" : "palegreen"
@@ -17,8 +17,6 @@ Item {
 
     property int right_spacing: 0
     property int left_spacing: 0
-
-    property bool on_hit: false
 
     // gesture serves no purpose in this version
     property int gesture: 0
@@ -35,7 +33,6 @@ Item {
     }
 
     antialiasing: true
-    //visible: y + height > 0
 
     y: (bpm * hispeed * (window - duration) * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position + note_height)
 
@@ -67,5 +64,32 @@ Item {
         color: line_color
     }
 
-    onWindowChanged: { if (window - duration > 0) _hold.destroy() }
+    function check_hold () {
+        if (window < 0) return
+        if (window > 40) {
+            //console.log("hold miss")
+            shape_color = "gray"
+            _hold.onWindowChanged.disconnect(check_hold)
+        }
+
+        if ((handA.gesture == 1 && handA.pos >= start_pos[0] && handA.pos < start_pos[1])
+             || (handB.gesture == 1 && handB.pos >= start_pos[0] && handB.pos < start_pos[1])) {
+
+            //console.log("hold hit")
+            _hold.onWindowChanged.disconnect(check_hold)
+        }
+    }
+
+    function link () {
+        _hold.onWindowChanged.connect(check_hold)
+
+        _hold.onWindowChanged.connect(()=>{ if (window - duration > 0) _hold.destroy() })
+        //console.log("linked - hold note")
+    }
+
+    //Component.onCompleted: link()  //for test
+
+    //onWindowChanged: { if (window - duration > 0) _hold.destroy() }
+
+    Component.onDestruction: console.log("destruction - hold")
 }
