@@ -20,7 +20,12 @@ int main(int argc, char *argv[])
 
     pid = fork();
     if(pid == 0){
-        system("cd ../mediapipe_playground/mediapipe; ./runHandTrackingGPU.sh");
+        char *argv[] = {"/bin/bash","runHandTrackingGPU.sh", NULL};
+        // direct to runHandTrackingGPU.sh folder
+        chdir("../mediapipe_playground/mediapipe");
+        execv("/bin/bash", argv);
+        std::cout << "child exec failed\n";
+        exit(EXIT_FAILURE);
     }
     else if(pid > 0){
         struct ShmPreventer{
@@ -55,8 +60,9 @@ int main(int argc, char *argv[])
         widget->showFullScreen();
         qDebug()<<getpid()<<" "<<pid;
         int appRet = app.exec();
-        //return app.exec();
-        //kill(pid,SIGTERM);
+
+        kill(pid,SIGTERM);
+
         segment.destroy<ShmConfig::Gesture>(ShmConfig::shmbbCenterGestureName);
 
         return appRet;
