@@ -263,9 +263,72 @@ Item {
         border.color: "white"
         radius: note_height / 15
 
-        opacity: 0.5
+        //opacity: 0.5
 
         height: width * 9 / 16
+
+        Rectangle {
+            height: parent.height
+            width: 50
+
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: 0.25
+
+            x: parent.width * handA.normX
+
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: handA.gesture != -1 ? "orange" : "gray" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: width
+                radius: width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                visible: handA.gesture != -2
+
+                //x: parent.width * handA.normX
+                y: parent.height * handA.normY
+
+                color: handA.gesture != -1 ? "orange" : "gray"
+            }
+        }
+
+        Rectangle {
+            height: parent.height
+            width: 50
+
+            anchors.verticalCenter: parent.verticalCenter
+            opacity: 0.25
+
+            x: parent.width * handB.normX
+
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: handB.gesture != -1 ? "orange" : "gray" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: width
+                radius: width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                visible: handA.gesture != -2
+
+                //x: parent.width * handB.normX
+                y: parent.height * handB.normY
+
+                color: handB.gesture != -1 ? "orange" : "gray"
+            }
+        }
+
     }
 
     function generating_notes () {
@@ -313,7 +376,6 @@ Item {
         hand_indicator.x = judge_left.x
         hand_indicator.y = judge_left.y - hand_indicator.height
 
-
-        console.log(judge_left, judge_right)
+        //mainqml.click_trigger.connect(NOTE_GENERATOR.click_hit)
     }
 }

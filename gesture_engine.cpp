@@ -53,19 +53,20 @@ void Gesture_engine::Get(){
     ges_last[0] = ges_cur[0];
     ges_last[1] = ges_cur[1];
     last_hand_num = hand_num;
+
     {
         // lock start
-        boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(shm->mutex);
-        if(!shm->gestureUpdate){
-            shm->condEmpty.wait(lock);
-        }
+        //boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lock(shm->mutex);
+        //if(!shm->gestureUpdate){
+        //    shm->condEmpty.wait(lock);
+        //}
         hand_num = shm->outputHandNum;
         for(int i= 0 ; i <hand_num ; i++)
             ges_cur[i] = boost::move(shm->lm[i]);
 
         // Notify the other process that the buffer is empty
-        shm->condFull.notify_one();
-        shm->gestureUpdate = false;
+        //shm->condFull.notify_one();
+        //shm->gestureUpdate = false;
         // lock end
      }
 

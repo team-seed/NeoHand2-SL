@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QQuickWidget>
 #include <unistd.h>
+#include<sys/types.h>
+#include<signal.h>
 
 #include "chart_maker.h"
 #include "soundfx_handler.h"
@@ -42,10 +44,6 @@ int main(int argc, char *argv[])
         qmlRegisterType <chart_maker> ("custom.chart_maker", 1, 0, "CustomChartMaker");
         qmlRegisterType <game_clock> ("custom.game_clock", 1, 0, "CustomGameClock");
 
-        // old qml registers
-        // qmlRegisterType<Game_process>("custom.game.process", 1, 0, "CustomGameProcess");
-        // qmlRegisterType<Game_timer>("custom.game.timer", 1, 0, "CustomGameTimer");
-
         QApplication app(argc, argv);
         Input_handler *widget = new Input_handler();
         const QUrl url (QStringLiteral("qrc:/main.qml"));
@@ -55,10 +53,12 @@ int main(int argc, char *argv[])
         widget->setSource(url);
         widget->init(gesture);
         widget->showFullScreen();
-
+        qDebug()<<getpid()<<" "<<pid;
         int appRet = app.exec();
         //return app.exec();
+        //kill(pid,SIGTERM);
         segment.destroy<ShmConfig::Gesture>(ShmConfig::shmbbCenterGestureName);
+
         return appRet;
     }
     else{

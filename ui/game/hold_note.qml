@@ -18,6 +18,8 @@ Item {
     property int right_spacing: 0
     property int left_spacing: 0
 
+    property bool on_hit: false
+
     // gesture serves no purpose in this version
     property int gesture: 0
 
@@ -65,5 +67,5 @@ Item {
         color: line_color
     }
 
-    onWindowChanged: { if (window - duration > 500) _hold.destroy() }
+    onWindowChanged: { if (window - duration > 0) _hold.destroy() }
 }

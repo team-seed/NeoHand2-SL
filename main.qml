@@ -30,10 +30,6 @@ Item {
         property double normY: 0.0
         property int gesture: -2
         property int position: -2
-
-        onGestureChanged: {
-            if (gesture == -2) console.log("Hand A left.")
-        }
     }
 
     Item {
@@ -42,10 +38,6 @@ Item {
         property double normY: 0.0
         property int gesture: -2
         property int position: -2
-
-        onGestureChanged: {
-            if (gesture == -2) console.log("Hand B left.")
-        }
     }
 
     // disable mouse functions
@@ -74,7 +66,7 @@ Item {
         source: "qrc:/ui/option/option_menu.qml"
         //source: "qrc:/ui/game/game_main.qml"
 
-        onLoaded:  transitionB.quit() //
+        onLoaded:  transitionB.quit()
     }
 
     Timer {

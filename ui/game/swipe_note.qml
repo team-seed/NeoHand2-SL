@@ -121,5 +121,38 @@ Item {
         z = p.y / parent.height + 3
     }
 
-    Component.onCompleted: map()
+    function hit (pos) {
+        // not yet
+        if (Math.abs(window) > 80) return;
+
+        // missed
+        //if (window > 120) _click.destroy();
+
+        // check area, exact
+        if ( pos >= left_pos && pos < right_pos || true ) {
+            _swipe.destroy();
+            console.log("swipe exact")
+        }
+    }
+
+    function miss () {
+        if (window < 80) return
+        _swipe.destroy();
+        console.log("swipe break")
+    }
+
+    function link () {
+        mainqml.enterpress_signal.connect(hit)
+        _swipe.onWindowChanged.connect(miss)
+    }
+
+    Component.onCompleted: {
+        map()
+        link()
+    }
+
+    Component.onDestruction: {
+        mainqml.enterpress_signal.disconnect(hit)
+        _swipe.onWindowChanged.disconnect(miss)
+    }
 }

@@ -23,7 +23,9 @@ Rectangle {
     transformOrigin: Item.BottomLeft
     scale: top_width + (1 - top_width) * (y + height - top_area) / bottom_area
 
-    onYChanged: { if (y > parent.height) _barline.destroy() }
+    //onYChanged: { if (y > parent.height) _barline.destroy() }
+
+    onWindowChanged: { if (window > 0) _barline.destroy() }
 
     function map () {
         var p = swipe_note_container.mapFromItem(lane_container, side_left.width, map_y)

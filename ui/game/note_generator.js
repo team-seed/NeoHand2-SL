@@ -3,6 +3,16 @@ var hold_component
 var swipe_component
 var barline_component
 
+var click_queue = []
+var swipe_queue = []
+
+const click_exact_range = 50
+const click_close_range = 120
+
+const swipe_exact_range = 40
+
+const hold_exact_range = 40
+
 function make_click (gesture, bpm, time, left, right) {
     if (click_component == null)
         click_component = Qt.createComponent("qrc:/ui/game/click_note.qml")
@@ -26,6 +36,8 @@ function make_click (gesture, bpm, time, left, right) {
 
         //gesture serves no purpose in this version
         dynamicObject.gesture = gesture
+
+        click_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading click note.")
@@ -100,6 +112,8 @@ function make_swipe (dirc, bpm, time, left, right) {
 
         //gesture serves no purpose in this version
         //dynamicObject.gesture = gesture
+
+        swipe_queue.push(dynamicObject)
     }
     else {
         console.log("Error on loading swipe note.")
@@ -135,4 +149,24 @@ function make_barline (bpm, time) {
     }
 
     return true
+}
+
+function click_hit (pos) {
+    //var timer = game_timer.elapsed
+
+    /*for (var i = 0; i < click_queue.length; i++) {
+        var w = click_queue[i].window
+
+        if (Math.abs(w) > click_close_range) {
+            if (w > 0) {
+                click_queue[i].destroy()
+                click_queue.splice(i, 1)
+            }
+            else break
+        }
+        else {
+            click_queue[i].destroy()
+            click_queue.splice(i, 1)
+        }
+    }*/
 }

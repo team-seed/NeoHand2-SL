@@ -47,5 +47,46 @@ Item {
 
     y: (bpm * hispeed * window * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position)
 
-    onYChanged: { if (y > parent.height) _click.destroy() }
+    //onYChanged: { if (y > parent.height) _click.destroy() }
+
+    function hit (pos) {
+        // not yet
+        if (Math.abs(window) > 120) return;
+
+        // missed
+        //if (window > 120) _click.destroy();
+
+        // check area
+        if ( pos >= left_pos && pos < right_pos || true ) {
+            // exact
+            if (Math.abs(window) <= 50) {
+                _click.destroy();
+                console.log("click exact")
+            }
+            // close
+            else {
+                _click.destroy();
+                console.log("click close")
+            }
+        }
+    }
+
+    function miss () {
+        if (window < 120) return
+        _click.destroy();
+        console.log("click break")
+    }
+
+    function link () {
+        mainqml.spacepress_signal.connect(hit)
+        _click.onWindowChanged.connect(miss)
+    }
+
+    Component.onCompleted: { link() }
+
+    Component.onDestruction: {
+        mainqml.spacepress_signal.disconnect(hit)
+        _click.onWindowChanged.disconnect(miss)
+        //console.log("click destroyed, timestamp " + time.toString())
+    }
 }
