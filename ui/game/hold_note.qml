@@ -91,5 +91,5 @@ Item {
 
     //onWindowChanged: { if (window - duration > 0) _hold.destroy() }
 
-    Component.onDestruction: console.log("destruction - hold")
+    //Component.onDestruction: console.log("destruction - hold")
 }

@@ -74,7 +74,7 @@ Item {
 
     Component.onDestruction: {
         mainqml.spacepress_signal.disconnect(hit)
-        console.log("destruction - click")
+        //console.log("destruction - click")
         //_click.onWindowChanged.disconnect(miss)
         //console.log("click destroyed, timestamp " + time.toString())
     }
