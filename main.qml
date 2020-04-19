@@ -66,7 +66,16 @@ Item {
         source: "qrc:/ui/option/option_menu.qml"
         //source: "qrc:/ui/game/game_main.qml"
 
-        onLoaded:  transitionB.quit()
+        onLoaded: {
+            if(transitionA.is_running){
+                transitionA.is_running = false
+                transitionA.quit()
+            }
+            else if(transitionB.is_running){
+                transitionB.is_running = false
+                transitionB.quit()
+            }
+        }
     }
 
     Timer {
@@ -82,6 +91,10 @@ Item {
     // insert animations here
     TransitionB {
         id: transitionB
+    }
+
+    TransitionA {
+        id: transitionA
     }
 
     function change_page (path) {

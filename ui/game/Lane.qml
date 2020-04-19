@@ -19,6 +19,8 @@ Item {
     property double judge_position: 300
     property double note_height: 100
 
+    property int combo: 1234
+
     antialiasing: true
     clip: true
 
@@ -102,6 +104,63 @@ Item {
                     particle.endSize = 30 * (1-rand) + 5
                 }
             }
+        }
+    }
+
+    Item {
+        id: left_bg
+        width: parent.width * lane_length_multiplier / 3
+        height: parent.height
+        anchors{
+            left: parent.left
+            verticalCenter:parent.verticalCenter
+        }
+        Rectangle{
+            anchors.fill: parent
+            color: "white"
+            opacity: 0.1
+        }
+
+        transform: Rotation {
+            axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 4.75
+        }
+    }
+
+    Item {
+        id: right_bg
+        width: parent.width * lane_length_multiplier / 3
+        height: parent.height
+        anchors{
+            right: parent.right
+            verticalCenter:parent.verticalCenter
+        }
+        Rectangle{
+            anchors.fill: parent
+            color: "blue"
+            opacity: 0.1
+        }
+
+        transform: Rotation {
+            origin.x: right_bg.width ; origin.y: 0
+            axis: Qt.vector3d(0, 1, 0); angle: -(lane_angle - 4.75)
+        }
+    }
+
+    Item {
+        id: healthbar_container
+        width: parent.width / 40
+        height: parent.height * 0.6
+        anchors{
+            bottom: parent.bottom
+            bottomMargin: height / 4
+            right: parent.right
+            rightMargin: width
+        }
+        Rectangle{
+            anchors.fill: parent
+            color: "white"
+            radius: width / 2
+            opacity: 0.2
         }
     }
 
@@ -247,6 +306,40 @@ Item {
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
+    }
+
+    Item {
+        id: combo_container
+        width: parent.width / 2
+        height: parent.height / 3
+        anchors{
+            left: parent.left
+            leftMargin: width / 5
+            verticalCenter:parent.verticalCenter
+            verticalCenterOffset: height / 6
+        }
+        Rectangle{
+            anchors.fill: parent
+            color: "#222222"
+            opacity: 0
+            transform: Rotation {
+                origin.x: 0 ; origin.y: -height / 2
+                axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 3.75
+            }
+        }
+        Text {
+            id: combo_text
+            text: combo.toString()
+            fontSizeMode: Text.Fit
+            font.pixelSize: parent.height
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+            transform: Rotation {
+                origin.x: 0 ; origin.y: -height / 2
+                axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 3.75
+            }
+        }
+
     }
 
     Item {

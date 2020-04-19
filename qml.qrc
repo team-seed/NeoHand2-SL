@@ -22,6 +22,6 @@
         <file>ui/game/swipe_note.qml</file>
         <file>ui/game/hold_note.qml</file>
         <file>ui/game/Game_panel.qml</file>
-
+        <file>TransitionA.qml</file>
     </qresource>
 </RCC>
