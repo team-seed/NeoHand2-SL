@@ -121,12 +121,15 @@ Item {
         z = p.y / parent.height + 3
     }
 
-    function hit (pos) {
+    function hit (id, pos) {
         // not yet
         if (Math.abs(window) > 80) return;
 
         // check area, exact
-        if ( pos >= left_pos && pos < right_pos) _swipe.destroy();
+        if ( id == direction && pos >= left_pos && pos < right_pos) {
+            console.log("swipe hit")
+            _swipe.destroy();
+        }
     }
 
     function link () {
@@ -141,7 +144,7 @@ Item {
     }
 
     Component.onDestruction: {
-        mainqml.enterpress_signal.disconnect(hit)
+        mainqml.swipe_trigger.disconnect(hit)
         //console.log("destruction - swipe")
     }
 }

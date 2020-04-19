@@ -54,12 +54,14 @@ Item {
         if (Math.abs(window) > 120) return;
 
         // check area
-        if ( pos >= left_pos && pos < right_pos || true ) {
+        if ( pos >= left_pos && pos < right_pos) {
             // exact
-            if (Math.abs(window) <= 50) _click.destroy();
+            //if (Math.abs(window) <= 50) _click.destroy();
             // close
-            else _click.destroy();
+            //else _click.destroy();
 
+            _click.destroy()
+            console.log("click hit")
         }
     }
 
@@ -73,7 +75,7 @@ Item {
     //Component.onCompleted: link() // for test
 
     Component.onDestruction: {
-        mainqml.spacepress_signal.disconnect(hit)
+        mainqml.click_trigger.disconnect(hit)
         //console.log("destruction - click")
         //_click.onWindowChanged.disconnect(miss)
         //console.log("click destroyed, timestamp " + time.toString())

@@ -72,8 +72,8 @@ Item {
             _hold.onWindowChanged.disconnect(check_hold)
         }
 
-        if ((handA.gesture == 1 && handA.pos >= start_pos[0] && handA.pos < start_pos[1])
-             || (handB.gesture == 1 && handB.pos >= start_pos[0] && handB.pos < start_pos[1])) {
+        if ((handA.gesture == 1 && handA.position >= start_pos[0] && handA.position < start_pos[1])
+             || (handB.gesture == 1 && handB.position >= start_pos[0] && handB.position < start_pos[1])) {
 
             //console.log("hold hit")
             _hold.onWindowChanged.disconnect(check_hold)
