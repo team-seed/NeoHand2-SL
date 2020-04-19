@@ -62,8 +62,7 @@ Item {
 
             _click.destroy()
             combo++
-
-            console.log("click hit")
+            //console.log("click hit")
         }
     }
 

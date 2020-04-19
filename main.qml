@@ -11,11 +11,11 @@ Item {
     width: Screen.width
     height: Screen.height
 
-    property string version: "NH2:SL2.20200418.1b"
+    property string version: "NH2:SL2.20200420.1b"
 
     property var global_song_meta: null
     property bool global_is_expert: false
-    property int final_score: 0
+    property int final_score: 0654358
 
     property int global_track_count: 0
 
@@ -24,6 +24,7 @@ Item {
     // soundfx handler
     CustomSoundFX { id: soundfx }
 
+    // hand gesture data handler
     Item {
         id: handA
         property double normX: 0.0
@@ -71,13 +72,14 @@ Item {
                 transitionA.is_running = false
                 transitionA.quit()
             }
-            else if(transitionB.is_running){
+            if(transitionB.is_running){
                 transitionB.is_running = false
                 transitionB.quit()
             }
         }
     }
 
+    // Timer for page switching
     Timer {
         property string next_page: ""
 
@@ -89,13 +91,8 @@ Item {
     }
 
     // insert animations here
-    TransitionB {
-        id: transitionB
-    }
-
-    TransitionA {
-        id: transitionA
-    }
+    TransitionB { id: transitionB }
+    TransitionA { id: transitionA }
 
     function change_page (path, time) {
         page_change_timer.next_page = path
@@ -150,7 +147,7 @@ Item {
     signal gesture_engine_stop()
 
     onEscpress_signal: {
-        pageloader.source = "/ui/option/option_menu.qml"
+        pageloader.source = "qrc:/ui/option/option_menu.qml"
         page_change_timer.stop()
     }
 
@@ -159,5 +156,4 @@ Item {
 
     Component.onDestruction: {
     }
-
 }

@@ -6,12 +6,26 @@ Item {
     visible: false
     property bool is_running: false
     property double len: Math.sqrt(Math.pow(width,2) + Math.pow(height,2))
-    property var index: ["t1","t2","t3","t4","t5","t6"]
+
     property double marg: len
     property double ang: 0
     property double gra_end: 0
 
     property alias end_anim: end_anim
+
+    property var index: [
+        "You'll get better response from your camera by swiping your hands gently.",
+        "Keep your hands open to catch HOLD notes.",
+        "You can catch all the notes with either your right or left hand.",
+        "Open your hand at the correct timing to catch CLICK notes.",
+        "Welcome to NeoHand.\nWe wish you a pleasant gameplay experience.",
+        "Good luck! We believe in you and your hands.",
+        "If you can't achieve great score, take a rest. It should help.",
+        "Can't hit SWIPE notes?\nTry to move your camera closer or further.",
+        "You can go back to the options menu at any time by hitting ESC.",
+        "Starting from BASIC difficulties is recommended if you're new to this game."
+    ]
+
     //bg
     Item {
         anchors.centerIn: parent
@@ -107,13 +121,18 @@ Item {
 
         Text {
             id: tip_txt
-            width: parent.width
-            height: parent.height
+            //width: parent.width
+            //height: parent.height
+            anchors.fill: parent
+            anchors.margins: parent.height * 0.1
+
             color: "white"
-            font.pixelSize: parent.height / 4
+            font.family: font_Genjyuu_XP_bold.name
+            font.pixelSize: parent.height * 0.12
             fontSizeMode: Text.Fit
+            wrapMode: Text.Wrap
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: Text.AlignLeft
             text: index[0]
 
             opacity: 0
@@ -280,7 +299,7 @@ Item {
             id:text_in
             target: tip_txt
             property: "opacity"
-            duration: 100
+            duration: 250
             from: 0
             to: 1
         }
@@ -293,7 +312,7 @@ Item {
             id:text_out
             target: tip_txt
             property: "opacity"
-            duration: 100
+            duration: 250
             from: 1
             to: 0
         }
@@ -304,10 +323,17 @@ Item {
             text_change()
             text_anim.start()
         }
+
+        onStarted: text_change()
     }
+
     function text_change(){
-        var j = 1 + Math.floor(Math.random() * (index.length - 1));
-        [index[0], index[j]] = [index[j], index[0]]
+        for (var i = 0; i < index.length; i++) {
+            var j = i + Math.floor(Math.random() * (index.length - 1 - i));
+            [index[i], index[j]] = [index[j], index[i]]
+        }
+        //var j = 1 + Math.floor(Math.random() * (index.length - 1));
+        //[index[0], index[j]] = [index[j], index[0]]
         tip_txt.text = index[0]
     }
 
@@ -331,4 +357,10 @@ Item {
             //transA.visible = false
         })
     }
+
+    FontLoader {
+        id: font_Genjyuu_XP_bold
+        source: "/font/GenJyuuGothicX-P-Bold.ttf"
+    }
+
 }

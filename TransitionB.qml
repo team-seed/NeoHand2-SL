@@ -202,7 +202,7 @@ Item {
         to:0
         duration: 1000
 
-        onFinished: pageloader.source = ""
+        onStarted: pageloader.source = ""
     }
 
     NumberAnimation{

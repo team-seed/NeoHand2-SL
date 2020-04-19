@@ -1,18 +1,14 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
-import custom.songselect 1.0
 import QtQuick.Particles 2.12
+
 Item {
-    property var current_song_meta: dir.content[1]
+    anchors.fill: parent
 
-    property int song_index: 1
-    property var songs_meta: dir.content
     property double pulse_bpm: 60
-    property string song_color: mainqml.global_song_meta ? mainqml.global_song_meta[5] : "white"
-    property bool is_expert: true
+    property string song_color: global_song_meta ? global_song_meta[5] : "white"
     property string text_color: "#DDDDDD"
-
 
     property var score: 0987654
     property var best_score: 999999
@@ -22,8 +18,6 @@ Item {
     property var close_number: 4567
     property var break_number: 8907
     property var max_combo: 2345
-
-    CustomSongselect { id: dir }
 
     // temp background
 
@@ -197,7 +191,7 @@ Item {
     // song difficult
     Image {
         id: diff
-        source: "qrc:/ui/songselect/image/difficulty_frame_" +  (is_expert ? "expert.png" : "basic.png")
+        source: "qrc:/ui/songselect/image/difficulty_frame_" +  (global_is_expert ? "expert.png" : "basic.png")
         //fillMode: Image.PreserveAspectFit
         width : height * 0.6
         height: parent.height / 4
@@ -207,7 +201,7 @@ Item {
         }
 
         Text {
-            text: is_expert ? current_song_meta[7] : current_song_meta[6]
+            text: global_is_expert ? global_song_meta[7] : global_song_meta[6]
 
             width: parent.width * 0.7
             height: width
@@ -243,7 +237,7 @@ Item {
             }
 
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + current_song_meta[0] + "/jacket"
+            source: "file:///" + global_song_meta[0] + "/jacket"
         }
 
     }
@@ -330,7 +324,7 @@ Item {
                         top: parent.top
                         left: parent.left
                     }
-                    text: current_song_meta[2]
+                    text: global_song_meta[2]
                     color: text_color
                     font.family: font_Genjyuu_XP_bold.name
                     font.pixelSize: height
@@ -355,7 +349,7 @@ Item {
                         //right: parent.right
                     }
 
-                    text: current_song_meta[1]
+                    text: global_song_meta[1]
                     color: text_color
                     font.family: font_Genjyuu_XP_bold.name
                     font.pixelSize: height
@@ -424,7 +418,7 @@ Item {
                     id: score_text
                     property int cur_score: 0
                     anchors.fill:parent
-                    text: parent.scoreStr(cur_score)
+                    text: cur_score.toString().padStart(7, "0")
                     color: text_color
 
                     font.family: font_Roboto_Medium.name
@@ -445,26 +439,18 @@ Item {
                         target: s_panel
                         property: "anchors.rightMargin"
                         from: score_panel.width
-                        to : 0
-                        duration: 500
+                        to:0
+                        duration: 1000
                         easing.type: Easing.OutExpo
                     }
                     NumberAnimation {
                         target: score_text
                         property: "cur_score"
-                        duration: 1000
+                        duration: 3000
                         from: 0
-                        to: score
-                        easing.type: Easing.InOutQuad
+                        to: final_score
+                        easing.type: Easing.OutExpo
                     }
-                }
-
-                function scoreStr(cur_score)    // append 0
-                {
-                   if(cur_score.toString().length>=7)
-                       return cur_score
-                   else
-                       return scoreStr("0"+cur_score)
                 }
             }
 
@@ -579,7 +565,7 @@ Item {
 
             Text{
                 id: delta_score
-                text: ((score >= best_score) ? "+" :"-") + Math.abs(score- best_score).toString().padStart(7,"0")
+                text: ((final_score >= best_score) ? "+" :"-") + Math.abs(score_text.cur_score - best_score).toString().padStart(7,"0")
                 height: parent.height
                 anchors{
                     top: best_score_txt.bottom
@@ -776,18 +762,14 @@ Item {
         source: "/font/hemi-head-bd-it.ttf"
     }
 
-    function select(){
+    function select () {
         //cal.restart()
         transitionA.start()
         change_page("qrc:/ui/songselect/songselect_main.qml", 6000)
     }
 
     function disconnect_all (){
-        mainqml.rightpress_signal.connect(select)
-        mainqml.leftpress_signal.connect(select)
-        mainqml.uppress_signal.connect(select)
-        mainqml.downpress_signal.connect(select)
-        mainqml.enterpress_signal.connect(select)
+        mainqml.enterpress_signal.disconnect(select)
     }
 
     Component.onCompleted:{

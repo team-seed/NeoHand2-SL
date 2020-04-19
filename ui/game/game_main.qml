@@ -26,12 +26,6 @@ Item {
         color: "#222222"
     }
 
-    /*Text {
-        id: name
-        text: global_song_meta.toString()
-        color: "white"
-    }*/
-
     Lane {
         id: game_lane
 
@@ -52,8 +46,11 @@ Item {
 
     Timer {
         id: game_end_countdown
-        interval: 3000
-        onTriggered: change_page("qrc:/ui/result.qml", 6000)
+        interval: 2000
+        onTriggered: {
+            transitionA.start()
+            change_page("qrc:/ui/result.qml", 6000)
+        }
     }
 
     function hispeed_increase () { hispeed = Math.min(9.5, hispeed + 0.5) }
@@ -64,6 +61,12 @@ Item {
     function disconnect_all() {
         mainqml.uppress_signal.disconnect(hispeed_increase)
         mainqml.downpress_signal.disconnect(hispeed_decrease)
+        mainqml.spacepress_signal.disconnect(skip)
+    }
+
+    function skip () {
+        transitionA.start()
+        change_page("qrc:/ui/result.qml", 6000)
     }
 
     Component.onCompleted: {
@@ -71,6 +74,7 @@ Item {
         game_lane.generating_notes()
         mainqml.uppress_signal.connect(hispeed_increase)
         mainqml.downpress_signal.connect(hispeed_decrease)
+        mainqml.spacepress_signal.connect(skip)
 
         gesture_engine_start()
     }

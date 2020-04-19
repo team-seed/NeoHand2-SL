@@ -109,7 +109,7 @@ void Gesture_engine::check_gesture(){
 
             if(qAbs(y) > y_threshold){
                 //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;
-                emit swipe_trigger((y > 0) ? 0 : 1, ges_cur[i].position);
+                emit swipe_trigger((y > 0) ? 1 : 0, ges_cur[i].position);
             }
             /*else if(y < -y_threshold){
                 //qDebug()<< i <<": swipe y" << ges_cur[i].gesture;

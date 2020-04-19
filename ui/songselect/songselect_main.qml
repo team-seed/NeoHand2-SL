@@ -30,7 +30,7 @@ Item {
     property string effect_color: "white"
 
     property int track_count: 0
-    property int time_remaining: 99
+    property int time_remaining: -1
 
     Behavior on effect_color {
         ColorAnimation { duration: 250 }
