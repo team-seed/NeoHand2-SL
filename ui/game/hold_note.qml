@@ -66,7 +66,7 @@ Item {
 
     function check_hold () {
         if (window < 0) return
-        if (window > 40) {
+        if (window > 60) {
             //console.log("hold miss")
             shape_color = "gray"
             _hold.onWindowChanged.disconnect(check_hold)
@@ -76,6 +76,8 @@ Item {
              || (handB.gesture == 1 && handB.position >= start_pos[0] && handB.position < start_pos[1])) {
 
             //console.log("hold hit")
+            combo++
+
             _hold.onWindowChanged.disconnect(check_hold)
         }
     }

@@ -779,11 +779,7 @@ Item {
     function select(){
         //cal.restart()
         transitionA.start()
-        change_page("qrc:/ui/songselect/songselect_main.qml")
-    }
-
-    function to_main(){
-        Qt.quit()
+        change_page("qrc:/ui/songselect/songselect_main.qml", 6000)
     }
 
     function disconnect_all (){
@@ -792,13 +788,13 @@ Item {
         mainqml.uppress_signal.connect(select)
         mainqml.downpress_signal.connect(select)
         mainqml.enterpress_signal.connect(select)
-        mainqml.escpress_signal.disconnect(to_main)
     }
+
     Component.onCompleted:{
         mainqml.enterpress_signal.connect(select)
-        mainqml.escpress_signal.connect(to_main)
         cal.start()
     }
+
     Component.onDestruction: {
         disconnect_all();
     }

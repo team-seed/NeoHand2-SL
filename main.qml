@@ -97,8 +97,9 @@ Item {
         id: transitionA
     }
 
-    function change_page (path) {
+    function change_page (path, time) {
         page_change_timer.next_page = path
+        page_change_timer.interval = time
         page_change_timer.restart()
     }
 
@@ -126,7 +127,8 @@ Item {
     signal click_trigger(var position)
     signal click_untrigger()
     signal swipe_trigger(var id, var position)
-    function handA_update(x, y, ges, position){
+
+    function handA_update(x, y, ges, position) {
         handA.normX = x
         handA.normY = y
         handA.gesture = ges
@@ -146,6 +148,11 @@ Item {
     //hand engine (output signal)
     signal gesture_engine_start()
     signal gesture_engine_stop()
+
+    onEscpress_signal: {
+        pageloader.source = "/ui/option/option_menu.qml"
+        page_change_timer.stop()
+    }
 
     Component.onCompleted: {
     }

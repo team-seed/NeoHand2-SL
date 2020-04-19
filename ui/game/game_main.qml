@@ -15,7 +15,10 @@ Item {
     anchors.fill: parent
 
     CustomChartMaker { id: chart_maker }
-    CustomGameClock { id: game_timer }
+    CustomGameClock {
+        id: game_timer
+        onGame_finished: game_end_countdown.start()
+    }
 
     // temporary backgrond
     Rectangle {
@@ -47,13 +50,18 @@ Item {
         onTriggered: game_timer.game_start()
     }
 
+    Timer {
+        id: game_end_countdown
+        interval: 3000
+        onTriggered: change_page("qrc:/ui/result.qml", 6000)
+    }
+
     function hispeed_increase () { hispeed = Math.min(9.5, hispeed + 0.5) }
     function hispeed_decrease () { hispeed = Math.max(0.5, hispeed - 0.5) }
 
     function to_main () { pageloader.source = "/ui/option/option_menu.qml" }
 
     function disconnect_all() {
-        mainqml.escpress_signal.disconnect(to_main)
         mainqml.uppress_signal.disconnect(hispeed_increase)
         mainqml.downpress_signal.disconnect(hispeed_decrease)
     }
@@ -61,7 +69,6 @@ Item {
     Component.onCompleted: {
         game_timer.set_song("file:///" + global_song_meta[0] + "/audio.wav")
         game_lane.generating_notes()
-        mainqml.escpress_signal.connect(to_main)
         mainqml.uppress_signal.connect(hispeed_increase)
         mainqml.downpress_signal.connect(hispeed_decrease)
 

@@ -48,6 +48,7 @@ Item {
                     GradientStop{ position: 0; color: "#ff5555" }
                 }
                 NumberAnimation on angle {
+                    running: transA.visible
                     duration: 15000
                     from: 0
                     to: 360
@@ -136,6 +137,7 @@ Item {
                 GradientStop{
                     color: "pink"
                     SequentialAnimation on position{
+                        running: transA.visible
                         loops: Animation.Infinite
                         NumberAnimation {
                             duration: 1000
@@ -222,6 +224,8 @@ Item {
                 easing.type: Easing.OutCubic
             }
         }
+
+        onFinished: if (transA.visible) pageloader.source = ""
     }
     //end anim
     SequentialAnimation{
@@ -262,35 +266,40 @@ Item {
                 easing.type: Easing.InBack
             }
         }
+        onFinished: {
+            transA.visible = false
+            text_anim.stop()
+        }
     }
     //text anim
     SequentialAnimation{
         id:text_anim
+        running: transA.visible
 
         NumberAnimation{
             id:text_in
             target: tip_txt
             property: "opacity"
-            duration: 750
+            duration: 100
             from: 0
             to: 1
         }
 
         PauseAnimation {
-            duration: 3500
+            duration: 3000
         }
 
         NumberAnimation{
             id:text_out
             target: tip_txt
             property: "opacity"
-            duration: 750
+            duration: 100
             from: 1
             to: 0
         }
-        PauseAnimation {
+        /*PauseAnimation {
             duration: 500
-        }
+        }*/
         onFinished:{
             text_change()
             text_anim.start()
@@ -303,12 +312,23 @@ Item {
     }
 
     function start(){
-        start_anim.start()
-        transA.visible = true
+        start_anim.restart()
+        visible = true
         is_running= true
     }
 
     function quit(){
-        end_anim.start()
+
+        end_anim.restart()
+    }
+
+    Component.onCompleted: {
+        mainqml.escpress_signal.connect(() => {
+            transA.visible = false
+            start_anim.complete()
+            end_anim.complete()
+            text_anim.complete()
+            //transA.visible = false
+        })
     }
 }

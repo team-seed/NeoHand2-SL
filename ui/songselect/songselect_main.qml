@@ -1544,10 +1544,6 @@ Item {
         (is_secondlayer ? secondlayer_listview : firstlayer_listview).incrementCurrentIndex()
     }
 
-    function to_main () {
-        pageloader.source = "/ui/option/option_menu.qml"
-    }
-
     function select() {
         if(!is_secondlayer) {
             is_secondlayer = true
@@ -1566,13 +1562,11 @@ Item {
             //bgm_player.volume = 0
             song_smoothing.stop_previewing()
 
-            change_page("qrc:/ui/game/game_main.qml")
-            pageloader.source = ""
+            change_page("qrc:/ui/game/game_main.qml", 3000)
         }
     }
 
     Component.onCompleted: {
-        mainqml.escpress_signal.connect(to_main)
         bgm_delay.start()
         transitionA.end_anim.finished.connect(op_anim.start)
     }
@@ -1590,9 +1584,8 @@ Item {
         mainqml.leftpress_signal.disconnect(left_press)
         mainqml.uppress_signal.disconnect(up_press)
         mainqml.downpress_signal.disconnect(down_press)
-        mainqml.escpress_signal.disconnect(to_main)
         mainqml.enterpress_signal.disconnect(select)
-        transitionA.end_anim.finished.disconnect()
+        transitionA.end_anim.finished.disconnect(op_anim.start)
     }
 
     Component.onDestruction: {

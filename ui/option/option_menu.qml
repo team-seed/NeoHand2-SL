@@ -93,7 +93,7 @@ Column {
         switch (select_index){
             case 0:
                 transitionA.start()
-                change_page("qrc:/ui/songselect/songselect_main.qml")
+                change_page("qrc:/ui/songselect/songselect_main.qml", 6000)
                 break
             case 1:
                 pageloader.source = "button_test.qml"

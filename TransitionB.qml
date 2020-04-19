@@ -201,6 +201,8 @@ Item {
         from:1
         to:0
         duration: 1000
+
+        onFinished: pageloader.source = ""
     }
 
     NumberAnimation{
@@ -227,16 +229,16 @@ Item {
     }
 
     function start() {
-        transb_anim.start()
-        scaling.start()
-        transb_particle_sys.start()
+        transb_anim.restart()
+        scaling.restart()
+        transb_particle_sys.restart()
         transb.opacity = 1
         transb.visible = true
         is_running = true
     }
 
     function quit(){
-        fade_out.start()
+        fade_out.restart()
     }
 
     FontLoader {
@@ -247,6 +249,16 @@ Item {
     FontLoader {
         id: font_hemi_head
         source: "/font/hemi-head-bd-it.ttf"
+    }
+
+    Component.onCompleted: {
+        mainqml.escpress_signal.connect(() => {
+            transb_anim.complete()
+            scaling.complete()
+            transb_particle_sys.stop()
+            fade_out.complete()
+            transb.visible = false
+        })
     }
 }
 

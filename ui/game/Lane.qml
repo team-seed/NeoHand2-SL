@@ -19,7 +19,7 @@ Item {
     property double judge_position: 300
     property double note_height: 100
 
-    property int combo: 1234
+    property int combo: 0
 
     antialiasing: true
     clip: true
@@ -367,6 +367,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             opacity: 0.25
 
+            visible: handA.gesture != -2
+
             x: parent.width * handA.normX
 
             gradient: Gradient {
@@ -399,6 +401,8 @@ Item {
             opacity: 0.25
 
             x: parent.width * handB.normX
+
+            visible: handB.gesture != -2
 
             gradient: Gradient {
                 orientation: Gradient.Horizontal

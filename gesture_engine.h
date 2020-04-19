@@ -78,8 +78,8 @@ private:
     double x_filter = 0.13f;
     double y_filter = 0.08f;
 
-    double x_threshold = 0.035f;
-    double y_threshold = 0.03f;
+    double x_threshold = 0.0185f;
+    double y_threshold = 0.0089f;
 
     gesture_t ges_last[2];
     gesture_t ges_cur[2];
