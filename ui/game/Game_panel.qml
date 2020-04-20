@@ -239,23 +239,26 @@ Item {
             //visible: false
 
             Image {
+                clip: true
                 anchors.top: parent.top
                 anchors.right: parent.right
+                horizontalAlignment: Image.AlignRight
 
-                width: parent.width / 2
+                width: parent.width / 2 + 1
 
                 source: "qrc:/ui/songselect/image/top_bar.png"
-                fillMode: Image.PreserveAspectFit
+                fillMode: Image.PreserveAspectCrop
             }
 
             Image {
+                clip: true
                 anchors.top: parent.top
                 anchors.left: parent.left
-
-                width: parent.width / 2
+                horizontalAlignment: Image.AlignRight
+                width: parent.width / 2 + 1
 
                 source: "qrc:/ui/songselect/image/top_bar.png"
-                fillMode: Image.PreserveAspectFit
+                fillMode: Image.PreserveAspectCrop
                 mirror: true
             }
         }
@@ -437,6 +440,219 @@ Item {
 
         layer.enabled: true
         layer.effect: OpacityMask { maskSource: top_inner; }
+    }
+
+    Item {
+        id: health_bar
+        width: parent.height * 0.65
+        height: parent.height / 15
+        anchors{
+            top: parent.bottom
+            topMargin: - parent.height / 8
+            right: parent.right
+        }
+
+        Item{
+            anchors.fill: parent
+            Rectangle{
+                id:health
+                property string c: (width > health_bar.width * 0.7) ? "orange" : "deepskyblue"
+                width: 0
+                height: parent.height
+                anchors{
+                    top: parent.top
+                    right: parent.right
+                }
+                gradient: Gradient{
+                    GradientStop{position: 0;color:"#dddddd"}
+                    GradientStop{position: 0.3;color:health.c}
+                }
+            }
+
+            layer.enabled: true
+            layer.effect: OpacityMask{
+                maskSource: inner_health_bar
+            }
+        }
+
+        Item {
+            id:health_bar_bg
+            anchors.fill: parent
+            Image {
+                width: parent.width * 2
+                height: parent.height
+                anchors{
+                    top: parent.top
+                    left:parent.left
+                }
+                source: "qrc:/ui/songselect/image/second_layer_delegate_decoration.png"
+                fillMode: Image.TileHorizontally
+                sourceSize.height: height
+                sourceSize.width: width / 16
+                verticalAlignment: Image.AlignVCenter
+                horizontalAlignment: Image.AlignHCenter
+                opacity: 0.25
+                mirror: true
+                NumberAnimation on anchors.leftMargin{
+                    loops: Animation.Infinite
+                    from: 0
+                    to: - health_bar.width
+                    duration: 10000
+                    //running: false
+                }
+                layer.enabled: true
+                layer.effect: ColorOverlay{
+                    color: "gray"
+                }
+            }
+            layer.enabled: true
+            layer.effect: OpacityMask{
+                maskSource: inner_health_bar
+            }
+        }
+
+        Item {
+            id: outer_health_bar
+            anchors.fill: parent
+            Item {
+                anchors{
+                    top: parent.top
+                    left: parent.left
+                }
+                width: parent.width * 0.3
+                height: parent.height
+                Loader {
+                    sourceComponent: top_bar_base
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height / 2
+                }
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height / 2
+                }
+            }
+
+            Item {
+                anchors{
+                    top: parent.top
+                    right: parent.right
+                }
+                width: parent.width * 0.7
+                height: parent.height * 0.7
+                Loader {
+                    sourceComponent: top_bar_base
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height * 2 / 7
+                }
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height * 5 / 7
+                }
+            }
+            layer.enabled: true
+            layer.effect: OpacityMask{
+                invert: true
+                maskSource: inner_health_bar
+                layer.enabled: true
+                layer.effect: LinearGradient{
+                    gradient: Gradient{
+                        orientation: Gradient.Horizontal
+                        GradientStop{position: 1;color:"red"}
+                        GradientStop{position: 0.3;color:"orange"}
+                        GradientStop{position: 0;color:"green"}
+                    }
+                }
+            }
+            opacity: light_opacity
+
+        }
+
+        Item {
+            id: inner_health_bar
+            anchors.fill: parent
+            antialiasing: true
+            Item {
+                anchors{
+                    top: parent.top
+                    right: parent.left
+                    rightMargin: -parent.width * 0.295
+                }
+                width: parent.width * 0.275
+                height: parent.height * 0.8
+                Loader {
+                    sourceComponent: top_bar_base
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height / 2
+                }
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height / 2
+                }
+            }
+
+            Item {
+                anchors{
+                    top: parent.top
+                    left: parent.right
+                    leftMargin: -parent.width * 0.695
+                }
+                width: parent.width * 0.675
+                height: parent.height * 0.48
+                Loader {
+                    sourceComponent: top_bar_base
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height * 0.4
+                }
+                Rectangle{
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    width: parent.width
+                    height: parent.height * 0.6
+                }
+            }
+
+            layer.enabled: true
+            layer.effect: ColorOverlay{
+                color: "red"
+            }
+            visible: false
+        }
+
+
+        Text {
+            height: parent.height / 2
+            anchors{
+                top: parent.bottom
+                topMargin: -parent.height * 0.4
+                left: parent.left
+                leftMargin: parent.width * 0.35
+            }
+            text: "HEALTH BAR"
+            font.pixelSize: height * 0.8
+            font.family: font_hemi_head.name
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+            color: "#999999"
+            rotation: 180
+        }
+
+        transformOrigin: Item.TopRight
+        rotation: 90
     }
 
     FontLoader {
