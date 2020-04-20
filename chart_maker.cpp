@@ -182,7 +182,7 @@ void chart_maker::chart_toList() {
             }
         }
 
-        for (double i = song_chart[section].offset; i < max_time; i += beat_time) {
+        for (double i = song_chart[section].offset; i < max_time; i += qAbs(beat_time)) {
             QVariantList beat_line;
             beat_line.clear();
 

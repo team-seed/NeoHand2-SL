@@ -1,6 +1,8 @@
 import QtQuick 2.12
+import QtQuick.Shapes 1.12
 import QtGraphicalEffects 1.0
 import QtQuick.Particles 2.12
+
 import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
 
 Item {
@@ -20,7 +22,10 @@ Item {
 
     property int combo: 1234
 
-    property int bg_line_count : 32
+    property int bg_line_count : 16
+
+    property string bg_effect_color: "lightblue"
+
     antialiasing: true
     clip: true
 
@@ -34,37 +39,110 @@ Item {
         }
 
         Item {
+            id: bg_effect_left
             anchors.fill: parent
-            clip: true
-            Row{
-                id: left_bg_row
+            opacity: 0.25
+
+            Item {
                 width: parent.width * 2
                 height: parent.height
-                anchors{
-                    top: parent.top
-                    topMargin: -left_bg_row.height / 2
-                    left: parent.left
-                    leftMargin: - left_bg_row.width / bg_line_count * 2
-                }
-                spacing: width / bg_line_count
-                Repeater{
-                    model: bg_line_count / 2
-                    Rectangle{
-                        width: left_bg_row.width / bg_line_count
-                        height: left_bg_row.height * 2
-                        color: "gray"
-                        opacity: 0.1
-                        transformOrigin: Item.Center
-                        rotation: -45
+
+                anchors.left: parent.left
+                anchors.top: parent.top
+
+                Repeater {
+                    model: bg_line_count
+
+                    Item {
+                        height: parent.height * 2
+                        width: parent.width / bg_line_count
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: width * index
+
+                        Rectangle {
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0; color: "white" }
+                                GradientStop { position: 0.25; color: "transparent" }
+                            }
+
+                            transformOrigin: Item.BottomLeft
+                            rotation: -35
+                        }
                     }
+
                 }
+
                 NumberAnimation on anchors.leftMargin {
                     loops: Animation.Infinite
+                    from: 0; to: -width/2
                     running: true
                     duration: 5000
-                    from: - left_bg_row.width / bg_line_count * 2
-                    to: -left_bg_row.width / 2
                 }
+            }
+
+            Item {
+                height: parent.height
+                width: parent.width * 2
+                anchors.top: parent.top
+                anchors.left: parent.left
+
+                Repeater {
+                    model: 8
+
+                    Item {
+                        height: parent.height / 8
+                        width: parent.width
+                        anchors.left: parent.left
+                        anchors.top: parent.bottom
+
+                        Rectangle {
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                GradientStop { position: 0; color: "white" }
+                                GradientStop { position: 0.75; color: "transparent" }
+                            }
+
+                            transformOrigin: Item.TopRight
+                            rotation: -2.5 * index + 10
+                        }
+                    }
+
+                }
+
+                transformOrigin: Item.BottomRight
+
+                NumberAnimation on rotation {
+                    loops: Animation.Infinite
+                    from: 0; to: 10
+                    running: true
+                    duration: 5000
+                }
+            }
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: left_mask
+                layer.enabled: true
+                layer.effect: ColorOverlay { color: bg_effect_color }
+            }
+        }
+
+        LinearGradient {
+            id: left_mask
+            anchors.fill: parent
+            start: Qt.point(width, 0)
+            end: Qt.point(width / 2, height)
+            visible: false
+
+            gradient: Gradient {
+                GradientStop { position: 0.5; color: "transparent" }
+                GradientStop { position: 1; color: "white" }
             }
         }
 
@@ -85,49 +163,112 @@ Item {
         clip: true
 
         Item {
+            id: bg_effect_right
             anchors.fill: parent
+            opacity: 0.25
 
-            Row{
-                id: right_bg_row
+            Item {
                 width: parent.width * 2
                 height: parent.height
-                anchors{
-                    top: parent.top
-                    topMargin: -right_bg_row.height / 2
-                    right: parent.right
-                    rightMargin: - right_bg_row.width / bg_line_count * 2
-                }
-                spacing: width / bg_line_count
-                Repeater{
-                    model: bg_line_count / 2
-                    Rectangle{
-                        width: right_bg_row.width / bg_line_count
-                        height: right_bg_row.height * 2
-                        color: "gray"
-                        opacity: 1
-                        transformOrigin: Item.Center
-                        rotation: 45
+
+                anchors.right: parent.right
+                anchors.top: parent.top
+                visible: true
+
+                Repeater {
+                    model: bg_line_count
+
+                    Item {
+                        height: parent.height * 2
+                        width: parent.width / bg_line_count
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: width * index
+
+                        Rectangle {
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 1; color: "white" }
+                                GradientStop { position: 0.75; color: "transparent" }
+                            }
+
+                            transformOrigin: Item.BottomRight
+                            rotation: 35
+                        }
                     }
+
                 }
+
                 NumberAnimation on anchors.rightMargin {
                     loops: Animation.Infinite
+                    from: 0; to: -width/2
                     running: true
                     duration: 5000
-                    from: - right_bg_row.width / bg_line_count * 2
-                    to: -right_bg_row.width / 2
-                }
-            }
-            layer.enabled: true
-            layer.effect:LinearGradient {
-                anchors.fill: parent
-                start: Qt.point(0, 0)
-                end: Qt.point(width, height)
-                gradient: Gradient {
-                    GradientStop { position: 0.5; color: "transparent" }
-                    GradientStop { position: 1; color: "red" }
                 }
             }
 
+            Item {
+                height: parent.height
+                width: parent.width * 2
+                anchors.top: parent.top
+                anchors.right: parent.right
+
+                Repeater {
+                    model: 8
+
+                    Item {
+                        height: parent.height / 8
+                        width: parent.width
+                        anchors.right: parent.right
+                        anchors.top: parent.bottom
+
+                        Rectangle {
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                GradientStop { position: 0; color: "white" }
+                                GradientStop { position: 0.75; color: "transparent" }
+                            }
+
+                            transformOrigin: Item.TopLeft
+                            rotation: 2.5 * index - 10
+                        }
+                    }
+
+                }
+
+                transformOrigin: Item.BottomLeft
+
+                NumberAnimation on rotation {
+                    loops: Animation.Infinite
+                    from: 0; to: -10
+                    running: true
+                    duration: 5000
+                }
+            }
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: right_mask
+                layer.enabled: true
+                layer.effect: ColorOverlay { color: bg_effect_color }
+            }
+        }
+
+        LinearGradient {
+            id: right_mask
+            anchors.fill: parent
+            start: Qt.point(0, 0)
+            end: Qt.point(width / 2, height)
+            visible: false
+
+            gradient: Gradient {
+                GradientStop { position: 0.5; color: "transparent" }
+                GradientStop { position: 1; color: "white" }
+            }
         }
 
         transform: Rotation {
