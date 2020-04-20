@@ -28,7 +28,7 @@ Column{
         font.family: font_Genjyuu_XP_bold.name
         font.pixelSize: 20
 
-        text:"Online service is not supported in this version."
+        text: "Online service is not supported in this version."
     }
 
     Text{

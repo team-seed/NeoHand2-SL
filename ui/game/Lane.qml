@@ -119,6 +119,59 @@ Item {
             opacity: 0.1
         }
 
+        Item {
+            id: combo_container
+            height: parent.height / 3
+            width: parent.width / 3
+
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: height
+            anchors.bottomMargin: 50
+
+            Text {
+                id: combo_text
+                text: combo.toString()
+                height: parent.height
+                anchors {
+                    left: parent.left
+                    bottom: parent.bottom
+                }
+
+                color: "#DDDDDD"
+                fontSizeMode: Text.Fit
+                font.pixelSize: height
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignLeft
+
+                onTextChanged: if (combo > 0) combo_anim.restart()
+            }
+
+            Text {
+                text: "COMBO"
+                height: parent.height / 2
+                anchors {
+                    left: combo_text.right
+                    bottom: parent.bottom
+                }
+
+                color: "#DDDDDD"
+                fontSizeMode: Text.Fit
+                font.pixelSize: height
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignLeft
+            }
+        }
+
+        NumberAnimation {
+            id: combo_anim
+            target: combo_container
+            property: "anchors.bottomMargin"
+            from: 80; to: 50
+            duration: 250
+            easing.type: Easing.OutExpo
+        }
+
         transform: Rotation {
             axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 4.75
         }
@@ -286,40 +339,6 @@ Item {
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
-    }
-
-    Item {
-        id: combo_container
-        width: parent.width / 2
-        height: parent.height / 3
-        anchors{
-            left: parent.left
-            leftMargin: width / 5
-            verticalCenter:parent.verticalCenter
-            verticalCenterOffset: height / 6
-        }
-        Rectangle{
-            anchors.fill: parent
-            color: "#222222"
-            opacity: 0
-            transform: Rotation {
-                origin.x: 0 ; origin.y: -height / 2
-                axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 3.75
-            }
-        }
-        Text {
-            id: combo_text
-            text: combo.toString()
-            fontSizeMode: Text.Fit
-            font.pixelSize: parent.height
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignLeft
-            transform: Rotation {
-                origin.x: 0 ; origin.y: -height / 2
-                axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 3.75
-            }
-        }
-
     }
 
     Item {
