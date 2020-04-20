@@ -22,7 +22,11 @@ Item {
 
     property int bg_line_count : 16
 
-    property string bg_effect_color: "lightblue"
+    property string bg_effect_color: current_health >= pass_threshold ? global_song_meta[5] : "gray"
+
+    Behavior on bg_effect_color {
+        ColorAnimation { duration: 1000 }
+    }
 
     antialiasing: true
     clip: true
@@ -39,7 +43,7 @@ Item {
         Item {
             id: bg_effect_left
             anchors.fill: parent
-            opacity: 0.25
+            opacity: 0.5
 
             Item {
                 width: parent.width * 2
@@ -79,7 +83,7 @@ Item {
                     loops: Animation.Infinite
                     from: 0; to: -width/2
                     running: true
-                    duration: 5000
+                    duration: 2500
                 }
             }
 
@@ -119,7 +123,7 @@ Item {
                     loops: Animation.Infinite
                     from: 0; to: 10
                     running: true
-                    duration: 5000
+                    duration: 2500
                 }
             }
 
@@ -144,6 +148,59 @@ Item {
             }
         }
 
+        Item {
+            id: combo_container
+            height: parent.height / 3
+            width: parent.width / 3
+
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: height
+            anchors.bottomMargin: 50
+
+            Text {
+                id: combo_text
+                text: combo.toString()
+                height: parent.height
+                anchors {
+                    left: parent.left
+                    bottom: parent.bottom
+                }
+
+                color: "#DDDDDD"
+                fontSizeMode: Text.Fit
+                font.pixelSize: height
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignLeft
+
+                onTextChanged: if (combo > 0) combo_anim.restart()
+            }
+
+            Text {
+                text: "COMBO"
+                height: parent.height / 2
+                anchors {
+                    left: combo_text.right
+                    bottom: parent.bottom
+                }
+
+                color: "#DDDDDD"
+                fontSizeMode: Text.Fit
+                font.pixelSize: height
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignLeft
+            }
+        }
+
+        NumberAnimation {
+            id: combo_anim
+            target: combo_container
+            property: "anchors.bottomMargin"
+            from: 80; to: 50
+            duration: 250
+            easing.type: Easing.OutExpo
+        }
+
         transform: Rotation {
             axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 4.75
         }
@@ -163,7 +220,7 @@ Item {
         Item {
             id: bg_effect_right
             anchors.fill: parent
-            opacity: 0.25
+            opacity: 0.5
 
             Item {
                 width: parent.width * 2
@@ -204,7 +261,7 @@ Item {
                     loops: Animation.Infinite
                     from: 0; to: -width/2
                     running: true
-                    duration: 5000
+                    duration: 2500
                 }
             }
 
@@ -244,7 +301,7 @@ Item {
                     loops: Animation.Infinite
                     from: 0; to: -10
                     running: true
-                    duration: 5000
+                    duration: 2500
                 }
             }
 
@@ -275,11 +332,10 @@ Item {
         }
     }
 
-
     ParticleSystem {
         id: side_effect
         anchors.fill: parent
-        opacity: 0.5
+        opacity: 0.75
 
         ImageParticle {
             system: side_effect
