@@ -568,9 +568,9 @@ Item {
                 layer.effect: LinearGradient{
                     gradient: Gradient{
                         orientation: Gradient.Horizontal
-                        GradientStop{position: 1;color:"red"}
-                        GradientStop{position: 0.3;color:"orange"}
-                        GradientStop{position: 0;color:"green"}
+                        GradientStop{position: 0.9;color:"red"}
+                        GradientStop{position: 0.29;color:"orange"}
+                        GradientStop{position: 0.25;color:"green"}
                     }
                 }
             }
