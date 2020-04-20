@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtGraphicalEffects 1.0
 import QtQuick.Particles 2.12
-
 import "qrc:/ui/game/note_generator.js" as NOTE_GENERATOR
 
 Item {
@@ -18,6 +17,8 @@ Item {
 
     property double judge_position: 300
     property double note_height: 100
+
+    property int bg_line_count : 32
 
     antialiasing: true
     clip: true
@@ -113,10 +114,38 @@ Item {
             left: parent.left
             verticalCenter:parent.verticalCenter
         }
-        Rectangle{
+        Item {
             anchors.fill: parent
-            color: "white"
-            opacity: 0.1
+            clip: true
+            Row{
+                id: left_bg_row
+                width: parent.width * 2
+                height: parent.height
+                anchors{
+                    top: parent.top
+                    topMargin: -left_bg_row.height / 2
+                    left: parent.left
+                }
+                spacing: width / bg_line_count
+                Repeater{
+                    model: bg_line_count / 2
+                    Rectangle{
+                        width: left_bg_row.width / bg_line_count
+                        height: left_bg_row.height * 2
+                        color: "gray"
+                        transformOrigin: Item.Center
+                        rotation: -45
+                    }
+                }
+                NumberAnimation on anchors.leftMargin {
+                    loops: Animation.Infinite
+                    running: true
+                    duration: 5000
+                    from: 0
+                    to: -left_bg_row.width / 2
+                }
+            }
+
         }
 
         Item {

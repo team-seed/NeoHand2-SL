@@ -173,14 +173,6 @@ Item {
                 GradientStop{ position: 0; color: "transparent" }
             }
 
-            NumberAnimation on opacity {
-                running: false
-                duration: 3000
-                loops: Animation.Infinite
-                from: 0.8
-                to: 0.5
-            }
-
             layer.enabled: true
             layer.effect: HueSaturation {
                 lightness: 0.5
