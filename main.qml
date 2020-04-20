@@ -45,8 +45,8 @@ Item {
         asynchronous: true
 
         //source: "qrc:/ui/result.qml"
-        source: "qrc:/ui/option/option_menu.qml"
-        //source: "qrc:/ui/game/game_main.qml"
+        //source: "qrc:/ui/option/option_menu.qml"
+        source: "qrc:/ui/game/game_main.qml"
 
         onLoaded: {
             if(transitionA.is_running){

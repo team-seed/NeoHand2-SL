@@ -147,24 +147,6 @@ Item {
     }
 
     Item {
-        id: healthbar_container
-        width: parent.width / 40
-        height: parent.height * 0.6
-        anchors{
-            bottom: parent.bottom
-            bottomMargin: height / 4
-            right: parent.right
-            rightMargin: width
-        }
-        Rectangle{
-            anchors.fill: parent
-            color: "white"
-            radius: width / 2
-            opacity: 0.2
-        }
-    }
-
-    Item {
         id: barline_container
         anchors.fill: parent
         antialiasing: true
