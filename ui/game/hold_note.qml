@@ -67,9 +67,7 @@ Item {
     function check_hold () {
         if (window < 0) return
         if (window > 60) {
-            //console.log("hold miss")
-            hitmark(0, start_pos[0] + left_spacing, start_pos[1] + right_spacing)
-            combo = 0
+            hitmark(0, start_pos[0] + left_spacing, start_pos[1] + left_spacing)
             shape_color = "gray"
             _hold.onWindowChanged.disconnect(check_hold)
         }
@@ -80,24 +78,13 @@ Item {
         if ((handA.gesture == 1 && handA.position >= L && handA.position < R)
              || (handB.gesture == 1 && handB.position >= L && handB.position < R)) {
 
-            //console.log("hold hit")
             hitmark(2, L, R)
-            combo++
-
             _hold.onWindowChanged.disconnect(check_hold)
         }
     }
 
     function link () {
         _hold.onWindowChanged.connect(check_hold)
-
         _hold.onWindowChanged.connect(()=>{ if (window - duration > 0) _hold.destroy() })
-        //console.log("linked - hold note")
     }
-
-    //Component.onCompleted: link()  //for test
-
-    //onWindowChanged: { if (window - duration > 0) _hold.destroy() }
-
-    //Component.onDestruction: console.log("destruction - hold")
 }

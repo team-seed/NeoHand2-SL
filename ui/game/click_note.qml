@@ -47,25 +47,14 @@ Item {
 
     y: (bpm * hispeed * window * lane_length_multiplier * speed_base_multiplier) / parent.height + (parent.height - judge_position)
 
-    //onYChanged: { if (y > parent.height) _click.destroy() }
-
     function hit (pos) {
         // not yet
         if (Math.abs(window) > 120) return;
 
         // check area
         if ( pos >= left_pos && pos < right_pos ) {
-            // exact
-            //if (Math.abs(window) <= 50) _click.destroy();
-            // close
-            //else _click.destroy();
-
             hitmark((Math.abs(window) <= 50) ? 2 : 1, left_pos, right_pos)
-
-            combo++
             _click.destroy()
-
-            //console.log("click hit")
         }
     }
 
@@ -74,18 +63,10 @@ Item {
 
         _click.onWindowChanged.connect(()=>{ if (window > 120) {
                                                hitmark(0, left_pos, right_pos)
-                                               combo = 0
                                                _click.destroy()
                                            }})
-        //console.log("linked - click note")
     }
 
-    //Component.onCompleted: link() // for test
 
-    Component.onDestruction: {
-        mainqml.click_trigger.disconnect(hit)
-        //console.log("destruction - click")
-        //_click.onWindowChanged.disconnect(miss)
-        //console.log("click destroyed, timestamp " + time.toString())
-    }
+    Component.onDestruction: mainqml.click_trigger.disconnect(hit)
 }

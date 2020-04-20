@@ -10,8 +10,7 @@ Item {
     property string song_color: global_song_meta ? global_song_meta[5] : "white"
     property string text_color: "#DDDDDD"
 
-    property var score: 0987654
-    property var best_score: 999999
+    property var best_score: 0
     property color bgcolor: "#222222"
 
     property var exact_number: 123
@@ -201,7 +200,7 @@ Item {
         }
 
         Text {
-            text: global_is_expert ? global_song_meta[7] : global_song_meta[6]
+            text: global_song_meta ? global_song_meta[global_is_expert ? 7 : 6] : ""
 
             width: parent.width * 0.7
             height: width
@@ -237,7 +236,7 @@ Item {
             }
 
             fillMode: Image.PreserveAspectFit
-            source: "file:///" + global_song_meta[0] + "/jacket"
+            source: global_song_meta ? "file:///" + global_song_meta[0] + "/jacket" : ""
         }
 
     }
@@ -324,7 +323,7 @@ Item {
                         top: parent.top
                         left: parent.left
                     }
-                    text: global_song_meta[2]
+                    text: global_song_meta ? global_song_meta[2] : ""
                     color: text_color
                     font.family: font_Genjyuu_XP_bold.name
                     font.pixelSize: height
@@ -349,7 +348,7 @@ Item {
                         //right: parent.right
                     }
 
-                    text: global_song_meta[1]
+                    text: global_song_meta ? global_song_meta[1] : ""
                     color: text_color
                     font.family: font_Genjyuu_XP_bold.name
                     font.pixelSize: height
@@ -658,7 +657,7 @@ Item {
                     top: parent.top
                 }
                 Text {
-                    text:  exact_number
+                    text: final_hit_count[2].toString().padStart(4, "0")
                     height: parent.height/5
                     width: parent.width
                     color: text_color
@@ -673,7 +672,7 @@ Item {
                     styleColor: "black"
                 }
                 Text {
-                    text:  close_number
+                    text: final_hit_count[1].toString().padStart(4, "0")
                     height: parent.height/5
                     width: parent.width
                     color: text_color
@@ -688,7 +687,7 @@ Item {
                     styleColor: "black"
                 }
                 Text {
-                    text:  break_number
+                    text: final_hit_count[0].toString().padStart(4, "0")
                     height: parent.height/5
                     width: parent.width
                     color: text_color
@@ -727,7 +726,7 @@ Item {
         }
         Text{
             id: combo_score
-            text: max_combo
+            text: final_max_combo.toString().padStart(4, "0")
             height: combo.height * 1.1
             anchors{
                 bottom: detail_row.bottom
@@ -779,5 +778,6 @@ Item {
 
     Component.onDestruction: {
         disconnect_all();
+        clear_song_data()
     }
 }

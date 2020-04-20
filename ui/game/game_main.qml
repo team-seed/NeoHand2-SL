@@ -8,13 +8,26 @@ import custom.game_clock 1.0
 Item {
     id: game_main
 
-    //property int duration_before_start: 3000
     property double hispeed: 1.0
-    property int current_score: 0
+    property int current_score: Math.ceil(1000000 * ((close_count * 0.5 + exact_count) / total_object)) + max_combo
 
     property int total_object: 0
     property int current_health: 0
     property int max_health: total_object * 10
+    property int pass_threshold: total_object * 7
+
+    property int exact_count: 0
+    property int close_count: 0
+    property int break_count: 0
+
+    property int combo: 0
+    property int max_combo: 0
+
+    onComboChanged: max_combo = Math.max(combo, max_combo)
+
+    Behavior on current_score {
+        NumberAnimation { duration: 500; easing.type: Easing.OutExpo }
+    }
 
     anchors.fill: parent
 
@@ -51,10 +64,7 @@ Item {
     Timer {
         id: game_end_countdown
         interval: 2000
-        onTriggered: {
-            transitionA.start()
-            change_page("qrc:/ui/result.qml", 6000)
-        }
+        onTriggered: result()
     }
 
     function hispeed_increase () { hispeed = Math.min(9.5, hispeed + 0.5) }
@@ -65,10 +75,14 @@ Item {
     function disconnect_all() {
         mainqml.uppress_signal.disconnect(hispeed_increase)
         mainqml.downpress_signal.disconnect(hispeed_decrease)
-        mainqml.spacepress_signal.disconnect(skip)
+        mainqml.spacepress_signal.disconnect(result)
     }
 
-    function skip () {
+    function result () {
+        final_score = current_score
+        final_max_combo = max_combo
+        final_hit_count = [break_count, close_count, exact_count]
+
         transitionA.start()
         change_page("qrc:/ui/result.qml", 6000)
     }
@@ -78,7 +92,7 @@ Item {
         game_lane.generating_notes()
         mainqml.uppress_signal.connect(hispeed_increase)
         mainqml.downpress_signal.connect(hispeed_decrease)
-        mainqml.spacepress_signal.connect(skip)
+        mainqml.spacepress_signal.connect(result)
 
         gesture_engine_start()
     }

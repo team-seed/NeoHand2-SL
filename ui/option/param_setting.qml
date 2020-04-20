@@ -16,7 +16,7 @@ Column{
     }
 
     FontLoader { id: font_Genjyuu_XP_bold; source: "qrc:/font/GenJyuuGothicX-P-Bold.ttf" }
-    Header{ text:"PARAM  SETTING" }
+    Header{ text: "PARAM  SETTING" }
 
     Rectangle {
         width: 300

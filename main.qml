@@ -15,7 +15,9 @@ Item {
 
     property var global_song_meta: null
     property bool global_is_expert: false
-    property int final_score: 0654358
+    property int final_score: 0
+    property var final_hit_count: [0, 0, 0]
+    property int final_max_combo: 0
 
     property int global_track_count: 0
 
@@ -64,8 +66,8 @@ Item {
         asynchronous: true
 
         //source: "qrc:/ui/result.qml"
-        //source: "qrc:/ui/option/option_menu.qml"
-        source: "qrc:/ui/game/game_main.qml"
+        source: "qrc:/ui/option/option_menu.qml"
+        //source: "qrc:/ui/game/game_main.qml"
 
         onLoaded: {
             if(transitionA.is_running){
@@ -98,6 +100,14 @@ Item {
         page_change_timer.next_page = path
         page_change_timer.interval = time
         page_change_timer.restart()
+    }
+
+    function clear_song_data () {
+        global_song_meta = null
+        global_is_expert = false
+        final_score = 0
+        final_hit_count = [0, 0, 0]
+        final_max_combo = 0
     }
 
     // press signal

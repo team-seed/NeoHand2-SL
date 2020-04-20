@@ -19,8 +19,6 @@ Item {
     property double judge_position: 300
     property double note_height: 100
 
-    property int combo: 0
-
     antialiasing: true
     clip: true
 
@@ -513,7 +511,7 @@ Item {
                                                case -1: NOTE_GENERATOR.make_barline(value[1], value[2]); break
                                            }
 
-                                           //if (value[0] != -1) total_note_count += 1
+                                           if (value[0] != -1) total_object++
                                        }
                                        else {
                                            console.log(value);
@@ -528,7 +526,24 @@ Item {
 
     function hitmark (type, left, right) {
         NOTE_GENERATOR.make_hitmark(type, left, right)
-        if (type==0) return;
+
+        switch (type) {
+        case 0:
+            current_health = Math.min(max_health, Math.max(0, current_health - 20));
+            combo = 0;
+            break_count++;
+            return
+        case 1:
+            current_health = Math.min(max_health, Math.max(0, current_health + 10));
+            close_count++
+            break
+        case 2:
+            current_health = Math.min(max_health, Math.max(0, current_health + 20));
+            exact_count++
+            break
+        }
+
+        combo++
 
         for (var i = left; i < right; i++) {
             (type == 2 ? emitters_exact : emitters_close).itemAt(i).burst(50)

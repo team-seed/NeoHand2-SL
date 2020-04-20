@@ -455,17 +455,20 @@ Item {
         Item{
             anchors.fill: parent
             Rectangle{
-                id:health
-                property string c: (width > health_bar.width * 0.7) ? "orange" : "deepskyblue"
-                width: 0
+                id: health
+                width: parent.width * (current_health / max_health)
                 height: parent.height
                 anchors{
                     top: parent.top
                     right: parent.right
                 }
                 gradient: Gradient{
-                    GradientStop{position: 0;color:"#dddddd"}
-                    GradientStop{position: 0.3;color:health.c}
+                    GradientStop{position: 0; color: "#999999"}
+                    GradientStop{position: 0.3; color: (current_health >= pass_threshold) ? "orangered" : "deepskyblue"}
+                }
+
+                Behavior on width {
+                    NumberAnimation { duration: 100 }
                 }
             }
 
@@ -491,7 +494,7 @@ Item {
                 sourceSize.width: width / 16
                 verticalAlignment: Image.AlignVCenter
                 horizontalAlignment: Image.AlignHCenter
-                opacity: 0.25
+                opacity: 0.5
                 mirror: true
                 NumberAnimation on anchors.leftMargin{
                     loops: Animation.Infinite
@@ -571,7 +574,8 @@ Item {
                     }
                 }
             }
-            opacity: light_opacity
+
+            opacity: 1 //light_opacity
 
         }
 

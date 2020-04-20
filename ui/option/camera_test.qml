@@ -24,80 +24,87 @@ Column{
         color: "seashell"
     }
 
-    Camera{
-        id: cam
-        imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceFlash
-        flash.mode: Camera.FlashRedEyeReduction
+    Rectangle {
+        width: parent.width / 2
+        height: width * 9 / 16
 
-        exposure {
-            exposureCompensation: -1.0
-            exposureMode: Camera.ExposurePortrait
-        }
+        color: "transparent"
+        border { color: "red"; width: 5 }
 
-        imageCapture.onImageCaptured: photoPreview.source = preview
-    }
+        Item {
+            visible: handA.gesture != -2
 
-    Item {
-        height: parent.height / 2
-        width: height * 16 / 9
-
-        VideoOutput{
-
-            id: video
-            source: cam
-            focus: visible
             anchors.fill: parent
-            fillMode: VideoOutput.PreserveAspectFit
-        }
 
-        Text {
-            id: banr
-            font.family: font_Genjyuu_XP_bold.name
-            text: "UP / DOWN  TO  CHANGE  CAMERA"
-            color: "white"
-            anchors {
-                top: video.top
-                left: video.right
-                leftMargin: 50
+            Rectangle {
+                height: width
+                width: 30
+
+                color: handA.gesture != -1 ? "yellow" : "transparent"
+                border { color: "lightgreen"; width: 2 }
+
+                anchors.verticalCenter: hA_horizontal.verticalCenter
+                anchors.horizontalCenter: hA_vertical.horizontalCenter
+            }
+
+            Rectangle {
+                id: hA_horizontal
+                color: "lightgreen"
+                height: 2
+                width: parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                y: parent.height * handA.normY
+            }
+
+            Rectangle {
+                id: hA_vertical
+                color: "lightgreen"
+                height: parent.height
+                width: 2
+                anchors.verticalCenter: parent.verticalCenter
+
+                x: parent.width * handA.normX
             }
         }
 
-        ListView {
-            id: camera_list
-            model: QtMultimedia.availableCameras
-            anchors {
-                top: banr.bottom
-                left: video.right
-                leftMargin: 50
+        Item {
+            visible: handB.gesture != -2
+
+            anchors.fill: parent
+
+            Rectangle {
+                height: width
+                width: 30
+
+                color: handB.gesture != -1 ? "yellow" : "transparent"
+                border { color: "lightgreen"; width: 2 }
+
+                anchors.verticalCenter: hB_horizontal.verticalCenter
+                anchors.horizontalCenter: hB_vertical.horizontalCenter
             }
 
-            highlight: Rectangle {
-                color: "transparent"
-                border {
-                    color: "red"
-                    width: 2
-                }
+            Rectangle {
+                id: hB_horizontal
+                color: "lightgreen"
+                height: 2
+                width: parent.width
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                y: parent.height * handB.normY
             }
 
-            delegate: Rectangle{
-                width: 300
-                height: 30
-                color: "transparent"
-                Text {
-                    text: modelData.displayName
-                    font.family: font_Genjyuu_XP_bold.name
-                    anchors.centerIn: parent
-                    color: "white"
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: cam.deviceId = modelData.deviceId
-                    }
-                }
+            Rectangle {
+                id: hB_vertical
+                color: "lightgreen"
+                height: parent.height
+                width: 2
+                anchors.verticalCenter: parent.verticalCenter
+
+                x: parent.width * handB.normX
             }
         }
     }
-
-    Image{ id: photoPreview }
 
     Text{
         color: "white"
@@ -109,18 +116,14 @@ Column{
 
     Component.onCompleted:{
         mainqml.bksppress_signal.connect(tomain)
-        mainqml.uppress_signal.connect(prev_camera)
-        mainqml.downpress_signal.connect(next_camera)
+        gesture_engine_start()
     }
 
-    function tomain(){pageloader.source = "option_menu.qml"}
-    function prev_camera() { camera_list.decrementCurrentIndex(); cam.deviceId = camera_list.currentItem.deviceId }
-    function next_camera() { camera_list.incrementCurrentIndex(); cam.deviceId = camera_list.currentItem.deviceId }
+    function tomain(){ pageloader.source = "option_menu.qml" }
 
     Component.onDestruction: {
         mainqml.bksppress_signal.disconnect(tomain)
-        mainqml.uppress_signal.disconnect(prev_camera)
-        mainqml.downpress_signal.disconnect(next_camera)
+        gesture_engine_stop()
     }
 
     FontLoader { id: font_Genjyuu_XP_bold; source: "qrc:/font/GenJyuuGothicX-P-Bold.ttf" }
