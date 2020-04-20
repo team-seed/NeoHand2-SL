@@ -2,6 +2,7 @@ var click_component
 var hold_component
 var swipe_component
 var barline_component
+var hitmark_component
 
 var object_queue = []
 
@@ -159,5 +160,31 @@ function dynamic_link () {
     while (object_queue.length && cur_time > object_queue[0].time) {
         object_queue[0].link()
         object_queue.shift()
+    }
+}
+
+function make_hitmark (type, left, right) {
+    if (hitmark_component == null)
+        hitmark_component = Qt.createComponent("qrc:/ui/game/hit_mark.qml")
+
+
+    if (hitmark_component.status == Component.Ready) {
+        var dynamicObject
+        dynamicObject = hitmark_component.createObject(hit_mark_container)
+
+        if (dynamicObject == null) {
+            console.log("Error on creating hit mark.")
+            console.log(hitmark_component.errorString())
+            return false
+        }
+
+        dynamicObject.type = type
+        dynamicObject.left_pos = left
+        dynamicObject.right_pos = right
+    }
+    else {
+        console.log("Error on loading hit mark.")
+        console.log(hitmark_component.errorString())
+        return false
     }
 }

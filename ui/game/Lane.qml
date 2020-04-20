@@ -426,6 +426,88 @@ Item {
             }
         }
 
+        ParticleSystem {
+            id: hit_particle_sys
+            anchors.fill: parent
+
+            ImageParticle {
+                system: hit_particle_sys
+                groups: ["E"]
+
+                source: "qrc:/ui/songselect/image/particle2.png"
+                opacity: 0.5
+                color: "yellow"
+            }
+
+            ImageParticle {
+                system: hit_particle_sys
+                groups: ["C"]
+
+                source: "qrc:/ui/songselect/image/particle2.png"
+                opacity: 0.5
+                color: "deepskyblue"
+            }
+
+            Row {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+
+                Repeater {
+                    id: emitters_exact
+                    model: 16
+
+                    Emitter {
+                        enabled: false
+                        width: hit_particle_sys.width / 16
+                        height: 1
+
+                        system: hit_particle_sys
+                        group: "E"
+
+                        lifeSpan: 300
+                        lifeSpanVariation: 50
+
+                        velocity: PointDirection { y: -150; yVariation: 100; x: 0; xVariation: 100 }
+                        acceleration: PointDirection { y: 100 }
+
+                        size: 15
+                        sizeVariation: 3
+                    }
+                }
+            }
+
+            Row {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+
+                Repeater {
+                    id: emitters_close
+                    model: 16
+
+                    Emitter {
+                        enabled: false
+                        width: hit_particle_sys.width / 16
+                        height: 1
+
+                        system: hit_particle_sys
+                        group: "C"
+
+                        lifeSpan: 300
+                        lifeSpanVariation: 50
+
+                        velocity: PointDirection { y: -150; yVariation: 100; x: 0; xVariation: 100; }
+                        acceleration: PointDirection { y: 100 }
+
+                        size: 15
+                        sizeVariation: 3
+                    }
+                }
+            }
+        }
+
+        Item { id: hit_mark_container; anchors.fill: parent }
     }
 
     Timer {
@@ -462,6 +544,15 @@ Item {
         game_start_countdown.restart();
     }
 
+    function hitmark (type, left, right) {
+        NOTE_GENERATOR.make_hitmark(type, left, right)
+        if (type==0) return;
+
+        for (var i = left; i < right; i++) {
+            (type == 2 ? emitters_exact : emitters_close).itemAt(i).burst(50)
+        }
+    }
+
     Component.onCompleted: {
         var left_top = swipe_note_container.mapFromItem(lane_container, 0, 0)
         var right_top = swipe_note_container.mapFromItem(lane_container, width, 0)
@@ -485,6 +576,13 @@ Item {
 
         dynamic_linker.start()
 
+        mainqml.bksppress_signal.connect(()=>NOTE_GENERATOR.make_hitmark(0, Math.floor(Math.random()*16), Math.floor(Math.random()*16)))
+
         //mainqml.click_trigger.connect(NOTE_GENERATOR.click_hit)
+    }
+
+    FontLoader {
+        id: font_good_times
+        source: "qrc:/font/good-times-rg.ttf"
     }
 }

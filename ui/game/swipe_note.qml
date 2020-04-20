@@ -128,6 +128,7 @@ Item {
         // check area, exact
         if ( id == direction && pos >= left_pos && pos < right_pos) {
             //console.log("swipe hit")
+            hitmark(2, left_pos, right_pos)
             combo++
             _swipe.destroy();
         }
@@ -135,7 +136,11 @@ Item {
 
     function link () {
         mainqml.swipe_trigger.connect(hit)
-        _swipe.onWindowChanged.connect(()=>{ if (window > 80) _swipe.destroy() })
+        _swipe.onWindowChanged.connect(()=>{ if (window > 80) {
+                                               hitmark(0, left_pos, right_pos)
+                                               combo = 0
+                                               _swipe.destroy()
+                                           }})
         //console.log("linked - swipe note")
     }
 

@@ -12,6 +12,9 @@ Item {
     property double hispeed: 1.0
     property int current_score: 0
 
+    property int total_object: 0
+    property int current_life: 0
+
     anchors.fill: parent
 
     CustomChartMaker { id: chart_maker }

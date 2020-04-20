@@ -54,14 +54,17 @@ Item {
         if (Math.abs(window) > 120) return;
 
         // check area
-        if ( pos >= left_pos && pos < right_pos) {
+        if ( pos >= left_pos && pos < right_pos ) {
             // exact
             //if (Math.abs(window) <= 50) _click.destroy();
             // close
             //else _click.destroy();
 
-            _click.destroy()
+            hitmark((Math.abs(window) <= 50) ? 2 : 1, left_pos, right_pos)
+
             combo++
+            _click.destroy()
+
             //console.log("click hit")
         }
     }
@@ -69,7 +72,11 @@ Item {
     function link () {
         mainqml.click_trigger.connect(hit)
 
-        _click.onWindowChanged.connect(()=>{ if (window > 120) _click.destroy() })
+        _click.onWindowChanged.connect(()=>{ if (window > 120) {
+                                               hitmark(0, left_pos, right_pos)
+                                               combo = 0
+                                               _click.destroy()
+                                           }})
         //console.log("linked - click note")
     }
 

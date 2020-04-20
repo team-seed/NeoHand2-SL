@@ -68,14 +68,20 @@ Item {
         if (window < 0) return
         if (window > 60) {
             //console.log("hold miss")
+            hitmark(0, start_pos[0] + left_spacing, start_pos[1] + right_spacing)
+            combo = 0
             shape_color = "gray"
             _hold.onWindowChanged.disconnect(check_hold)
         }
 
-        if ((handA.gesture == 1 && handA.position >= start_pos[0] && handA.position < start_pos[1])
-             || (handB.gesture == 1 && handB.position >= start_pos[0] && handB.position < start_pos[1])) {
+        var L = start_pos[0] + left_spacing
+        var R = start_pos[1] + left_spacing
+
+        if ((handA.gesture == 1 && handA.position >= L && handA.position < R)
+             || (handB.gesture == 1 && handB.position >= L && handB.position < R)) {
 
             //console.log("hold hit")
+            hitmark(2, L, R)
             combo++
 
             _hold.onWindowChanged.disconnect(check_hold)

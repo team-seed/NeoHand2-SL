@@ -334,7 +334,7 @@ Item {
         }
         //var j = 1 + Math.floor(Math.random() * (index.length - 1));
         //[index[0], index[j]] = [index[j], index[0]]
-        tip_txt.text = index[0]
+        tip_txt.text = index[Math.floor(Math.random() * (index.length - 1))]
     }
 
     function start(){
