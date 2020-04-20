@@ -13,7 +13,8 @@ Item {
     property int current_score: 0
 
     property int total_object: 0
-    property int current_life: 0
+    property int current_health: 0
+    property int max_health: total_object * 10
 
     anchors.fill: parent
 
