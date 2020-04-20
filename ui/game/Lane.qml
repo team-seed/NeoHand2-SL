@@ -24,6 +24,119 @@ Item {
     antialiasing: true
     clip: true
 
+    Item {
+        id: left_bg
+        width: parent.width * lane_length_multiplier / 3
+        height: parent.height
+        anchors{
+            left: parent.left
+            verticalCenter:parent.verticalCenter
+        }
+
+        Item {
+            anchors.fill: parent
+            clip: true
+            Row{
+                id: left_bg_row
+                width: parent.width * 2
+                height: parent.height
+                anchors{
+                    top: parent.top
+                    topMargin: -left_bg_row.height / 2
+                    left: parent.left
+                    leftMargin: - left_bg_row.width / bg_line_count * 2
+                }
+                spacing: width / bg_line_count
+                Repeater{
+                    model: bg_line_count / 2
+                    Rectangle{
+                        width: left_bg_row.width / bg_line_count
+                        height: left_bg_row.height * 2
+                        color: "gray"
+                        opacity: 0.1
+                        transformOrigin: Item.Center
+                        rotation: -45
+                    }
+                }
+                NumberAnimation on anchors.leftMargin {
+                    loops: Animation.Infinite
+                    running: true
+                    duration: 5000
+                    from: - left_bg_row.width / bg_line_count * 2
+                    to: -left_bg_row.width / 2
+                }
+            }
+        }
+
+        transform: Rotation {
+            axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 4.75
+        }
+    }
+
+    Item {
+        id: right_bg
+        width: parent.width * lane_length_multiplier / 3
+        height: parent.height
+        anchors{
+            right: parent.right
+            verticalCenter:parent.verticalCenter
+        }
+
+        clip: true
+
+        Item {
+            anchors.fill: parent
+
+            Row{
+                id: right_bg_row
+                width: parent.width * 2
+                height: parent.height
+                anchors{
+                    top: parent.top
+                    topMargin: -right_bg_row.height / 2
+                    right: parent.right
+                    rightMargin: - right_bg_row.width / bg_line_count * 2
+                }
+                spacing: width / bg_line_count
+                Repeater{
+                    model: bg_line_count / 2
+                    Rectangle{
+                        width: right_bg_row.width / bg_line_count
+                        height: right_bg_row.height * 2
+                        color: "gray"
+                        opacity: 1
+                        transformOrigin: Item.Center
+                        rotation: 45
+                    }
+                }
+                NumberAnimation on anchors.rightMargin {
+                    loops: Animation.Infinite
+                    running: true
+                    duration: 5000
+                    from: - right_bg_row.width / bg_line_count * 2
+                    to: -right_bg_row.width / 2
+                }
+            }
+            layer.enabled: true
+            layer.effect:LinearGradient {
+                anchors.fill: parent
+                start: Qt.point(0, 0)
+                end: Qt.point(width, height)
+                gradient: Gradient {
+                    GradientStop { position: 0.5; color: "transparent" }
+                    GradientStop { position: 1; color: "red" }
+                }
+            }
+
+        }
+
+        transform: Rotation {
+            origin.x: right_bg.width ; origin.y: 0
+            axis: Qt.vector3d(0, 1, 0); angle: -(lane_angle - 4.75)
+        }
+    }
+
+
     ParticleSystem {
         id: side_effect
         anchors.fill: parent
@@ -104,73 +217,6 @@ Item {
                     particle.endSize = 30 * (1-rand) + 5
                 }
             }
-        }
-    }
-
-    Item {
-        id: left_bg
-        width: parent.width * lane_length_multiplier / 3
-        height: parent.height
-        anchors{
-            left: parent.left
-            verticalCenter:parent.verticalCenter
-        }
-        Item {
-            anchors.fill: parent
-            clip: true
-            Row{
-                id: left_bg_row
-                width: parent.width * 2
-                height: parent.height
-                anchors{
-                    top: parent.top
-                    topMargin: -left_bg_row.height / 2
-                    left: parent.left
-                }
-                spacing: width / bg_line_count
-                Repeater{
-                    model: bg_line_count / 2
-                    Rectangle{
-                        width: left_bg_row.width / bg_line_count
-                        height: left_bg_row.height * 2
-                        color: "gray"
-                        transformOrigin: Item.Center
-                        rotation: -45
-                    }
-                }
-                NumberAnimation on anchors.leftMargin {
-                    loops: Animation.Infinite
-                    running: true
-                    duration: 5000
-                    from: 0
-                    to: -left_bg_row.width / 2
-                }
-            }
-
-        }
-
-        transform: Rotation {
-            axis: Qt.vector3d(0, 1, 0); angle: lane_angle - 4.75
-        }
-    }
-
-    Item {
-        id: right_bg
-        width: parent.width * lane_length_multiplier / 3
-        height: parent.height
-        anchors{
-            right: parent.right
-            verticalCenter:parent.verticalCenter
-        }
-        Rectangle{
-            anchors.fill: parent
-            color: "blue"
-            opacity: 0.1
-        }
-
-        transform: Rotation {
-            origin.x: right_bg.width ; origin.y: 0
-            axis: Qt.vector3d(0, 1, 0); angle: -(lane_angle - 4.75)
         }
     }
 
