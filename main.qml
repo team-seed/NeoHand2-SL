@@ -18,7 +18,7 @@ Item {
     property int final_score: 0
     property var final_hit_count: [0, 0, 0]
     property int final_max_combo: 0
-
+    property int final_pass_state: 0
     property int global_track_count: 0
 
     property int global_offset: 0
@@ -108,6 +108,7 @@ Item {
         final_score = 0
         final_hit_count = [0, 0, 0]
         final_max_combo = 0
+        final_pass_state = 0
     }
 
     // press signal

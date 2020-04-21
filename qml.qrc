@@ -24,5 +24,6 @@
         <file>ui/game/Game_panel.qml</file>
         <file>TransitionA.qml</file>
         <file>ui/game/hit_mark.qml</file>
+        <file>ui/option/Option_list.qml</file>
     </qresource>
 </RCC>

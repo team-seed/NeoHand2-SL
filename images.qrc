@@ -28,5 +28,9 @@
         <file>ui/game/image/swipe_arrow_new.png</file>
         <file>ui/game/image/game_data_frame.png</file>
         <file>ui/songselect/image/neohand2logoonly.png</file>
+        <file>ui/songselect/image/result_marker_allchain.png</file>
+        <file>ui/songselect/image/result_marker_clear.png</file>
+        <file>ui/songselect/image/result_marker_failed.png</file>
+        <file>ui/songselect/image/result_marker_perfect.png</file>
     </qresource>
 </RCC>

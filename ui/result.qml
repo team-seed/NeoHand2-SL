@@ -18,8 +18,12 @@ Item {
     property var break_number: 8907
     property var max_combo: 2345
 
-    // temp background
+    property var pass_img: ["qrc:/ui/songselect/image/result_marker_failed.png",
+                            "qrc:/ui/songselect/image/result_marker_clear.png",
+                            "qrc:/ui/songselect/image/result_marker_allchain.png",
+                            "qrc:/ui/songselect/image/result_marker_perfect.png"]
 
+    // temp background
     ParticleSystem {
         id: particle_sys
         anchors.fill: parent
@@ -238,36 +242,18 @@ Item {
             fillMode: Image.PreserveAspectFit
             source: global_song_meta ? "file:///" + global_song_meta[0] + "/jacket" : ""
         }
-
     }
 
-    //  Failed, Clear, Full Combo, Perfect
-    //  ==========================!! TO BE REPLACED !!===============================
-    /*Rectangle{
-        z:101
-        height: parent.width * 0.2
-        width: parent.height
+    Image {
+        height: parent.height / 3
+        width: height
         anchors{
-            bottom: parent.verticalCenter
             left: parent.left
+            bottom: parent.bottom
         }
-        color: "white"
-        transform: Rotation { origin.x: 0; origin.y: 0 ; axis { x: 0; y: 0; z: 1 } angle: 45}
-        Text{
-            anchors.fill: parent
-            text: "CLEAR"
-            font.family: font_Genjyuu_XP_bold.name
-            font.pixelSize: height
-            minimumPixelSize: 10
-
-            fontSizeMode: Text.Fit
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            style: Text.Raised
-            styleColor: "black"
-        }
-    }*/
-
+        source: pass_img[final_pass_state]
+        fillMode:Image.PreserveAspectFit
+    }
     //Right panel
     Item {
         property double panel_margin: width / 16

@@ -83,6 +83,11 @@ Item {
         final_max_combo = max_combo
         final_hit_count = [break_count, close_count, exact_count]
 
+        if( exact_count == total_object)         final_pass_state = 3
+        else if(break_count == 0)                final_pass_state = 2
+        else if(current_health > pass_threshold) final_pass_state = 1
+        else                                     final_pass_state = 0
+
         transitionA.start()
         change_page("qrc:/ui/result.qml", 6000)
     }
