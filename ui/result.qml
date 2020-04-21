@@ -750,6 +750,7 @@ Item {
     function select () {
         //cal.restart()
         transitionA.start()
+        disconnect_all()
         change_page("qrc:/ui/songselect/songselect_main.qml", 6000)
     }
 
