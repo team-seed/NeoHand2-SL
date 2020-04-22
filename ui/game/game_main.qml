@@ -8,7 +8,7 @@ import custom.game_clock 1.0
 Item {
     id: game_main
 
-    property double hispeed: 1.0
+    property double hispeed: default_hispeed
     property int current_score: Math.ceil(1000000 * ((close_count * 0.5 + exact_count) / total_object)) + max_combo
 
     property int total_object: 0

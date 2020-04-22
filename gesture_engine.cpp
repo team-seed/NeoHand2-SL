@@ -69,11 +69,12 @@ void Gesture_engine::Get(){
         //shm->gestureUpdate = false;
         // lock end
      }
-
-    check_hand();
-    normalize();
-
-    check_gesture();
+    //if(ges_last[0] == ges_cur[0] && ges_last[1] == ges_cur[1])
+    {
+        check_hand();
+        normalize();
+        check_gesture();
+    }
 }
 
 

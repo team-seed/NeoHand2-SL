@@ -22,6 +22,7 @@ Item {
     property int global_track_count: 0
 
     property int global_offset: 0
+    property double default_hispeed: 1.0
 
     // soundfx handler
     CustomSoundFX { id: soundfx }
@@ -59,8 +60,9 @@ Item {
     // loader for page switching
     Loader {
         id: pageloader
-        height: parent.height
-        width: height * 16/9
+        height: width * 9/16
+        width: parent.width
+        clip: true
         anchors.centerIn: parent
         //focus: true
         asynchronous: true

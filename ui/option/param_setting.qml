@@ -26,6 +26,13 @@ Column{
             initialize: function (i) { params.setProperty(i, "value", global_offset) }
             save: function (i) { global_offset = params.get(i).value }
         }
+
+        ListElement {
+            name: "Default HiSpeed"
+            type: "half"; value: 0
+            initialize: function (i) { params.setProperty(i, "value", default_hispeed) }
+            save: function (i) { default_hispeed = Math.min(9.5, Math.max(0.5, params.get(i).value)) }
+        }
     }
 
     Header{ text: "PARAM  SETTING" }
@@ -71,13 +78,15 @@ Column{
     function left () {
         var obj = params.get(select_index)
         switch (obj.type) {
-        case "integer": params.setProperty(select_index, "value", obj.value - 1)
+        case "integer": params.setProperty(select_index, "value", obj.value - 1); break
+        case "half": params.setProperty(select_index, "value", obj.value - 0.5); break
         }
     }
     function right () {
         var obj = params.get(select_index)
         switch (obj.type) {
-        case "integer": params.setProperty(select_index, "value", obj.value + 1)
+        case "integer": params.setProperty(select_index, "value", obj.value + 1); break
+        case "half": params.setProperty(select_index, "value", obj.value + 0.5); break
         }
     }
     function tomain () {pageloader.source = "option_menu.qml"}
